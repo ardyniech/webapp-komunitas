@@ -1,0 +1,247 @@
+{
+  "fase": [
+    {
+      "kode": "F0",
+      "nama": "Cek Bengkel (Persiapan)",
+      "deskripsi": "Pengecekan server, ketersediaan port, dan aturan hosting",
+      "urutan": 1,
+      "fitur": [
+        {
+          "kode": "F0-1",
+          "nama": "Kondisi Server & Port",
+          "deskripsi": "Memastikan laptop aman, RAM cukup, dan port bebas",
+          "uji": [
+            { "kode": "U-F0-1", "nama": "Uji Kapasitas RAM & Swap", "jenis": "uji_statis" },
+            { "kode": "U-F0-2", "nama": "Uji Port 8095 PocketBase", "jenis": "ada_route" }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F1",
+      "nama": "Rakit Mesin (Backend Inti)",
+      "deskripsi": "Database SQLite, PocketBase, dan koleksi utama",
+      "urutan": 2,
+      "fitur": [
+        {
+          "kode": "F1-1",
+          "nama": "Koleksi Inti Kas & Iuran",
+          "deskripsi": "Tabel kas, iuran, dan proteksi permanen (tanpa edit/hapus)",
+          "uji": [
+            { "kode": "U-F1-1", "nama": "Koleksi kas tersedia", "jenis": "ada_koleksi" },
+            { "kode": "U-F1-2", "nama": "Koleksi iuran tersedia", "jenis": "ada_koleksi" },
+            { "kode": "U-F1-3", "nama": "Anggota dilarang input/edit/hapus kas", "jenis": "uji_api" },
+            { "kode": "U-F1-4", "nama": "Bendahara dilarang edit/hapus kas", "jenis": "uji_api" }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F1b",
+      "nama": "Panel Setelan (Konfigurasi & Fleksibilitas)",
+      "deskripsi": "Pengaturan fleksibel, referensi dinamis, dan pemetaan izin",
+      "urutan": 3,
+      "fitur": [
+        {
+          "kode": "F1b-1",
+          "nama": "Konfigurasi Terpusat",
+          "deskripsi": "Semua angka kebijakan dan setelan disimpan di database",
+          "uji": [
+            { "kode": "U-F1b-1", "nama": "Koleksi konfigurasi & referensi tersedia", "jenis": "ada_koleksi" },
+            { "kode": "U-F1b-2", "nama": "Koleksi pemetaan_izin tersedia", "jenis": "ada_koleksi" }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F1c",
+      "nama": "Dasbor Progres (Runner Uji Otomatis)",
+      "deskripsi": "Sistem pelacakan progres berbasis bukti uji otomatis",
+      "urutan": 4,
+      "fitur": [
+        {
+          "kode": "F1c-1",
+          "nama": "Pelacakan Progres Terbuka",
+          "deskripsi": "Anggota dapat memantau status pembuatan fitur secara transparan",
+          "uji": [
+            { "kode": "U-F1c-1", "nama": "Koleksi progres_* lengkap", "jenis": "ada_koleksi" },
+            { "kode": "U-F1c-2", "nama": "Route API progres aktif", "jenis": "ada_route" }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F2",
+      "nama": "Muka Depan (Login, Kas & Menu)",
+      "deskripsi": "Antarmuka markas ojol, dompet saldo kas, dan riwayat transaksi",
+      "urutan": 5,
+      "fitur": [
+        {
+          "kode": "F2-1",
+          "nama": "Login & Logout Aman",
+          "deskripsi": "Masuk akun basecamp dan keluar aman",
+          "uji": [
+            { "kode": "U-F2-1", "nama": "Autentikasi akun uji berfungsi", "jenis": "uji_api" },
+            { "kode": "U-F2-2", "nama": "Menu pengguna & tombol Keluar tersedia", "jenis": "uji_ui_ringan" }
+          ]
+        },
+        {
+          "kode": "F2-2",
+          "nama": "Dompet Saldo Kas Transparan",
+          "deskripsi": "Angka saldo besar dan ringkasan masuk/keluar bulan ini",
+          "uji": [
+            { "kode": "U-F2-3", "nama": "Perhitungan saldo otomatis cocok", "jenis": "uji_api" },
+            { "kode": "U-F2-4", "nama": "Ekspor CSV riwayat kas", "jenis": "uji_ui_ringan" }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F2b",
+      "nama": "Daftar & Profil",
+      "deskripsi": "Pendaftaran pendaftar baru, verifikasi admin, dan profil anggota",
+      "urutan": 6,
+      "fitur": [
+        {
+          "kode": "F2b-1",
+          "nama": "Pendaftaran Anggota Mandiri",
+          "deskripsi": "Calon anggota daftar sendiri, status menunggu persetujuan",
+          "uji": [
+            { "kode": "U-F2b-1", "nama": "Koleksi pendaftaran & profil_publik tersedia", "jenis": "ada_koleksi" },
+            { "kode": "U-F2b-2", "nama": "Akun menunggu dilarang login", "jenis": "uji_api" }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F3",
+      "nama": "Iuran & Anggota",
+      "deskripsi": "Manajemen setoran iuran pangkalan dan daftar anggota",
+      "urutan": 7,
+      "fitur": [
+        {
+          "kode": "F3-1",
+          "nama": "Setoran Iuran & Tangki Bensin",
+          "deskripsi": "Tandai lunas otomatis masuk kas dan visual tangki bensin",
+          "uji": [
+            { "kode": "U-F3-1", "nama": "Pencatatan iuran otomatis masuk kas", "jenis": "uji_api" }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F3b",
+      "nama": "Dandan (Animasi, Hero & Wizard)",
+      "deskripsi": "Maskot Bang Gas, wizard input data kas, dan mode hemat animasi",
+      "urutan": 8,
+      "fitur": [
+        {
+          "kode": "F3b-1",
+          "nama": "Maskot Bang Gas & Wizard",
+          "deskripsi": "Driver ojol pemandu santai dan dialog konfirmasi kas",
+          "uji": [
+            { "kode": "U-F3b-1", "nama": "Aset visual di bawah 150KB", "jenis": "uji_statis" },
+            { "kode": "U-F3b-2", "nama": "Mode hemat animasi tersedia", "jenis": "uji_ui_ringan" }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F3c",
+      "nama": "Identitas & Struktur",
+      "deskripsi": "Personalisasi basecamp, bagan pengurus, dan unit tugas",
+      "urutan": 9,
+      "fitur": [
+        {
+          "kode": "F3c-1",
+          "nama": "Bagan Struktur Unit & Jabatan",
+          "deskripsi": "Bagan kepengurusan, dewan etik, satgas, dan unit komunitas",
+          "uji": [
+            { "kode": "U-F3c-1", "nama": "Koleksi unit & jabatan tersedia", "jenis": "ada_koleksi" }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F3c-2",
+      "nama": "Aturan Main (Aturan & Keputusan Etik)",
+      "deskripsi": "Editor pasal aturan, tangga sanksi, dan sidang etik",
+      "urutan": 10,
+      "fitur": [
+        {
+          "kode": "F3c2-1",
+          "nama": "Bab & Pasal Aturan Komunitas",
+          "deskripsi": "Penyusunan aturan bersama Dewan Etik dan pengesahan",
+          "uji": [
+            { "kode": "U-F3c2-1", "nama": "Koleksi aturan_* dan keputusan_etik tersedia", "jenis": "ada_koleksi" }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F3d",
+      "nama": "Panduan, Forum, Pengumuman",
+      "deskripsi": "Pusat bantuan ojol, diskusi pangkalan, dan kabar resmi",
+      "urutan": 11,
+      "fitur": [
+        {
+          "kode": "F3d-1",
+          "nama": "Pusat Panduan & Forum",
+          "deskripsi": "Artikel solusi masalah ojol dan forum santai bermoderasi",
+          "uji": [
+            { "kode": "U-F3d-1", "nama": "Koleksi forum_* dan panduan tersedia", "jenis": "ada_koleksi" }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F3e",
+      "nama": "Uji Anggota",
+      "deskripsi": "Kuesioner pemahaman aturan dan penyaringan berkala",
+      "urutan": 12,
+      "fitur": [
+        {
+          "kode": "F3e-1",
+          "nama": "Kuesioner & Penilaian Rahasia Server",
+          "deskripsi": "Kunci jawaban tersembunyi dan nilai dihitung server",
+          "uji": [
+            { "kode": "U-F3e-1", "nama": "Kunci jawaban dilarang dibaca anggota", "jenis": "uji_api" }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F3g",
+      "nama": "Event Komunitas",
+      "deskripsi": "Manajemen kegiatan kopdar, baksos, kepanitiaan & peta dana",
+      "urutan": 13,
+      "fitur": [
+        {
+          "kode": "F3g-1",
+          "nama": "Kepanitiaan & Anggaran Event",
+          "deskripsi": "Penunjukan ketua pelaksana, pembentukan seksi, dan RAB",
+          "uji": [
+            { "kode": "U-F3g-1", "nama": "Koleksi event_* lengkap", "jenis": "ada_koleksi" }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F4",
+      "nama": "Meluncur (Deployment)",
+      "deskripsi": "Peluncuran systemd, Caddy, dan akses publik Tailscale Funnel",
+      "urutan": 14,
+      "fitur": [
+        {
+          "kode": "F4-1",
+          "nama": "Akses Publik Aman",
+          "deskripsi": "Aplikasi dapat diakses publik via https://ardyvaio.taild277bb.ts.net/drg/",
+          "uji": [
+            { "kode": "U-F4-1", "nama": "URL publik merespons HTTP 200", "jenis": "ada_route" },
+            { "kode": "U-F4-2", "nama": "Admin UI publik diblokir HTTP 403", "jenis": "uji_api" }
+          ]
+        }
+      ]
+    }
+  ]
+}

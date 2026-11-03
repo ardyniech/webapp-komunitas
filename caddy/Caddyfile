@@ -1,0 +1,9 @@
+:80 {
+    bind 100.117.176.41
+
+    # Block admin UI from reverse proxy
+    @admin_ui path /_/* /_/
+    respond @admin_ui "Forbidden: Admin UI is restricted to direct Tailscale access." 403
+
+    reverse_proxy 100.117.176.41:8095
+}

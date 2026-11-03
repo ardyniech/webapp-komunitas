@@ -1,0 +1,10 @@
+# PocketBase data and uploads
+pb_data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# OS & Logs
+.DS_Store
+*.log

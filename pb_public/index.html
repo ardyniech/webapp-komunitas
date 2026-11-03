@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <script>
+    if (window.location.pathname === '/drg') {
+      window.location.replace('/drg/');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Basecamp Solid — Kas Transparan & Komunitas</title>
+  <meta name="theme-color" content="#10b981">
+  <meta name="description" content="Aplikasi Komunitas Driver Ojol Ringan & Kas Transparan">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <!-- Ambient Floating Icons (CSS transform & opacity only, max 4 elements) -->
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="ambient-icon">🛵</div>
+    <div class="ambient-icon">⛽</div>
+    <div class="ambient-icon">🪙</div>
+    <div class="ambient-icon">☕</div>
+  </div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand-wrap">
+      <div class="brand-logo-icon">🛵</div>
+      <div>
+        <div class="brand-name brand-name-text">Basecamp Ojol</div>
+        <div class="brand-tagline brand-tagline-text">Kas Transparan, Aspal Lancar</div>
+      </div>
+    </div>
+    <div id="user-header-badge" class="user-badge-header" onclick="App.toggleUserMenu(event)" style="cursor:pointer;" title="Buka Menu Pengguna"></div>
+    <!-- Dropdown Menu Pengguna (Section 6.15) -->
+    <div id="user-dropdown-menu" class="user-dropdown-menu">
+      <button class="dropdown-item" onclick="App.switchTab('profil'); App.closeUserMenu();">
+        <span>👤</span> <span>Profil Saya</span>
+      </button>
+      <button class="dropdown-item" onclick="App.switchTab('struktur'); App.closeUserMenu();">
+        <span>🏛️</span> <span>Struktur Basecamp</span>
+      </button>
+      <button class="dropdown-item" onclick="App.switchTab('aturan'); App.closeUserMenu();">
+        <span>📜</span> <span>Aturan & Etika</span>
+      </button>
+      <button class="dropdown-item" onclick="App.switchTab('event'); App.closeUserMenu();">
+        <span>🎉</span> <span>Event & Kegiatan</span>
+      </button>
+      <button class="dropdown-item" onclick="App.switchTab('progres'); App.closeUserMenu();">
+        <span>🚀</span> <span>Progres Aplikasi</span>
+      </button>
+      <button class="dropdown-item" onclick="App.switchTab('pengaturan'); App.closeUserMenu();">
+        <span>⚙️</span> <span>Setelan Basecamp</span>
+      </button>
+      <button class="dropdown-item" style="color:var(--warna-merah);" onclick="App.logout(); App.closeUserMenu();">
+        <span>🚪</span> <span>Keluar Basecamp</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main App Content -->
+  <main class="main-content">
+    
+    <!-- VIEW: AUTH (LOGIN / DAFTAR / CEK STATUS) -->
+    <div id="auth-view" style="display: none;">
+      <div class="auth-card">
+        <div style="font-size: 42px; margin-bottom: 10px;">🛵</div>
+        <div class="auth-header">
+          <h2 class="brand-name-text">Basecamp Ojol</h2>
+          <p>Aplikasi Komunitas & Kas Transparan Pangkalan</p>
+        </div>
+
+        <!-- 3 Toggle Tabs -->
+        <div class="auth-toggle-tabs">
+          <button class="auth-tab-btn active" id="btn-auth-tab-login" onclick="App.switchAuthTab('login')">Masuk</button>
+          <button class="auth-tab-btn" id="btn-auth-tab-daftar" onclick="App.switchAuthTab('daftar')">Daftar Anggota</button>
+          <button class="auth-tab-btn" id="btn-auth-tab-status" onclick="App.switchAuthTab('status')">Cek Status</button>
+        </div>
+
+        <!-- SUB-PANEL 1: LOGIN FORM -->
+        <div id="auth-panel-login">
+          <form id="login-form">
+            <div class="form-group">
+              <label for="login-identity">Email atau Username</label>
+              <input type="text" id="login-identity" class="form-control" placeholder="Contoh: anggota@test.local" required autocomplete="username">
+            </div>
+            <div class="form-group">
+              <label for="login-password">Password Akun</label>
+              <input type="password" id="login-password" class="form-control" placeholder="Masukkan password" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 8px;">
+              🛵 Masuk Basecamp
+            </button>
+          </form>
+          <div style="margin-top: 14px; font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">
+            Belum punya akun? Tekan tab <strong>Daftar Anggota</strong> di atas ya bro.
+          </div>
+        </div>
+
+        <!-- SUB-PANEL 2: DAFTAR FORM (6.12) -->
+        <div id="auth-panel-daftar" style="display: none;">
+          <form id="daftar-form" onsubmit="App.handleDaftarSubmit(event)">
+            <input type="text" id="reg-honeypot" style="display:none;" tabindex="-1" autocomplete="off">
+            <div class="form-group">
+              <label>Nama Lengkap / Panggilan</label>
+              <input type="text" id="reg-nama" class="form-control" placeholder="Contoh: Agus Santoso" required>
+            </div>
+            <div class="form-group">
+              <label>Nomor WhatsApp Aktif</label>
+              <input type="tel" id="reg-wa" class="form-control" placeholder="Contoh: 081234567890" required>
+            </div>
+            <div class="form-group">
+              <label>Domisili / Wilayah Pangkalan</label>
+              <input type="text" id="reg-domisili" class="form-control" placeholder="Contoh: Palmerah, Jakbar">
+            </div>
+            <div class="form-group">
+              <label>Password Akun Baru</label>
+              <input type="password" id="reg-password" class="form-control" placeholder="Minimal 8 karakter" minlength="8" required>
+            </div>
+            <div class="form-group">
+              <label>Alasan Bergabung</label>
+              <textarea id="reg-alasan" class="form-control" rows="2" placeholder="Contoh: Ingin guyub rukun bareng kawan satu aspal"></textarea>
+            </div>
+            <div style="text-align: left; margin: 12px 0; font-size: 0.8rem; color: var(--text-sub);">
+              <label style="display: flex; gap: 8px; align-items: flex-start;">
+                <input type="checkbox" id="reg-setuju" required style="margin-top: 3px;">
+                <span>Saya setuju membaca & menaati aturan basecamp, menjaga etika, serta transparansi komunitas.</span>
+              </label>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              📝 Ajukan Pendaftaran
+            </button>
+          </form>
+          <div id="daftar-success-msg" style="display:none; margin-top:14px; padding:12px; border-radius:10px; background:rgba(31,164,99,0.15); border:1px solid var(--warna-utama); font-size:0.85rem;"></div>
+        </div>
+
+        <!-- SUB-PANEL 3: CEK STATUS (6.12) -->
+        <div id="auth-panel-status" style="display: none;">
+          <form onsubmit="App.handleCekStatusSubmit(event)">
+            <div class="form-group">
+              <label>Kode Pendaftaran</label>
+              <input type="text" id="status-kode" class="form-control" placeholder="Contoh: REG-ABC123" required style="text-transform:uppercase;">
+            </div>
+            <button type="submit" class="btn btn-primary">
+              🔍 Cek Status Saya
+            </button>
+          </form>
+          <div id="status-result-box" style="display:none; margin-top:16px; padding:14px; border-radius:10px; background:var(--bg-input); border:1px solid var(--border-color); text-align:left; font-size:0.85rem;"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- VIEW: MAIN APP (LOGGED IN) -->
+    <div id="app-view" style="display: none;">
+      
+      <!-- TAB 1: MARKAS (DASHBOARD) -->
+      <section id="panel-markas" class="view-panel active">
+        <!-- Dompet Kas Card -->
+        <div class="dompet-card">
+          <div class="dompet-title">DOMPET KAS BASECAMP</div>
+          <div class="dompet-saldo">
+            <span class="rp">Rp</span>
+            <span id="dash-total-saldo">0</span>
+          </div>
+          <div class="dompet-stats">
+            <div class="stat-item">
+              <span class="stat-label">⬇️ Pemasukan Bulan Ini</span>
+              <div id="dash-masuk-bulan" class="stat-val masuk">+Rp 0</div>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">⬆️ Pengeluaran Bulan Ini</span>
+              <div id="dash-keluar-bulan" class="stat-val keluar">-Rp 0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tangki Bensin Iuran -->
+        <div class="bensin-card">
+          <div class="bensin-header">
+            <div class="bensin-title">
+              <span>⛽</span>
+              <span>Tangki Bensin Iuran Pangkalan</span>
+            </div>
+            <div id="bensin-status-text" class="bensin-status-text">0%</div>
+          </div>
+          <div class="bensin-bar-wrap">
+            <div id="bensin-fill-bar" class="bensin-bar-fill"></div>
+          </div>
+          <div class="bensin-footer">
+            <span>Bensin Kosong</span>
+            <span>Full Tank (Semua Lunas)</span>
+          </div>
+        </div>
+
+        <!-- Status Kesiapan Anggota -->
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-sub); margin-bottom: 6px;">
+            STATUS SETORAN ANGGOTA
+          </div>
+          <div id="dash-members-chips" class="members-grid"></div>
+        </div>
+
+        <!-- Menu Pintas Basecamp (F3c, F3c-2, F3g) -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px;">
+          <button class="btn btn-outline" style="flex-direction: column; padding: 10px 6px; font-size: 0.75rem; text-align: center; border-radius: 12px; height: auto;" onclick="App.switchTab('struktur')">
+            <span style="font-size: 20px; margin-bottom: 4px;">🏛️</span>
+            <span>Struktur</span>
+          </button>
+          <button class="btn btn-outline" style="flex-direction: column; padding: 10px 6px; font-size: 0.75rem; text-align: center; border-radius: 12px; height: auto;" onclick="App.switchTab('aturan')">
+            <span style="font-size: 20px; margin-bottom: 4px;">📜</span>
+            <span>Aturan</span>
+          </button>
+          <button class="btn btn-outline" style="flex-direction: column; padding: 10px 6px; font-size: 0.75rem; text-align: center; border-radius: 12px; height: auto;" onclick="App.switchTab('event')">
+            <span style="font-size: 20px; margin-bottom: 4px;">🎉</span>
+            <span>Event</span>
+          </button>
+        </div>
+
+        <!-- 5 Transaksi Terakhir -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <div style="font-size: 0.92rem; font-weight: 700;">5 Transaksi Terbaru</div>
+          <button class="btn btn-outline" style="width: auto; padding: 4px 10px; font-size: 0.75rem;" onclick="App.switchTab('kas')">
+            Lihat Semua &rarr;
+          </button>
+        </div>
+        <div id="dash-latest-kas"></div>
+      </section>
+
+      <!-- TAB 2: BUKU KAS -->
+      <section id="panel-kas" class="view-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px;">
+          <h2 style="font-size: 1.15rem; font-weight: 700;">Buku Kas Komunitas</h2>
+          <div style="display: flex; gap: 6px;">
+            <button id="btn-open-catat-kas" class="btn btn-primary" style="width: auto; padding: 8px 12px; font-size: 0.8rem;" onclick="App.openCatatKas()">
+              + Catat Kas
+            </button>
+            <button class="btn btn-outline" style="width: auto; padding: 8px 10px; font-size: 0.8rem;" onclick="App.exportKasCSV()" title="Ekspor CSV">
+              📥 CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+          <select id="filter-kas-jenis" class="form-control" style="font-size: 0.85rem; padding: 8px 10px;">
+            <option value="all">Semua Jenis Kas</option>
+            <option value="masuk">Pemasukan (Koin Masuk)</option>
+            <option value="keluar">Pengeluaran (Keluar)</option>
+          </select>
+          <input type="text" id="filter-kas-search" class="form-control" style="font-size: 0.85rem; padding: 8px 10px;" placeholder="Cari keterangan/kategori...">
+        </div>
+
+        <div id="full-kas-list"></div>
+      </section>
+
+      <!-- TAB 3: IURAN -->
+      <section id="panel-iuran" class="view-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <h2 style="font-size: 1.15rem; font-weight: 700;">Iuran Bulanan</h2>
+          <div>
+            <input type="month" id="iuran-period-select" class="form-control" style="width: auto; padding: 6px 10px; font-size: 0.85rem;">
+          </div>
+        </div>
+        <div id="iuran-member-checklist"></div>
+      </section>
+
+      <!-- TAB 4: ANGGOTA (ADMIN) -->
+      <section id="panel-anggota" class="view-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <h2 style="font-size: 1.15rem; font-weight: 700;">Daftar Anggota</h2>
+          <button class="btn btn-primary" style="width: auto; padding: 8px 12px; font-size: 0.8rem;" onclick="App.openAddAnggotaModal()">
+            + Tambah Anggota
+          </button>
+        </div>
+        <div id="admin-members-list"></div>
+      </section>
+
+      <!-- TAB 5: PENGATURAN -->
+      <section id="panel-pengaturan" class="view-panel">
+        <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 16px;">Setelan Basecamp</h2>
+        
+        <div class="kas-card" style="margin-bottom: 12px;">
+          <div>
+            <div style="font-weight: 600;">Mode Hemat Animasi</div>
+            <div style="font-size: 0.75rem; color: var(--text-sub);">Matikan animasi latar & gerakan untuk HP hemat baterai</div>
+          </div>
+          <div>
+            <input type="checkbox" id="toggle-hemat-animasi" style="width: 20px; height: 20px;">
+          </div>
+        </div>
+
+        <div class="kas-card" style="margin-bottom: 12px;">
+          <div>
+            <div style="font-weight: 600;">Sembunyikan Pemandu Hero</div>
+            <div style="font-size: 0.75rem; color: var(--text-sub);">Sembunyikan karakter driver ojol di pojok layar</div>
+          </div>
+          <div>
+            <input type="checkbox" id="toggle-sembunyikan-hero" style="width: 20px; height: 20px;">
+          </div>
+        </div>
+
+        <div class="kas-card" style="margin-bottom: 24px;">
+          <div>
+            <div style="font-weight: 600;">Mode Tampilan Terang</div>
+            <div style="font-size: 0.75rem; color: var(--text-sub);">Ganti latar gelap ke tema terang</div>
+          </div>
+          <div>
+            <input type="checkbox" id="toggle-mode-terang" style="width: 20px; height: 20px;">
+          </div>
+        </div>
+
+        <button class="btn btn-danger" onclick="App.logout()">
+          🚪 Keluar dari Basecamp
+        </button>
+      </section>
+
+      <!-- TAB 6: PROFIL (6.11) -->
+      <section id="panel-profil" class="view-panel">
+        <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 14px;">Profil Saya</h2>
+        <div class="dompet-card" style="background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-color:var(--border-color); margin-bottom:14px;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div style="width:58px; height:58px; border-radius:50%; background:var(--warna-utama); display:flex; align-items:center; justify-content:center; font-size:26px;">🛵</div>
+            <div>
+              <div id="profil-nama-display" style="font-size:1.15rem; font-weight:700;">Nama Anggota</div>
+              <div id="profil-role-display" style="font-size:0.75rem; color:var(--text-sub);">Anggota Basecamp</div>
+              <div id="profil-wa-display" style="font-size:0.78rem; color:var(--text-muted); margin-top:3px;">📱 WhatsApp</div>
+            </div>
+          </div>
+          <!-- Bar Kelengkapan Profil -->
+          <div style="margin-top:16px; border-top:1px solid rgba(255,255,255,0.1); padding-top:12px;">
+            <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:6px;">
+              <span>Kelengkapan Profil</span>
+              <span id="profil-pct-text">80%</span>
+            </div>
+            <div class="bensin-bar-wrap" style="height:10px;">
+              <div id="profil-bar-fill" class="bensin-bar-fill" style="width:80%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:12px; margin-bottom:14px;">
+          <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">DATA PRIBADI & DOMISILI</div>
+          <form onsubmit="App.saveProfilData(event)">
+            <div class="form-group">
+              <label>Nama Panggilan</label>
+              <input type="text" id="prof-nama-panggilan" class="form-control" placeholder="Contoh: Bang Agus">
+            </div>
+            <div class="form-group">
+              <label>Nomor WhatsApp</label>
+              <input type="tel" id="prof-whatsapp" class="form-control" placeholder="08123456789">
+            </div>
+            <div class="form-group">
+              <label>Domisili / Wilayah Mangkal</label>
+              <input type="text" id="prof-domisili" class="form-control" placeholder="Contoh: Senayan, Jaksel">
+            </div>
+            <div class="form-group">
+              <label>Bio Singkat</label>
+              <textarea id="prof-bio" class="form-control" rows="2" placeholder="Driver santuy, pantang pulang sebelum gacor!"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="padding:10px;">💾 Simpan Pembaruan Profil</button>
+          </form>
+        </div>
+
+        <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:10px; margin-bottom:14px;">
+          <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">KEAMANAN AKUN (6.15)</div>
+          <button class="btn btn-outline" onclick="App.logout()">🚪 Keluar dari Perangkat Ini</button>
+          <button class="btn btn-danger" onclick="App.logoutAllDevices()">🔒 Keluar dari Semua Perangkat (Reset Sesi)</button>
+        </div>
+      </section>
+
+      <!-- TAB 7: PROGRES PENGEMBANGAN (6.14) -->
+      <section id="panel-progres" class="view-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:700;">Progres Pengembangan</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Pelacakan otomatis berbasis hasil uji nyata</div>
+          </div>
+          <button class="btn btn-outline" style="width:auto; padding:6px 10px; font-size:0.75rem;" onclick="App.loadProgres()">
+            🔄 Muat Ulang
+          </button>
+        </div>
+
+        <!-- Ringkasan Progres Bar -->
+        <div class="dompet-card" style="padding:16px; margin-bottom:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <div style="font-size:0.78rem; color:#a7f3d0; font-weight:700;">FITUR BERFUNGSI</div>
+            <div id="progres-pct-headline" style="font-size:1.4rem; font-weight:800; color:#fff;">0%</div>
+          </div>
+          <div class="bensin-bar-wrap" style="height:14px; margin:10px 0;">
+            <div id="progres-bar-fill" class="bensin-bar-fill" style="width:0%;"></div>
+          </div>
+          <div id="progres-summary-sub" style="font-size:0.75rem; color:#d1fae5;">Memuat data uji...</div>
+        </div>
+
+        <!-- Pos Pemberhentian Rute Ojol -->
+        <div style="font-size:0.8rem; font-weight:700; color:var(--text-sub); margin-bottom:4px;">POS RUTE PENGEMBANGAN</div>
+        <div id="progres-roadmap-wrap" class="progres-roadmap"></div>
+
+        <!-- Accordion Daftar Fase & Fitur -->
+        <div style="font-size:0.8rem; font-weight:700; color:var(--text-sub); margin:14px 0 8px 0;">DETAIL FASE & HASIL UJI</div>
+        <div id="progres-fase-accordion"></div>
+      </section>
+
+      <!-- TAB 8: STRUKTUR PENGURUS (F3c) -->
+      <section id="panel-struktur" class="view-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:700;">Struktur Basecamp</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Bagan kepengurusan & penanggung jawab pangkalan</div>
+          </div>
+          <button class="btn btn-outline" style="width:auto; padding:6px 10px; font-size:0.75rem;" onclick="App.loadStruktur()">
+            🔄 Segarkan
+          </button>
+        </div>
+        <div id="struktur-units-list"></div>
+      </section>
+
+      <!-- TAB 9: ATURAN & ETIKA (F3c-2) -->
+      <section id="panel-aturan" class="view-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:700;">Aturan & Etika Pangkalan</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Tata tertib bersama yang disahkan Dewan Etik</div>
+          </div>
+          <div id="aturan-versi-badge"></div>
+        </div>
+
+        <!-- Banner Persetujuan Anggota -->
+        <div id="aturan-persetujuan-banner" class="dompet-card" style="margin-bottom:14px; background:linear-gradient(135deg, rgba(31,164,99,0.2) 0%, rgba(16,185,129,0.1) 100%); border:1px solid var(--warna-utama); display:none;">
+          <div style="font-weight:700; color:var(--warna-utama); font-size:0.9rem; margin-bottom:4px;">📜 Komitmen Solidaritas & Etika</div>
+          <div style="font-size:0.78rem; color:var(--text-main); margin-bottom:10px;">
+            Setiap anggota wajib membaca, memahami, dan mematuhi aturan pangkalan demi keamanan dan kenyamanan bersama satu aspal.
+          </div>
+          <button class="btn btn-primary" style="padding:8px 12px; font-size:0.8rem;" onclick="App.setujuiAturan()">
+            🤝 Saya Sudah Baca & Paham Aturan
+          </button>
+        </div>
+
+        <div id="aturan-pasal-list"></div>
+      </section>
+
+      <!-- TAB 10: EVENT & KEGIATAN (F3g) -->
+      <section id="panel-event" class="view-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:700;">Event & Kegiatan</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Kopdar, baksos, dan pertanggungjawaban dana</div>
+          </div>
+          <button class="btn btn-outline" style="width:auto; padding:6px 10px; font-size:0.75rem;" onclick="App.loadEvents()">
+            🔄 Segarkan
+          </button>
+        </div>
+        <div id="events-list"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Floating Hero Widget -->
+  <div id="hero-widget"></div>
+
+  <!-- Bottom Mobile Navigation -->
+  <nav id="bottom-nav" class="bottom-nav" style="display: none;">
+    <button class="nav-item active" data-tab="markas">
+      <span class="nav-icon">🏠</span>
+      <span>Markas</span>
+    </button>
+    <button class="nav-item" data-tab="kas">
+      <span class="nav-icon">📖</span>
+      <span>Buku Kas</span>
+    </button>
+    <button class="nav-item" data-tab="iuran">
+      <span class="nav-icon">⛽</span>
+      <span>Iuran</span>
+    </button>
+    <button class="nav-item" data-tab="progres">
+      <span class="nav-icon">🚀</span>
+      <span>Progres</span>
+    </button>
+    <button id="nav-btn-anggota" class="nav-item" data-tab="anggota" style="display: none;">
+      <span class="nav-icon">👥</span>
+      <span>Anggota</span>
+    </button>
+    <button class="nav-item" data-tab="profil">
+      <span class="nav-icon">👤</span>
+      <span>Profil</span>
+    </button>
+  </nav>
+
+  <!-- MODAL: WIZARD CATAT KAS -->
+  <div id="wizard-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Catat Transaksi Kas</h3>
+        <button onclick="App.closeWizard()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+
+      <!-- Step Indicators -->
+      <div class="wizard-steps">
+        <div class="step-indicator active">1. Data Dasar</div>
+        <div class="step-indicator">2. Bukti & Info</div>
+        <div class="step-indicator">3. Konfirmasi</div>
+      </div>
+
+      <!-- Step 1 Panel -->
+      <div id="wizard-step-1" class="wizard-step-panel">
+        <div class="form-group">
+          <label>Jenis Transaksi</label>
+          <select id="wiz-jenis" class="form-control">
+            <option value="masuk">Pemasukan (Koin Masuk)</option>
+            <option value="keluar">Pengeluaran (Kas Keluar)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nominal (Rp)</label>
+          <input type="number" id="wiz-nominal" class="form-control" placeholder="Contoh: 50000" min="100" step="100" required>
+        </div>
+        <div class="form-group">
+          <label>Kategori</label>
+          <select id="wiz-kategori" class="form-control">
+            <option value="iuran">Iuran Anggota</option>
+            <option value="donasi">Donasi / Sumbangan</option>
+            <option value="operasional">Operasional Basecamp</option>
+            <option value="sosial">Kas Sosial / Sakit / Musibah</option>
+            <option value="lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 18px;">
+          <button class="btn btn-outline" onclick="App.closeWizard()">Batal</button>
+          <button class="btn btn-primary" onclick="App.wizardNext()">Lanjut &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Step 2 Panel -->
+      <div id="wizard-step-2" class="wizard-step-panel" style="display: none;">
+        <div class="form-group">
+          <label>Keterangan Transaksi</label>
+          <textarea id="wiz-keterangan" class="form-control" rows="3" placeholder="Contoh: Beli kopi & gula pangkalan mingguan" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Foto Nota / Bukti Struk <span style="color:var(--warna-merah)">*Wajib jika Pengeluaran</span></label>
+          <input type="file" id="wiz-bukti" class="form-control" accept="image/jpeg,image/png,image/webp">
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 18px;">
+          <button class="btn btn-outline" onclick="App.wizardPrev()">&larr; Kembali</button>
+          <button class="btn btn-primary" onclick="App.wizardNext()">Lanjut Cek &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Step 3 Panel: Confirmation Summary -->
+      <div id="wizard-step-3" class="wizard-step-panel" style="display: none;">
+        <div class="confirm-warning-box">
+          ⚠️ <strong>PENTING:</strong> Sesuai prinsip transparansi, data kas yang sudah disimpan <strong>TIDAK DAPAT diedit atau dihapus</strong>. Pastikan data sudah sesuai!
+        </div>
+        <div id="wizard-summary-content" style="background:var(--bg-input); padding:14px; border-radius:10px; margin-bottom:16px;"></div>
+        <div style="display: flex; gap: 8px; margin-top: 18px;">
+          <button class="btn btn-outline" onclick="App.wizardPrev()">&larr; Koreksi</button>
+          <button class="btn btn-primary" onclick="App.submitKas()">🔒 Kunci & Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: BUKTI TRANSAKSI -->
+  <div id="bukti-modal" class="modal-overlay" onclick="App.closeBuktiModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="text-align: center;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h4 style="font-size: 1rem;">Foto Bukti / Struk</h4>
+        <button onclick="App.closeBuktiModal()" style="background:none; border:none; font-size:22px; color:var(--text-muted); cursor:pointer;">&times;</button>
+      </div>
+      <img id="bukti-modal-img" src="" alt="Bukti Transaksi" style="max-width: 100%; border-radius: 8px; max-height: 70vh; object-fit: contain;">
+    </div>
+  </div>
+
+  <!-- MODAL: TAMBAH ANGGOTA (ADMIN) -->
+  <div id="modal-add-anggota" class="modal-overlay">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Tambah Anggota Baru</h3>
+        <button onclick="App.closeAddAnggotaModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      <div class="form-group">
+        <label>Nama Lengkap / Panggilan</label>
+        <input type="text" id="add-anggota-nama" class="form-control" placeholder="Contoh: Budi Santoso" required>
+      </div>
+      <div class="form-group">
+        <label>Email Login</label>
+        <input type="email" id="add-anggota-email" class="form-control" placeholder="Contoh: budi@test.local" required>
+      </div>
+      <div class="form-group">
+        <label>Nomor WhatsApp</label>
+        <input type="text" id="add-anggota-kontak" class="form-control" placeholder="08123456789">
+      </div>
+      <div class="form-group">
+        <label>Peran (Role)</label>
+        <select id="add-anggota-role" class="form-control">
+          <option value="anggota">Anggota Biasa</option>
+          <option value="bendahara">Bendahara</option>
+          <option value="pengurus">Pengurus</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Password Awal</label>
+        <input type="text" id="add-anggota-pass" class="form-control" value="Password123!">
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 18px;">
+        <button class="btn btn-outline" onclick="App.closeAddAnggotaModal()">Batal</button>
+        <button class="btn btn-primary" onclick="App.submitAddAnggota()">Daftarkan Akun</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="teks.js"></script>
+  <script src="hero.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration skipped', err));
+    }
+  </script>
+</body>
+</html>
