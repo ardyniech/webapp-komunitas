@@ -26,7 +26,7 @@
   <!-- Header -->
   <header class="app-header">
     <div class="brand-wrap">
-      <div class="brand-logo-icon">🛵</div>
+      <div id="brand-logo-container" class="brand-logo-icon">🛵</div>
       <div>
         <div class="brand-name brand-name-text">Basecamp Ojol</div>
         <div class="brand-tagline brand-tagline-text">Kas Transparan, Aspal Lancar</div>
@@ -36,7 +36,7 @@
     <!-- Smart User Card Popup (Click avatar di header) -->
     <div id="user-card" class="smart-user-card" style="display:none;">
       <div class="card-avatar-row">
-        <div class="card-avatar">🛵</div>
+        <div id="user-card-avatar" class="card-avatar">🛵</div>
         <div style="min-width:0; flex:1;">
           <div id="user-card-name" class="card-name">Nama Anggota</div>
           <div id="user-card-role" class="card-meta">Role: Anggota</div>
@@ -435,7 +435,11 @@
         <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 14px;">Profil Saya</h2>
         <div class="dompet-card" style="background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-color:var(--border-color); margin-bottom:14px;">
           <div style="display:flex; align-items:center; gap:14px;">
-            <div style="width:58px; height:58px; border-radius:50%; background:var(--warna-utama); display:flex; align-items:center; justify-content:center; font-size:26px;">🛵</div>
+            <div id="profil-avatar-box" style="position:relative; cursor:pointer;" onclick="document.getElementById('prof-foto-input').click()" title="Klik untuk ganti foto profil">
+              <div id="profil-foto-img" style="width:62px; height:62px; border-radius:50%; background:var(--warna-utama); display:flex; align-items:center; justify-content:center; font-size:28px; overflow:hidden; border:2px solid rgba(255,255,255,0.2);">🛵</div>
+              <div style="position:absolute; bottom:-2px; right:-2px; background:#0f172a; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; font-size:11px; border:1px solid var(--border-color);">📷</div>
+              <input type="file" id="prof-foto-input" style="display:none;" accept="image/png,image/jpeg,image/webp" onchange="App.handleUploadFotoProfil(event)">
+            </div>
             <div>
               <div id="profil-nama-display" style="font-size:1.15rem; font-weight:700;">Nama Anggota</div>
               <div id="profil-role-display" style="font-size:0.75rem; color:var(--text-sub);">Anggota Basecamp</div>
@@ -443,6 +447,31 @@
               <div id="profil-badges-container" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;"></div>
             </div>
           </div>
+
+          <!-- KARTU KARAKTER ZODIAK & SHIO (DITARIK OTOMATIS DARI TANGGAL LAHIR) -->
+          <div id="profil-astrologi-card" style="display:none; margin-top:14px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <div style="font-size:0.75rem; font-weight:700; color:var(--warna-aksen);">✨ KARAKTER & AURA ASPAL</div>
+              <div id="astro-umur-text" style="font-size:0.72rem; color:var(--text-muted);"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div id="astro-zodiak-icon" style="font-size:24px;">♌</div>
+                <div>
+                  <div id="astro-zodiak-nama" style="font-size:0.82rem; font-weight:700;">Leo</div>
+                  <div id="astro-zodiak-desc" style="font-size:0.7rem; color:var(--text-sub); line-height:1.2;">Percaya diri, ksatria</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div id="astro-shio-icon" style="font-size:24px;">🐕</div>
+                <div>
+                  <div id="astro-shio-nama" style="font-size:0.82rem; font-weight:700;">Shio Anjing</div>
+                  <div id="astro-shio-desc" style="font-size:0.7rem; color:var(--text-sub); line-height:1.2;">Sangat setia, pelindung</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Bar Kelengkapan Profil -->
           <div style="margin-top:16px; border-top:1px solid rgba(255,255,255,0.1); padding-top:12px;">
             <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:6px;">
@@ -465,6 +494,11 @@
             <div class="form-group">
               <label>Nama Panggilan / Julukan Aspal</label>
               <input type="text" id="prof-nama-panggilan" class="form-control" placeholder="Contoh: Bang Agus">
+            </div>
+            <div class="form-group">
+              <label>Tanggal Lahir (Untuk Karakter Zodiak & Shio)</label>
+              <input type="date" id="prof-tanggal-lahir" class="form-control" onchange="App.handleTanggalLahirChange(event)">
+              <div style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">Otomatis menghitung bintang zodiak & shio kamu di komunitas.</div>
             </div>
             <div class="form-group">
               <label>Nomor WhatsApp Aktif</label>
@@ -1049,6 +1083,13 @@
       <div class="form-group">
         <label>Tagline / Slogan</label>
         <input type="text" id="setup-tagline" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Logo Komunitas / Pangkalan (PNG/JPG/WebP, Maks 500KB)</label>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div id="setup-logo-preview" style="width:40px; height:40px; border-radius:8px; background:var(--warna-utama); display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:20px;">🛵</div>
+          <input type="file" id="setup-logo-file" class="form-control" accept="image/png,image/jpeg,image/webp" onchange="App.previewSetupLogo(event)">
+        </div>
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
         <div class="form-group">

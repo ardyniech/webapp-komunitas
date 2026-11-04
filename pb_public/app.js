@@ -30,8 +30,17 @@ const App = {
       if (window.App && App.user) {
         const nameEl = document.getElementById('user-card-name');
         const roleEl = document.getElementById('user-card-role');
+        const avatarEl = document.getElementById('user-card-avatar');
         if (nameEl) nameEl.textContent = App.user.nama || App.user.nama_panggilan || App.user.username || 'Anggota';
         if (roleEl) roleEl.textContent = `${(App.user.role || 'anggota').toUpperCase()} • ${App.user.status || 'aktif'}`;
+        if (avatarEl) {
+          if (App.user.foto) {
+            const fUrl = `${this.apiBase}/files/${App.user.collectionId}/${App.user.id}/${App.user.foto}`;
+            avatarEl.innerHTML = `<img src="${fUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+          } else {
+            avatarEl.innerHTML = `🛵`;
+          }
+        }
       }
       const isHidden = card.style.display === 'none' || card.style.display === '';
       // Close full dropdown menu if open
@@ -165,6 +174,17 @@ const App = {
           // Update Brand Elements
           document.querySelectorAll(".brand-name-text").forEach(el => el.innerText = this.komunitas.nama);
           document.querySelectorAll(".brand-tagline-text").forEach(el => el.innerText = this.komunitas.tagline);
+
+          // Update Logo if exists
+          const logoEl = document.getElementById("brand-logo-container");
+          if (logoEl) {
+            if (this.komunitas.logo) {
+              const logoUrl = `${this.apiBase}/files/${this.komunitas.collectionId}/${this.komunitas.id}/${this.komunitas.logo}`;
+              logoEl.innerHTML = `<img src="${logoUrl}" alt="Logo" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`;
+            } else {
+              logoEl.innerHTML = `🛵`;
+            }
+          }
         }
       }
     } catch (e) {
@@ -1017,9 +1037,21 @@ const App = {
     if (roleEl) roleEl.innerText = `${(this.user.role || 'anggota').toUpperCase()} • ${this.user.status || 'aktif'}`;
     if (waEl) waEl.innerText = `📱 ${this.user.whatsapp || this.user.kontak || 'Belum ada kontak'}`;
 
+    // Render Avatar / Foto Profil
+    const fotoEl = document.getElementById("profil-foto-img");
+    if (fotoEl) {
+      if (this.user.foto) {
+        const fotoUrl = `${this.apiBase}/files/${this.user.collectionId}/${this.user.id}/${this.user.foto}`;
+        fotoEl.innerHTML = `<img src="${fotoUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+      } else {
+        fotoEl.innerHTML = `🛵`;
+      }
+    }
+
     // Fill Form fields
     const fNamaLengkap = document.getElementById("prof-nama-lengkap");
     const fNama = document.getElementById("prof-nama-panggilan");
+    const fTglLahir = document.getElementById("prof-tanggal-lahir");
     const fWa = document.getElementById("prof-whatsapp");
     const fDomisili = document.getElementById("prof-domisili");
     const fBio = document.getElementById("prof-bio");
@@ -1028,18 +1060,25 @@ const App = {
 
     if (fNamaLengkap) fNamaLengkap.value = this.user.nama || "";
     if (fNama) fNama.value = this.user.nama_panggilan || "";
+    if (fTglLahir) {
+      fTglLahir.value = this.user.tanggal_lahir ? this.user.tanggal_lahir.split(" ")[0] : "";
+    }
     if (fWa) fWa.value = this.user.whatsapp || this.user.kontak || "";
     if (fDomisili) fDomisili.value = this.user.domisili || "";
     if (fBio) fBio.value = this.user.bio || "";
     if (fDaruratNama) fDaruratNama.value = this.user.kontak_darurat_nama || "";
     if (fDaruratTelp) fDaruratTelp.value = this.user.kontak_darurat_telepon || "";
 
+    // Hitung & Render Karakter Zodiak dan Shio
+    this.renderKarakterAstrologi(this.user.tanggal_lahir);
     this.loadUserDokumenList();
 
     // Completeness calculation
     const checks = [
       !!(this.user.nama),
       !!(this.user.nama_panggilan),
+      !!(this.user.tanggal_lahir),
+      !!(this.user.foto),
       !!(this.user.whatsapp || this.user.kontak),
       !!this.user.domisili,
       !!this.user.bio,
@@ -1074,6 +1113,7 @@ const App = {
 
     const nama = document.getElementById("prof-nama-lengkap")?.value.trim() || "";
     const nama_panggilan = document.getElementById("prof-nama-panggilan")?.value.trim() || "";
+    const tanggal_lahir = document.getElementById("prof-tanggal-lahir")?.value || "";
     const whatsapp = document.getElementById("prof-whatsapp")?.value.trim() || "";
     const domisili = document.getElementById("prof-domisili")?.value.trim() || "";
     const kontak_darurat_nama = document.getElementById("prof-kontak-darurat-nama")?.value.trim() || "";
@@ -1088,6 +1128,7 @@ const App = {
         body: JSON.stringify({
           nama: nama || this.user.nama,
           nama_panggilan,
+          tanggal_lahir: tanggal_lahir ? (tanggal_lahir + " 00:00:00.000Z") : null,
           whatsapp,
           kontak: whatsapp || this.user.kontak,
           domisili,
@@ -1117,6 +1158,126 @@ const App = {
       Hero.setExpression("waspada", "Terjadi kendala jaringan saat simpan profil.");
       alert("Terjadi kendala jaringan saat menyimpan profil!");
     }
+  },
+
+  async handleUploadFotoProfil(e) {
+    const file = e.target.files[0];
+    if (!file || !this.user) return;
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Ukuran foto maksimal 2MB!");
+      e.target.value = "";
+      return;
+    }
+
+    const fd = new FormData();
+    fd.append("foto", file);
+
+    try {
+      Hero.setExpression("berpikir", "Mengunggah foto profil...");
+      const res = await fetch(`${this.apiBase}/collections/users/records/${this.user.id}`, {
+        method: "PATCH",
+        headers: this.getAuthHeaders(true),
+        body: fd
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Gagal upload foto profil");
+      }
+      const updated = await res.json();
+      this.user = { ...this.user, ...updated };
+      localStorage.setItem("pb_user", JSON.stringify(this.user));
+      Hero.setExpression("senang", "Foto profil berhasil diperbarui!");
+      this.renderProfil();
+    } catch (err) {
+      console.error(err);
+      alert("Gagal mengunggah foto profil: " + err.message);
+    }
+  },
+
+  handleTanggalLahirChange(e) {
+    const val = e.target.value;
+    this.renderKarakterAstrologi(val);
+  },
+
+  renderKarakterAstrologi(tglStr) {
+    const card = document.getElementById("profil-astrologi-card");
+    if (!card) return;
+    if (!tglStr) {
+      card.style.display = "none";
+      return;
+    }
+
+    const tgl = new Date(tglStr);
+    if (isNaN(tgl.getTime())) {
+      card.style.display = "none";
+      return;
+    }
+
+    const m = tgl.getMonth() + 1;
+    const d = tgl.getDate();
+    const y = tgl.getFullYear();
+
+    // Hitung Umur
+    const today = new Date();
+    let age = today.getFullYear() - y;
+    const mDiff = today.getMonth() - (m - 1);
+    if (mDiff < 0 || (mDiff === 0 && today.getDate() < d)) age--;
+    const umurEl = document.getElementById("astro-umur-text");
+    if (umurEl) umurEl.innerText = `${age} Tahun • Lahir ${d}/${m}/${y}`;
+
+    // Zodiak Bintang
+    const zodiakData = [
+      { m: 1, d: 19, nama: "Capricorn", icon: "♑", desc: "Pekerja keras, disiplin & tertib" },
+      { m: 2, d: 18, nama: "Aquarius", icon: "♒", desc: "Visioner, mandiri & setia kawan" },
+      { m: 3, d: 20, nama: "Pisces", icon: "♓", desc: "Empati tinggi & suka menolong" },
+      { m: 4, d: 19, nama: "Aries", icon: "♈", desc: "Pemberani & pantang menyerah" },
+      { m: 5, d: 20, nama: "Taurus", icon: "♉", desc: "Gigih, sabar & setia pada rekan" },
+      { m: 6, d: 20, nama: "Gemini", icon: "♊", desc: "Cepat tanggap, lincah & komunikatif" },
+      { m: 7, d: 22, nama: "Cancer", icon: "♋", desc: "Perhatian & pelindung kawan aspal" },
+      { m: 8, d: 22, nama: "Leo", icon: "♌", desc: "Percaya diri, berjiwa ksatria" },
+      { m: 9, d: 22, nama: "Virgo", icon: "♍", desc: "Teliti, rapi & dapat diandalkan" },
+      { m: 10, d: 22, nama: "Libra", icon: "♎", desc: "Adil, bijak & pembawa damai" },
+      { m: 11, d: 21, nama: "Scorpio", icon: "♏", desc: "Fokus tajam & tangguh hadapi badai" },
+      { m: 12, d: 21, nama: "Sagittarius", icon: "♐", desc: "Jiwa petualang & selalu optimis" },
+      { m: 12, d: 31, nama: "Capricorn", icon: "♑", desc: "Pekerja keras, disiplin & tertib" }
+    ];
+
+    let z = zodiakData[0];
+    for (const item of zodiakData) {
+      if (m < item.m || (m === item.m && d <= item.d)) {
+        z = item;
+        break;
+      }
+    }
+
+    // Shio Cina
+    const shioNames = [
+      { nama: "Shio Tikus", icon: "🐀", desc: "Cerdik, hemat & gesit baca peluang" },
+      { nama: "Shio Kerbau", icon: "🐂", desc: "Ulet, jujur & kuat tahan banting" },
+      { nama: "Shio Macan", icon: "🐅", desc: "Berani, kharismatik & pelindung kawan" },
+      { nama: "Shio Kelinci", icon: "🐇", desc: "Lembut, waspada & cinta damai" },
+      { nama: "Shio Naga", icon: "🐉", desc: "Penuh energi & berjiwa besar" },
+      { nama: "Shio Ular", icon: "🐍", desc: "Bijaksana & pemikir tenang" },
+      { nama: "Shio Kuda", icon: "🐎", desc: "Lincah, antusias & pantang kalah" },
+      { nama: "Shio Kambing", icon: "🐐", desc: "Rendah hati, dermawan & penyabar" },
+      { nama: "Shio Monyet", icon: "🐒", desc: "Cerdas, fleksibel & banyak akal" },
+      { nama: "Shio Ayam", icon: "🐓", desc: "Disiplin waktu & selalu siaga" },
+      { nama: "Shio Anjing", icon: "🐕", desc: "Sangat setia, jujur & penjaga kawan" },
+      { nama: "Shio Babi", icon: "🐖", desc: "Tulus, ramah & pembawa rezeki" }
+    ];
+    const shioIdx = (y - 4) % 12;
+    const s = shioNames[shioIdx >= 0 ? shioIdx : (shioIdx + 12)];
+
+    // Render ke card
+    document.getElementById("astro-zodiak-icon").innerText = z.icon;
+    document.getElementById("astro-zodiak-nama").innerText = z.nama;
+    document.getElementById("astro-zodiak-desc").innerText = z.desc;
+
+    document.getElementById("astro-shio-icon").innerText = s.icon;
+    document.getElementById("astro-shio-nama").innerText = s.nama;
+    document.getElementById("astro-shio-desc").innerText = s.desc;
+
+    card.style.display = "block";
   },
 
   async uploadDokumenAnggota(e) {
@@ -3113,7 +3274,33 @@ const App = {
     document.getElementById("setup-warna-utama").value = this.komunitas.warna_utama || "#1FA463";
     document.getElementById("setup-warna-aksen").value = this.komunitas.warna_aksen || "#FFB020";
     document.getElementById("setup-iuran-default").value = this.komunitas.iuran_default || 20000;
+    
+    const previewEl = document.getElementById("setup-logo-preview");
+    if (previewEl) {
+      if (this.komunitas.logo) {
+        const logoUrl = `${this.apiBase}/files/${this.komunitas.collectionId}/${this.komunitas.id}/${this.komunitas.logo}`;
+        previewEl.innerHTML = `<img src="${logoUrl}" style="width:100%; height:100%; object-fit:cover;">`;
+      } else {
+        previewEl.innerHTML = `🛵`;
+      }
+    }
     modal.classList.add("show");
+  },
+
+  previewSetupLogo(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 500 * 1024) {
+      alert("Ukuran file logo maksimal 500KB!");
+      e.target.value = "";
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const previewEl = document.getElementById("setup-logo-preview");
+      if (previewEl) previewEl.innerHTML = `<img src="${evt.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
+    };
+    reader.readAsDataURL(file);
   },
 
   closeSetupKomunitasModal() {
@@ -3128,22 +3315,39 @@ const App = {
     const warna_utama = document.getElementById("setup-warna-utama")?.value.trim();
     const warna_aksen = document.getElementById("setup-warna-aksen")?.value.trim();
     const iuran_default = Number(document.getElementById("setup-iuran-default")?.value) || 0;
+    const logoInput = document.getElementById("setup-logo-file");
 
     if (!nama) { alert("Nama komunitas tidak boleh kosong!"); return; }
 
     try {
-      const res = await fetch(`${this.apiBase}/collections/komunitas/records/${this.komunitas.id}`, {
-        method: "PATCH",
-        headers: this.getAuthHeaders(),
-        body: JSON.stringify({ nama, tagline, warna_utama, warna_aksen, iuran_default })
-      });
+      let res;
+      if (logoInput && logoInput.files && logoInput.files.length > 0) {
+        const fd = new FormData();
+        fd.append("nama", nama);
+        fd.append("tagline", tagline);
+        fd.append("warna_utama", warna_utama);
+        fd.append("warna_aksen", warna_aksen);
+        fd.append("iuran_default", iuran_default);
+        fd.append("logo", logoInput.files[0]);
+        res = await fetch(`${this.apiBase}/collections/komunitas/records/${this.komunitas.id}`, {
+          method: "PATCH",
+          headers: this.getAuthHeaders(true),
+          body: fd
+        });
+      } else {
+        res = await fetch(`${this.apiBase}/collections/komunitas/records/${this.komunitas.id}`, {
+          method: "PATCH",
+          headers: this.getAuthHeaders(),
+          body: JSON.stringify({ nama, tagline, warna_utama, warna_aksen, iuran_default })
+        });
+      }
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.message || "Gagal menyimpan identitas");
       }
       this.komunitas = await res.json();
       await this.loadKomunitasBranding();
-      Hero.setExpression("senang", "Identitas basecamp berhasil diperbarui! Tampilan langsung berubah.");
+      Hero.setExpression("senang", "Identitas & logo basecamp berhasil diperbarui!");
       this.closeSetupKomunitasModal();
     } catch (e) {
       alert("Gagal update komunitas: " + e.message);
