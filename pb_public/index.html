@@ -68,6 +68,9 @@
       <button class="dropdown-item" onclick="App.switchTab('kuesioner'); App.closeUserMenu();">
         <span>📝</span> <span>Uji & Kuesioner</span>
       </button>
+      <button class="dropdown-item" onclick="App.switchTab('dokumen'); App.closeUserMenu();">
+        <span>📁</span> <span>Dokumen Basecamp</span>
+      </button>
       <button class="dropdown-item" onclick="App.switchTab('progres'); App.closeUserMenu();">
         <span>🚀</span> <span>Progres Aplikasi</span>
       </button>
@@ -366,6 +369,22 @@
           </div>
           <div id="konfigurasi-editor-container" style="display:none; background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:12px;">
             <div id="konfigurasi-list-items"><div class="empty-state">Memuat konfigurasi...</div></div>
+          </div>
+        </div>
+
+        <!-- LOG AKTIVITAS SISTEM (ADMIN - Plan §6.6 §6) -->
+        <div id="admin-log-aktivitas-section" style="margin-bottom: 24px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div>
+              <div style="font-weight:700; font-size:0.95rem;">Log Aktivitas Sistem</div>
+              <div style="font-size:0.75rem; color:var(--text-sub);">Jejak audit aksi penting di basecamp</div>
+            </div>
+            <button class="btn btn-outline" style="width:auto; padding:5px 12px; font-size:0.75rem;" onclick="App.toggleLogAktivitas()">
+              📜 Lihat
+            </button>
+          </div>
+          <div id="log-aktivitas-container" style="display:none; background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:12px;">
+            <div id="log-aktivitas-list"><div class="empty-state">Memuat log aktivitas...</div></div>
           </div>
         </div>
 
@@ -670,6 +689,18 @@
         <div id="events-list"></div>
       </section>
 
+      <!-- TAB 18: DOKUMEN BASECAMP (Plan §6.6 §5) -->
+      <section id="panel-dokumen" class="view-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:700;">📁 Dokumen & Berkas Basecamp</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">AD/ART, aturan, formulir, dan template berkas</div>
+          </div>
+          <button class="btn btn-outline" style="width:auto; padding:6px 10px; font-size:0.75rem;" onclick="App.loadDokumen()">🔄</button>
+        </div>
+        <div id="dokumen-list"><div class="empty-state">Memuat berkas dokumen...</div></div>
+      </section>
+
     </div>
   </main>
 
@@ -862,6 +893,62 @@
       <div style="display: flex; gap: 8px; margin-top: 18px;">
         <button class="btn btn-outline" onclick="App.closeSusunPanitiaModal()">Batal</button>
         <button class="btn btn-primary" onclick="App.submitPanitiaEvent()">Tunjuk Panitia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: KOREKSI TRANSAKSI KAS (Plan §6.1 D #4) -->
+  <div id="modal-koreksi-kas" class="modal-overlay">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Koreksi Transaksi Kas</h3>
+        <button onclick="App.closeKoreksiKasModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      <div class="confirm-warning-box" style="margin-bottom:14px;">
+        ⚠️ Sesuai prinsip transparansi, transaksi lama <strong>tidak dapat diedit atau dihapus</strong>. Sistem akan mencatat transaksi pembalik baru.
+      </div>
+      <div id="koreksi-target-info" style="background:var(--bg-input); padding:10px 12px; border-radius:8px; margin-bottom:14px; font-size:0.83rem;"></div>
+      <input type="hidden" id="koreksi-target-id">
+      <input type="hidden" id="koreksi-jenis-kebalikan">
+      <div class="form-group">
+        <label>Alasan Koreksi (Wajib)</label>
+        <textarea id="koreksi-alasan" class="form-control" rows="2" placeholder="Contoh: Salah catat nominal / bukti tidak valid..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Nominal Pembalik (Rp)</label>
+        <input type="number" id="koreksi-nominal" class="form-control" min="100" required>
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 18px;">
+        <button class="btn btn-outline" onclick="App.closeKoreksiKasModal()">Batal</button>
+        <button class="btn btn-primary" onclick="App.submitKoreksiKas()">🔒 Simpan Transaksi Koreksi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SUSUN LPJ EVENT (Plan §6.8 D) -->
+  <div id="modal-susun-lpj" class="modal-overlay">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Laporan Pertanggungjawaban (LPJ) Event</h3>
+        <button onclick="App.closeLPJModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      <input type="hidden" id="lpj-event-id">
+      <div id="lpj-keuangan-otomatis" style="background:var(--bg-input); border-radius:10px; padding:12px; margin-bottom:14px; font-size:0.82rem;"></div>
+      <div class="form-group">
+        <label>Kronologi & Jalannya Acara</label>
+        <textarea id="lpj-jalannya-acara" class="form-control" rows="3" placeholder="Ceritakan jalannya acara dari awal hingga selesai..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Kendala & Solusi yang Dilakukan</label>
+        <textarea id="lpj-kendala" class="form-control" rows="2" placeholder="Kendala teknis/lapangan dan cara mengatasinya..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Evaluasi & Rekomendasi</label>
+        <textarea id="lpj-evaluasi" class="form-control" rows="2" placeholder="Pelajaran penting untuk kegiatan berikutnya..."></textarea>
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 18px;">
+        <button class="btn btn-outline" onclick="App.closeLPJModal()">Batal</button>
+        <button class="btn btn-primary" onclick="App.submitLPJEvent()">Kirim LPJ ke Pengurus</button>
       </div>
     </div>
   </div>

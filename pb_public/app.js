@@ -231,6 +231,9 @@ const App = {
     } else if (tabName === "kuesioner") {
       Hero.setExpression("menjelaskan", "Uji pemahaman aturan basecamp. Santai aja bro, yang penting jujur.");
       this.loadKuesioner();
+    } else if (tabName === "dokumen") {
+      Hero.setExpression("menjelaskan", "Berkas AD/ART, SK, dan template formulir basecamp kita.");
+      this.loadDokumen();
     }
   },
 
@@ -413,6 +416,7 @@ const App = {
     const nomStr = `${sign}Rp ${Number(t.nominal).toLocaleString("id-ID")}`;
     const dicatatOleh = t.expand?.dicatat_oleh?.nama || "Pengurus";
     const hasBukti = !!t.bukti;
+    const canManageKas = this.user && (this.user.role === "admin" || this.user.role === "bendahara");
 
     return `
       <div class="kas-card">
@@ -420,7 +424,7 @@ const App = {
           ${isMasuk ? '🪙' : '🧾'}
         </div>
         <div class="kas-info">
-          <div class="kas-keterangan">${this.escapeHtml(t.keterangan)}</div>
+          <div class="kas-keterangan">${this.escapeHtml(t.keterangan)} ${t.mengoreksi ? `<span style="color:var(--warna-aksen); font-size:0.72rem; font-weight:700;">(Koreksi)</span>` : ''}</div>
           <div class="kas-sub">
             <span>📅 ${t.tanggal ? t.tanggal.split(" ")[0] : '-'}</span>
             <span>🏷️ ${t.kategori}</span>
@@ -429,12 +433,19 @@ const App = {
         </div>
         <div style="text-align:right;">
           <div class="kas-nominal ${t.jenis}">${nomStr}</div>
-          ${hasBukti ? `
-            <button class="btn btn-outline" style="padding:2px 8px; font-size:0.7rem; margin-top:4px;" 
-              onclick="App.showBuktiModal('${t.collectionId}', '${t.id}', '${t.bukti}')">
-              🖼️ Bukti
-            </button>
-          ` : ''}
+          <div style="margin-top:4px; display:flex; justify-content:flex-end; gap:4px;">
+            ${hasBukti ? `
+              <button class="btn btn-outline" style="padding:2px 8px; font-size:0.7rem;" 
+                onclick="App.showBuktiModal('${t.collectionId}', '${t.id}', '${t.bukti}')">
+                🖼️ Bukti
+              </button>
+            ` : ''}
+            ${canManageKas ? `
+              <button class="btn btn-outline" style="padding:2px 8px; font-size:0.68rem;" onclick="App.openKoreksiKasModal('${t.id}')">
+                🔄 Koreksi
+              </button>
+            ` : ''}
+          </div>
         </div>
       </div>
     `;
@@ -1471,13 +1482,14 @@ const App = {
       }
 
       const eventsHtml = await Promise.all(events.map(async ev => {
-        // Fetch sub-data: dana, anggaran, transaksi, panitia, peserta
-        const [resDana, resAnggaran, resTrans, resPanitia, resPeserta] = await Promise.all([
+        // Fetch sub-data: dana, anggaran, transaksi, panitia, peserta, laporan
+        const [resDana, resAnggaran, resTrans, resPanitia, resPeserta, resLaporan] = await Promise.all([
           fetch(`${this.apiBase}/collections/event_dana/records?filter=(event='${ev.id}')`, { headers: this.getAuthHeaders() }),
           fetch(`${this.apiBase}/collections/event_anggaran/records?filter=(event='${ev.id}')`, { headers: this.getAuthHeaders() }),
           fetch(`${this.apiBase}/collections/event_transaksi/records?filter=(event='${ev.id}')&sort=-tanggal`, { headers: this.getAuthHeaders() }),
           fetch(`${this.apiBase}/collections/event_panitia/records?filter=(event='${ev.id}')&expand=anggota`, { headers: this.getAuthHeaders() }),
-          fetch(`${this.apiBase}/collections/event_peserta/records?filter=(event='${ev.id}')&expand=anggota`, { headers: this.getAuthHeaders() })
+          fetch(`${this.apiBase}/collections/event_peserta/records?filter=(event='${ev.id}')&expand=anggota`, { headers: this.getAuthHeaders() }),
+          fetch(`${this.apiBase}/collections/event_laporan/records?filter=(event='${ev.id}')&expand=ditulis_oleh`, { headers: this.getAuthHeaders() })
         ]);
 
         const danaItems = resDana.ok ? (await resDana.json()).items : [];
@@ -1485,6 +1497,7 @@ const App = {
         const transItems = resTrans.ok ? (await resTrans.json()).items : [];
         const panitiaItems = resPanitia.ok ? (await resPanitia.json()).items : [];
         const pesertaItems = resPeserta.ok ? (await resPeserta.json()).items : [];
+        const laporanItems = resLaporan.ok ? (await resLaporan.json()).items : [];
 
         const totalDanaMasuk = danaItems.reduce((acc, d) => acc + (d.nominal_diterima || 0), 0);
         const totalPengeluaran = transItems.filter(t => t.jenis === 'keluar').reduce((acc, t) => acc + (t.nominal || 0), 0);
@@ -1589,6 +1602,28 @@ const App = {
                   `).join("")}
                 </div>
               ` : ''}
+
+              <!-- LAPORAN & LPJ KEGIATAN (Plan §6.8 D) -->
+              <div style="margin-top:12px; padding-top:10px; border-top:1px dashed rgba(255,255,255,0.1);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <span style="font-size:0.75rem; font-weight:700; color:var(--warna-aksen);">📑 LAPORAN LPJ:</span>
+                  ${this.canManageEvent(ev) ? `
+                    <button class="btn btn-outline" style="padding:2px 8px; font-size:0.7rem;" onclick="App.bukaSusunLPJ('${ev.id}')">+ Susun LPJ</button>
+                  ` : ''}
+                </div>
+                ${laporanItems.length ? laporanItems.map(l => {
+                  const penulis = l.expand?.ditulis_oleh?.nama || l.expand?.ditulis_oleh?.username || "Panitia";
+                  return `
+                    <div style="padding:6px 8px; background:rgba(0,0,0,0.2); border-radius:6px; margin-bottom:4px; font-size:0.75rem;">
+                      <div style="display:flex; justify-content:space-between;">
+                        <strong>${this.escapeHtml(l.jenis)}</strong>
+                        <span style="color:var(--warna-utama); font-weight:600;">[${l.status}]</span>
+                      </div>
+                      <div style="color:var(--text-muted); font-size:0.7rem; margin-top:2px;">Oleh: ${this.escapeHtml(penulis)}</div>
+                    </div>
+                  `;
+                }).join('') : `<div style="font-size:0.7rem; color:var(--text-muted);">Belum ada laporan yang diajukan.</div>`}
+              </div>
             </div>
           </div>
         `;
@@ -1696,6 +1731,251 @@ const App = {
       await this.loadEvents();
     } catch (e) {
       alert("Gagal daftar event: " + e.message);
+    }
+  },
+
+  // ============================================================
+  // KOREKSI TRANSAKSI KAS (Plan §6.1 D #4)
+  // ============================================================
+  openKoreksiKasModal(txId) {
+    const tx = (this.allKas || []).find(x => x.id === txId);
+    if (!tx) return;
+    const modal = document.getElementById("modal-koreksi-kas");
+    if (!modal) return;
+
+    document.getElementById("koreksi-target-id").value = tx.id;
+    const oppositeJenis = tx.jenis === "masuk" ? "keluar" : "masuk";
+    document.getElementById("koreksi-jenis-kebalikan").value = oppositeJenis;
+    document.getElementById("koreksi-nominal").value = tx.nominal;
+    document.getElementById("koreksi-alasan").value = "";
+
+    const infoEl = document.getElementById("koreksi-target-info");
+    if (infoEl) {
+      infoEl.innerHTML = `
+        <div><strong>Transaksi Asal:</strong> ${this.escapeHtml(tx.keterangan)}</div>
+        <div><strong>Jenis:</strong> ${tx.jenis.toUpperCase()} | <strong>Nominal:</strong> Rp ${Number(tx.nominal).toLocaleString('id-ID')} | <strong>Kategori:</strong> ${tx.kategori}</div>
+        <div style="color:var(--warna-aksen); margin-top:4px;">Akan dibuat transaksi pembalik jenis: <strong>${oppositeJenis.toUpperCase()}</strong></div>
+      `;
+    }
+    Hero.setExpression("waspada", "Koreksi kas akan mencatat transaksi pembalik. Cek nominalnya baik-baik ya bro!");
+    modal.classList.add("show");
+  },
+
+  closeKoreksiKasModal() {
+    const modal = document.getElementById("modal-koreksi-kas");
+    if (modal) modal.classList.remove("show");
+  },
+
+  async submitKoreksiKas() {
+    const targetId = document.getElementById("koreksi-target-id")?.value;
+    const jenis = document.getElementById("koreksi-jenis-kebalikan")?.value;
+    const nominal = Number(document.getElementById("koreksi-nominal")?.value);
+    const alasan = document.getElementById("koreksi-alasan")?.value?.trim();
+
+    if (!targetId || !nominal || nominal <= 0 || !alasan) {
+      alert("Isi alasan koreksi dan nominal yang valid bro!");
+      return;
+    }
+
+    const txAsal = (this.allKas || []).find(x => x.id === targetId);
+    const kategori = txAsal ? txAsal.kategori : "lainnya";
+
+    try {
+      const now = new Date();
+      const tglStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
+      const res = await fetch(`${this.apiBase}/collections/kas/records`, {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({
+          tanggal: tglStr,
+          jenis: jenis,
+          nominal: nominal,
+          kategori: kategori,
+          keterangan: `[KOREKSI TX ${targetId.substring(0, 6)}] ${alasan}`,
+          dicatat_oleh: this.user.id,
+          mengoreksi: targetId
+        })
+      });
+
+      if (!res.ok) {
+        const e = await res.json();
+        throw new Error(e.message || "Gagal mencatat koreksi");
+      }
+
+      Hero.setExpression("senang", "Transaksi koreksi berhasil disimpan!");
+      this.closeKoreksiKasModal();
+      await this.refreshData();
+    } catch (e) {
+      alert("Gagal simpan koreksi: " + e.message);
+    }
+  },
+
+  // ============================================================
+  // LPJ EVENT (Plan §6.8 D)
+  // ============================================================
+  async bukaSusunLPJ(eventId) {
+    const modal = document.getElementById("modal-susun-lpj");
+    if (!modal) return;
+    document.getElementById("lpj-event-id").value = eventId;
+
+    const infoEl = document.getElementById("lpj-keuangan-otomatis");
+    if (infoEl) infoEl.innerHTML = `<div class="empty-state">⏳ Menghitung ringkasan keuangan event...</div>`;
+    modal.classList.add("show");
+
+    try {
+      const [resDana, resTrans] = await Promise.all([
+        fetch(`${this.apiBase}/collections/event_dana/records?filter=(event='${eventId}')`, { headers: this.getAuthHeaders() }),
+        fetch(`${this.apiBase}/collections/event_transaksi/records?filter=(event='${eventId}')`, { headers: this.getAuthHeaders() })
+      ]);
+      const danaItems = resDana.ok ? (await resDana.json()).items : [];
+      const transItems = resTrans.ok ? (await resTrans.json()).items : [];
+
+      const totalMasuk = danaItems.reduce((acc, d) => acc + (d.nominal_diterima || 0), 0);
+      const totalKeluar = transItems.filter(t => t.jenis === "keluar").reduce((acc, t) => acc + (t.nominal || 0), 0);
+      const sisa = totalMasuk - totalKeluar;
+
+      if (infoEl) {
+        infoEl.innerHTML = `
+          <div style="font-weight:700; margin-bottom:4px;">📊 Ringkasan Keuangan Otomatis Sistem:</div>
+          <div>• Total Dana Diterima: <strong>Rp ${totalMasuk.toLocaleString('id-ID')}</strong></div>
+          <div>• Total Realisasi Biaya: <strong>Rp ${totalKeluar.toLocaleString('id-ID')}</strong></div>
+          <div style="color:var(--warna-utama); font-weight:700;">• Sisa Saldo Event: Rp ${sisa.toLocaleString('id-ID')}</div>
+        `;
+      }
+    } catch (e) {
+      if (infoEl) infoEl.innerHTML = `<div style="color:var(--warna-merah);">Gagal menghitung keuangan otomatis.</div>`;
+    }
+  },
+
+  closeLPJModal() {
+    const modal = document.getElementById("modal-susun-lpj");
+    if (modal) modal.classList.remove("show");
+  },
+
+  async submitLPJEvent() {
+    const eventId = document.getElementById("lpj-event-id")?.value;
+    const acara = document.getElementById("lpj-jalannya-acara")?.value?.trim() || "";
+    const kendala = document.getElementById("lpj-kendala")?.value?.trim() || "";
+    const evaluasi = document.getElementById("lpj-evaluasi")?.value?.trim() || "";
+
+    if (!eventId || (!acara && !kendala && !evaluasi)) {
+      alert("Lengkapi isi ringkasan laporan event bro!");
+      return;
+    }
+
+    const gabunganIsi = `JALANNYA ACARA:\n${acara}\n\nKENDALA & SOLUSI:\n${kendala}\n\nEVALUASI:\n${evaluasi}`;
+
+    try {
+      const res = await fetch(`${this.apiBase}/collections/event_laporan/records`, {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({
+          event: eventId,
+          jenis: "lpj_keuangan",
+          isi: gabunganIsi,
+          status: "diajukan",
+          ditulis_oleh: this.user.id
+        })
+      });
+
+      if (!res.ok) {
+        const e = await res.json();
+        throw new Error(e.message || "Gagal mengajukan LPJ.");
+      }
+
+      Hero.setExpression("senang", "Laporan LPJ berhasil diajukan ke pengurus!");
+      this.closeLPJModal();
+      await this.loadEvents();
+    } catch (e) {
+      alert("Gagal kirim LPJ: " + e.message);
+    }
+  },
+
+  // ============================================================
+  // DOKUMEN BASECAMP (Plan §6.6 §5)
+  // ============================================================
+  async loadDokumen() {
+    const el = document.getElementById("dokumen-list");
+    if (el) el.innerHTML = `<div class="empty-state">⏳ Memuat berkas dokumen...</div>`;
+    try {
+      const res = await fetch(`${this.apiBase}/collections/dokumen/records?sort=-created&perPage=50`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) throw new Error("Gagal memuat dokumen");
+      const data = await res.json();
+      const items = data.items || [];
+      if (!items.length) {
+        if (el) el.innerHTML = `<div class="empty-state">📁 Belum ada dokumen resmi yang diunggah.</div>`;
+        return;
+      }
+      if (el) {
+        el.innerHTML = items.map(d => {
+          const fileUrl = d.berkas ? `${this.apiBase}/files/${d.collectionId}/${d.id}/${d.berkas}` : "#";
+          return `
+            <div style="margin-bottom:10px; padding:12px 14px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div style="font-weight:700; font-size:0.92rem;">${this.escapeHtml(d.judul)}</div>
+                <div style="font-size:0.75rem; color:var(--text-sub); margin-top:2px;">Kategori: ${this.escapeHtml(d.kategori || 'Umum')}</div>
+              </div>
+              ${d.berkas ? `<a href="${fileUrl}" target="_blank" class="btn btn-outline" style="width:auto; padding:5px 10px; font-size:0.75rem; text-decoration:none;">⬇️ Unduh</a>` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+    } catch (e) {
+      if (el) el.innerHTML = `<div class="empty-state">⚠️ Gagal memuat dokumen.</div>`;
+    }
+  },
+
+  // ============================================================
+  // AUDIT LOG AKTIVITAS (Plan §6.6 §6)
+  // ============================================================
+  _logLoaded: false,
+
+  async toggleLogAktivitas() {
+    const container = document.getElementById("log-aktivitas-container");
+    if (!container) return;
+    const isVisible = container.style.display !== "none";
+    container.style.display = isVisible ? "none" : "block";
+    if (!isVisible && !this._logLoaded) {
+      await this.loadLogAktivitas();
+    }
+  },
+
+  async loadLogAktivitas() {
+    const el = document.getElementById("log-aktivitas-list");
+    if (el) el.innerHTML = `<div class="empty-state">⏳ Memuat log aktivitas...</div>`;
+    try {
+      const res = await fetch(`${this.apiBase}/collections/log_aktivitas/records?sort=-waktu&perPage=50&expand=aktor`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) throw new Error("Gagal memuat log");
+      const data = await res.json();
+      const items = data.items || [];
+      this._logLoaded = true;
+      if (!items.length) {
+        if (el) el.innerHTML = `<div class="empty-state">Belum ada catatan log aktivitas.</div>`;
+        return;
+      }
+      if (el) {
+        el.innerHTML = items.map(l => {
+          const aktor = l.expand?.aktor?.nama || l.expand?.aktor?.username || "Sistem";
+          const tgl = l.waktu ? new Date(l.waktu).toLocaleString('id-ID') : "-";
+          return `
+            <div style="padding:8px 0; border-bottom:1px solid var(--border-color); font-size:0.78rem;">
+              <div style="display:flex; justify-content:space-between; color:var(--text-sub); font-size:0.72rem;">
+                <span>👤 ${this.escapeHtml(aktor)}</span>
+                <span>${tgl}</span>
+              </div>
+              <div style="font-weight:600; margin-top:2px;">Aksi: <span style="color:var(--warna-utama);">${this.escapeHtml(l.aksi)}</span></div>
+              ${l.target ? `<div style="color:var(--text-muted); font-size:0.72rem;">Target: ${this.escapeHtml(l.target)}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+    } catch (e) {
+      if (el) el.innerHTML = `<div class="empty-state">⚠️ Gagal memuat log aktivitas: ${this.escapeHtml(e.message)}</div>`;
     }
   },
 
