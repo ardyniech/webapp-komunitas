@@ -828,6 +828,44 @@
     </div>
   </div>
 
+  <!-- MODAL: SUSUN PANITIA EVENT (F3g / Plan §6.8 B) -->
+  <div id="modal-susun-panitia" class="modal-overlay">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Tunjuk Panitia Event</h3>
+        <button onclick="App.closeSusunPanitiaModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      <input type="hidden" id="panitia-event-id">
+      <div class="form-group">
+        <label>Pilih Anggota</label>
+        <select id="panitia-anggota-select" class="form-control"></select>
+      </div>
+      <div class="form-group">
+        <label>Seksi Panitia</label>
+        <select id="panitia-seksi-select" class="form-control">
+          <option value="wakil">Wakil Ketua Pelaksana</option>
+          <option value="sekretaris">Sekretaris</option>
+          <option value="bendahara">Bendahara (Tidak boleh merangkap Ketua)</option>
+          <option value="acara">Seksi Acara</option>
+          <option value="humas">Seksi Humas & Publikasi</option>
+          <option value="perlengkapan">Seksi Perlengkapan / Logistik</option>
+          <option value="konsumsi">Seksi Konsumsi</option>
+          <option value="dokumentasi">Seksi Dokumentasi</option>
+          <option value="keamanan">Seksi Keamanan & Satgas</option>
+          <option value="lainnya">Seksi Lainnya</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Tugas / Tanggung Jawab Singkat</label>
+        <input type="text" id="panitia-tugas-input" class="form-control" placeholder="Contoh: Mengatur rute konvoi & parkir motor">
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 18px;">
+        <button class="btn btn-outline" onclick="App.closeSusunPanitiaModal()">Batal</button>
+        <button class="btn btn-primary" onclick="App.submitPanitiaEvent()">Tunjuk Panitia</button>
+      </div>
+    </div>
+  </div>
+
   <script src="teks.js"></script>
   <script src="hero.js"></script>
   <script src="app.js"></script>

@@ -8,3 +8,4 @@ pb_data/
 # OS & Logs
 .DS_Store
 *.log
+caddy/caddy/

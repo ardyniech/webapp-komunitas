@@ -1471,18 +1471,20 @@ const App = {
       }
 
       const eventsHtml = await Promise.all(events.map(async ev => {
-        // Fetch sub-data: dana, anggaran, transaksi, panitia
-        const [resDana, resAnggaran, resTrans, resPanitia] = await Promise.all([
+        // Fetch sub-data: dana, anggaran, transaksi, panitia, peserta
+        const [resDana, resAnggaran, resTrans, resPanitia, resPeserta] = await Promise.all([
           fetch(`${this.apiBase}/collections/event_dana/records?filter=(event='${ev.id}')`, { headers: this.getAuthHeaders() }),
           fetch(`${this.apiBase}/collections/event_anggaran/records?filter=(event='${ev.id}')`, { headers: this.getAuthHeaders() }),
           fetch(`${this.apiBase}/collections/event_transaksi/records?filter=(event='${ev.id}')&sort=-tanggal`, { headers: this.getAuthHeaders() }),
-          fetch(`${this.apiBase}/collections/event_panitia/records?filter=(event='${ev.id}')&expand=anggota`, { headers: this.getAuthHeaders() })
+          fetch(`${this.apiBase}/collections/event_panitia/records?filter=(event='${ev.id}')&expand=anggota`, { headers: this.getAuthHeaders() }),
+          fetch(`${this.apiBase}/collections/event_peserta/records?filter=(event='${ev.id}')&expand=anggota`, { headers: this.getAuthHeaders() })
         ]);
 
         const danaItems = resDana.ok ? (await resDana.json()).items : [];
         const anggaranItems = resAnggaran.ok ? (await resAnggaran.json()).items : [];
         const transItems = resTrans.ok ? (await resTrans.json()).items : [];
         const panitiaItems = resPanitia.ok ? (await resPanitia.json()).items : [];
+        const pesertaItems = resPeserta.ok ? (await resPeserta.json()).items : [];
 
         const totalDanaMasuk = danaItems.reduce((acc, d) => acc + (d.nominal_diterima || 0), 0);
         const totalPengeluaran = transItems.filter(t => t.jenis === 'keluar').reduce((acc, t) => acc + (t.nominal || 0), 0);
@@ -1495,6 +1497,7 @@ const App = {
                             (ev.status === "persiapan" || ev.status === "berlangsung" ? "var(--warna-aksen)" : "var(--text-sub)");
 
         const tglText = ev.tanggal_mulai ? new Date(ev.tanggal_mulai).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : "-";
+        const sudahIkut = this.user && pesertaItems.some(p => p.anggota === this.user.id);
 
         return `
           <div class="kas-card" style="margin-bottom:16px; flex-direction:column; align-items:stretch; gap:12px;">
@@ -1531,6 +1534,17 @@ const App = {
                 </div>`;
               }).join('') : `<div style="font-size:0.72rem; color:var(--text-muted);">Belum ada panitia. Ketua menyusun panitia.</div>`}
               ${this.canManageEvent(ev) ? `<button class="btn btn-outline" style="margin-top:6px; width:auto; padding:4px 10px; font-size:0.72rem;" onclick="App.susunPanitia('${ev.id}')">+ Susun Panitia</button>` : ''}
+            </div>
+
+            <!-- PESERTA & PENDAFTARAN EVENT (F3g) -->
+            <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <span style="font-size:0.78rem; font-weight:700;">Peserta: ${pesertaItems.length} Pejuang Aspal</span>
+                ${sudahIkut ? `<span style="margin-left:6px; font-size:0.72rem; color:var(--warna-utama); font-weight:700;">✓ Terdaftar</span>` : ''}
+              </div>
+              ${!sudahIkut && ev.status !== 'selesai' && ev.status !== 'ditutup' && ev.status !== 'dibatalkan' ? `
+                <button class="btn btn-primary" style="width:auto; padding:4px 12px; font-size:0.75rem;" onclick="App.ikutEvent('${ev.id}')">🛵 Ikut Event</button>
+              ` : ''}
             </div>
 
             <!-- PETA DANA EVENT -->
@@ -1610,23 +1624,78 @@ const App = {
     return ev.ketua_pelaksana === this.user.id;
   },
 
-  async susunPanitia(eventId) {
-    const anggotaId = prompt("ID anggota yang ditunjuk (lihat daftar anggota):");
-    if (!anggotaId?.trim()) return;
-    const seksi = prompt("Seksi (ketua_pelaksana/wakil/sekretaris/bendahara/acara/humas/perlengkapan/konsumsi/dokumentasi/keamanan/lainnya):", "lainnya");
-    if (!seksi?.trim()) return;
-    const tugas = prompt("Tugas (opsional):", "") || "";
+  susunPanitia(eventId) {
+    const modal = document.getElementById("modal-susun-panitia");
+    if (!modal) return;
+    document.getElementById("panitia-event-id").value = eventId;
+    const select = document.getElementById("panitia-anggota-select");
+    if (select) {
+      select.innerHTML = (this.allUsers || []).map(u => `<option value="${u.id}">${this.escapeHtml(u.nama || u.username)} (${u.role})</option>`).join('');
+    }
+    modal.classList.add("show");
+  },
+
+  closeSusunPanitiaModal() {
+    const modal = document.getElementById("modal-susun-panitia");
+    if (modal) modal.classList.remove("show");
+  },
+
+  async submitPanitiaEvent() {
+    const eventId = document.getElementById("panitia-event-id")?.value;
+    const anggotaId = document.getElementById("panitia-anggota-select")?.value;
+    const seksi = document.getElementById("panitia-seksi-select")?.value;
+    const tugas = document.getElementById("panitia-tugas-input")?.value?.trim() || "";
+
+    if (!eventId || !anggotaId || !seksi) {
+      alert("Lengkapi data panitia bro!");
+      return;
+    }
+
     try {
       const res = await fetch(`${this.apiBase}/collections/event_panitia/records`, {
         method: "POST",
         headers: this.getAuthHeaders(),
-        body: JSON.stringify({ event: eventId, anggota: anggotaId.trim(), seksi: seksi.trim(), tugas: tugas.trim(), ditunjuk_oleh: this.user.id, aktif: true })
+        body: JSON.stringify({
+          event: eventId,
+          anggota: anggotaId,
+          seksi: seksi,
+          tugas: tugas,
+          ditunjuk_oleh: this.user.id,
+          aktif: true
+        })
       });
-      if (!res.ok) { const e = await res.json(); throw new Error(e.message || "Gagal"); }
-      Hero.setExpression("senang", "Panitia baru udah ditambahkan bro!");
+      if (!res.ok) {
+        const e = await res.json();
+        throw new Error(e.message || "Gagal menambah panitia.");
+      }
+      Hero.setExpression("senang", "Panitia berhasil ditunjuk! Solid selalu!");
+      this.closeSusunPanitiaModal();
       await this.loadEvents();
     } catch (e) {
       alert("Gagal susun panitia: " + e.message);
+    }
+  },
+
+  async ikutEvent(eventId) {
+    if (!this.user) return;
+    try {
+      const res = await fetch(`${this.apiBase}/collections/event_peserta/records`, {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({
+          event: eventId,
+          anggota: this.user.id,
+          status: "daftar"
+        })
+      });
+      if (!res.ok) {
+        const e = await res.json();
+        throw new Error(e.message || "Gagal daftar event.");
+      }
+      Hero.setExpression("senang", "Mantap bro! Kamu sudah terdaftar di event ini. Gaspol!");
+      await this.loadEvents();
+    } catch (e) {
+      alert("Gagal daftar event: " + e.message);
     }
   },
 
