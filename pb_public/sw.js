@@ -1,5 +1,5 @@
 // Service Worker for Basecamp Komunitas PWA
-const CACHE_NAME = 'basecamp-cache-v3';
+const CACHE_NAME = 'basecamp-cache-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -9,7 +9,30 @@ const ASSETS_TO_CACHE = [
   './app.js',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './js/auth.js',
+  './js/markas.js',
+  './js/kas.js',
+  './js/wizard-kas.js',
+  './js/koreksi-kas.js',
+  './js/iuran.js',
+  './js/astrologi.js',
+  './js/profil.js',
+  './js/profil-dokumen.js',
+  './js/profil-publik.js',
+  './js/pendaftaran.js',
+  './js/anggota.js',
+  './js/komunitas.js',
+  './js/struktur-aturan.js',
+  './js/event.js',
+  './js/event-peta-dana.js',
+  './js/event-lpj.js',
+  './js/forum-panduan.js',
+  './js/pelengkap.js',
+  './js/kuesioner-dokumen.js',
+  './js/konfigurasi.js',
+  './js/progres.js',
+  './js/core-events.js'
 ];
 
 self.addEventListener('install', (e) => {
