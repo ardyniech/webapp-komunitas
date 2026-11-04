@@ -76,6 +76,14 @@ window.AppModules.CoreEvents = {
   },
 
   setupEventListeners() {
+    // Navigation Buttons (Menu Bawah)
+    document.querySelectorAll(".nav-item").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tab = btn.dataset.tab;
+        if (tab) this.switchTab(tab);
+      });
+    });
+
     const loginForm = document.getElementById("login-form");
     if (loginForm) {
       loginForm.addEventListener("submit", async (e) => {
