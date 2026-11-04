@@ -289,6 +289,8 @@ const App = {
     this.loadPengumuman().catch(() => {});
     // Load banner penunjukan panitia (non-blocking)
     this.loadDashPanitiaBanner().catch(() => {});
+    // Terapkan modul aktif (non-blocking)
+    this.applyModulAktif().catch(() => {});
   },
 
   async fetchKas() {
@@ -2390,6 +2392,50 @@ const App = {
     } catch (e) {
       alert("Gagal kirim jawaban: " + e.message);
     }
+  },
+
+  // ============================================================
+  // MODUL AKTIF (F1b / Plan §6.13 B)
+  // ============================================================
+  _modulAktif: null,
+
+  async applyModulAktif() {
+    if (!this.user) return;
+    try {
+      const res = await fetch(`${this.apiBase}/collections/konfigurasi/records?filter=(kunci='modul_aktif')&perPage=1`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      const item = (data.items || [])[0];
+      const mods = (item && Array.isArray(item.nilai)) ? item.nilai : null;
+      if (!mods) return;
+      this._modulAktif = mods;
+      const modSet = new Set(mods);
+      const tabToModule = {
+        kas: "kas", iuran: "kas",
+        struktur: "struktur",
+        profil: "profil",
+        aturan: "aturan",
+        forum: "forum",
+        panduan: "panduan",
+        kuesioner: "kuesioner",
+        event: "event",
+        progres: "progres",
+        pengumuman: "pengumuman",
+        pengaduan: "pengaduan",
+        polling: "polling",
+        agenda: "agenda"
+      };
+      document.querySelectorAll(".dropdown-item").forEach(btn => {
+        const m = (btn.getAttribute("onclick") || "").match(/switchTab\('([^']+)'\)/);
+        if (!m) return;
+        const tab = m[1];
+        const mod = tabToModule[tab];
+        if (mod && !modSet.has(mod)) btn.style.display = "none";
+        else btn.style.display = "";
+      });
+    } catch (e) {}
   },
 
   // ============================================================
