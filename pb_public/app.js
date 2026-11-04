@@ -22,8 +22,33 @@ const App = {
   isQuickMode: false,
 
   async init() {
+    // Add user card toggle method to App
+    this.toggleUserCard = (e) => {
+      e?.stopPropagation();
+      const card = document.getElementById('user-card');
+      if (!card) return;
+      if (window.App && App.user) {
+        const nameEl = document.getElementById('user-card-name');
+        const roleEl = document.getElementById('user-card-role');
+        if (nameEl) nameEl.textContent = App.user.nama || App.user.nama_panggilan || App.user.username || 'Anggota';
+        if (roleEl) roleEl.textContent = `${(App.user.role || 'anggota').toUpperCase()} • ${App.user.status || 'aktif'}`;
+      }
+      const isHidden = card.style.display === 'none' || card.style.display === '';
+      // Close full dropdown menu if open
+      this.closeUserMenu();
+      card.style.display = isHidden ? 'block' : 'none';
+    };
+    // Close card when clicking elsewhere
+    document.addEventListener('click', (ev) => {
+      const card = document.getElementById('user-card');
+      if (card && !card.contains(ev.target) && !ev.target.closest('#user-header-badge')) {
+        card.style.display = 'none';
+      }
+    });
+
     this.initTheme();
     this.initPeriod();
+    this.initSmartHeader();
     this.restoreSession();
 
     await this.loadKomunitasBranding();
@@ -45,6 +70,39 @@ const App = {
 
     const savedReduced = localStorage.getItem("komunitas_hemat_animasi") === "true";
     if (savedReduced) document.body.classList.add("mode-hemat-animasi");
+  },
+
+  initSmartHeader() {
+    let lastScrollY = window.scrollY;
+    const header = document.querySelector(".app-header");
+    if (!header) return;
+
+    window.addEventListener("scroll", () => {
+      const currentScrollY = window.scrollY;
+      
+      // Shadow & compact padding saat scroll
+      if (currentScrollY > 15) {
+        header.classList.add("header-scrolled");
+      } else {
+        header.classList.remove("header-scrolled");
+      }
+
+      // Hide saat scroll ke bawah jauh (>80px), show saat scroll ke atas
+      if (currentScrollY > 80 && currentScrollY > lastScrollY + 5) {
+        // Jangan hide jika dropdown user-card atau menu sedang aktif
+        const card = document.getElementById("user-card");
+        const menu = document.getElementById("user-dropdown-menu");
+        const isCardOpen = card && card.style.display === "block";
+        const isMenuOpen = menu && menu.classList.contains("show");
+        if (!isCardOpen && !isMenuOpen) {
+          header.classList.add("header-hidden");
+        }
+      } else if (currentScrollY < lastScrollY - 5 || currentScrollY <= 80) {
+        header.classList.remove("header-hidden");
+      }
+
+      lastScrollY = currentScrollY <= 0 ? 0 : currentScrollY;
+    }, { passive: true });
   },
 
   initPeriod() {
@@ -960,23 +1018,33 @@ const App = {
     if (waEl) waEl.innerText = `📱 ${this.user.whatsapp || this.user.kontak || 'Belum ada kontak'}`;
 
     // Fill Form fields
+    const fNamaLengkap = document.getElementById("prof-nama-lengkap");
     const fNama = document.getElementById("prof-nama-panggilan");
     const fWa = document.getElementById("prof-whatsapp");
     const fDomisili = document.getElementById("prof-domisili");
     const fBio = document.getElementById("prof-bio");
+    const fDaruratNama = document.getElementById("prof-kontak-darurat-nama");
+    const fDaruratTelp = document.getElementById("prof-kontak-darurat-telp");
 
-    if (fNama) fNama.value = this.user.nama_panggilan || this.user.nama || "";
+    if (fNamaLengkap) fNamaLengkap.value = this.user.nama || "";
+    if (fNama) fNama.value = this.user.nama_panggilan || "";
     if (fWa) fWa.value = this.user.whatsapp || this.user.kontak || "";
     if (fDomisili) fDomisili.value = this.user.domisili || "";
     if (fBio) fBio.value = this.user.bio || "";
+    if (fDaruratNama) fDaruratNama.value = this.user.kontak_darurat_nama || "";
+    if (fDaruratTelp) fDaruratTelp.value = this.user.kontak_darurat_telepon || "";
+
+    this.loadUserDokumenList();
 
     // Completeness calculation
     const checks = [
-      !!(this.user.nama || this.user.nama_panggilan),
+      !!(this.user.nama),
+      !!(this.user.nama_panggilan),
       !!(this.user.whatsapp || this.user.kontak),
       !!this.user.domisili,
       !!this.user.bio,
-      !!this.user.email
+      !!this.user.kontak_darurat_nama,
+      !!this.user.kontak_darurat_telepon
     ];
     const filledCount = checks.filter(Boolean).length;
     const pct = Math.round((filledCount / checks.length) * 100);
@@ -1004,9 +1072,12 @@ const App = {
     if (e) e.preventDefault();
     if (!this.user) return;
 
+    const nama = document.getElementById("prof-nama-lengkap")?.value.trim() || "";
     const nama_panggilan = document.getElementById("prof-nama-panggilan")?.value.trim() || "";
     const whatsapp = document.getElementById("prof-whatsapp")?.value.trim() || "";
     const domisili = document.getElementById("prof-domisili")?.value.trim() || "";
+    const kontak_darurat_nama = document.getElementById("prof-kontak-darurat-nama")?.value.trim() || "";
+    const kontak_darurat_telepon = document.getElementById("prof-kontak-darurat-telp")?.value.trim() || "";
     const bio = document.getElementById("prof-bio")?.value.trim() || "";
 
     try {
@@ -1015,9 +1086,13 @@ const App = {
         method: "PATCH",
         headers: this.getAuthHeaders(),
         body: JSON.stringify({
+          nama: nama || this.user.nama,
           nama_panggilan,
           whatsapp,
+          kontak: whatsapp || this.user.kontak,
           domisili,
+          kontak_darurat_nama,
+          kontak_darurat_telepon,
           bio,
           profil_dilengkapi_pada: new Date().toISOString()
         })
@@ -1041,6 +1116,78 @@ const App = {
       console.error(err);
       Hero.setExpression("waspada", "Terjadi kendala jaringan saat simpan profil.");
       alert("Terjadi kendala jaringan saat menyimpan profil!");
+    }
+  },
+
+  async uploadDokumenAnggota(e) {
+    if (e) e.preventDefault();
+    if (!this.user) return;
+
+    const judul = document.getElementById("doc-judul")?.value.trim();
+    const kategori = document.getElementById("doc-kategori")?.value || "lainnya";
+    const fileInput = document.getElementById("doc-file");
+
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+      alert("Pilih file dokumen terlebih dahulu!");
+      return;
+    }
+
+    const file = fileInput.files[0];
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Ukuran berkas maksimal 2MB!");
+      return;
+    }
+
+    const fd = new FormData();
+    fd.append("judul", `${judul} (${this.user.nama || this.user.username})`);
+    fd.append("kategori", kategori);
+    fd.append("berkas", file);
+    fd.append("hanya_pengurus", "true"); // Terproteksi hanya pengurus & dewan
+
+    try {
+      Hero.setExpression("berpikir", "Mengunggah dokumen...");
+      const res = await fetch(`${this.apiBase}/collections/dokumen/records`, {
+        method: "POST",
+        headers: this.getAuthHeaders(true),
+        body: fd
+      });
+
+      if (res.ok) {
+        Hero.setExpression("senang", "Dokumen berhasil diunggah!");
+        alert("Dokumen berhasil diunggah dan disimpan aman!");
+        document.getElementById("doc-judul").value = "";
+        fileInput.value = "";
+        this.loadUserDokumenList();
+      } else {
+        const err = await res.json();
+        alert("Gagal unggah dokumen: " + JSON.stringify(err.message || err));
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kendala jaringan saat unggah dokumen!");
+    }
+  },
+
+  async loadUserDokumenList() {
+    const listEl = document.getElementById("doc-list-user");
+    if (!listEl) return;
+    try {
+      const res = await fetch(`${this.apiBase}/collections/dokumen/records?sort=-created&perPage=5`, {
+        headers: this.getAuthHeaders()
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const myDocs = (data.items || []).filter(d => (d.judul || '').includes(this.user.nama || this.user.username));
+        if (myDocs.length === 0) {
+          listEl.innerHTML = `<span style="color:var(--text-muted);">Belum ada dokumen yang diunggah.</span>`;
+        } else {
+          listEl.innerHTML = `<strong>Dokumen tersimpan:</strong><ul style="margin:4px 0 0 16px; padding:0;">` +
+            myDocs.map(d => `<li>${this.escapeHtml(d.judul)} (${d.kategori}) - <span style="color:#10b981;">✓ Terunggah</span></li>`).join("") +
+            `</ul>`;
+        }
+      }
+    } catch (e) {
+      console.warn("Could not load user docs list", e);
     }
   },
 

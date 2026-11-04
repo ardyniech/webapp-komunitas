@@ -5,6 +5,7 @@ const Hero = {
   avatarEl: null,
   currentExpression: "menyapa",
   isVisible: true,
+  autoHideTimer: null,
 
   init() {
     this.container = document.getElementById("hero-widget");
@@ -17,6 +18,9 @@ const Hero = {
     if (!this.isVisible) {
       this.container.style.display = "none";
     }
+
+    // Auto-hide bubble awal setelah 4 detik agar tidak menutupi layar
+    this.scheduleAutoHide(4000);
   },
 
   setExpression(expr, text = null) {
@@ -39,8 +43,16 @@ const Hero = {
       if (wrap) {
         wrap.classList.remove("fade-out");
         wrap.classList.add("fade-in");
+        this.scheduleAutoHide(4500); // Otomatis sembunyi setelah 4.5 detik
       }
     }
+  },
+
+  scheduleAutoHide(delayMs = 4000) {
+    if (this.autoHideTimer) clearTimeout(this.autoHideTimer);
+    this.autoHideTimer = setTimeout(() => {
+      this.hideBubble();
+    }, delayMs);
   },
 
   toggleVisibility(show) {
@@ -116,8 +128,12 @@ const Hero = {
   },
 
   hideBubble() {
-    const wrap = this.container.querySelector(".hero-bubble");
-    if (wrap) wrap.classList.add("fade-out");
+    if (this.autoHideTimer) clearTimeout(this.autoHideTimer);
+    const wrap = this.container ? this.container.querySelector(".hero-bubble") : null;
+    if (wrap) {
+      wrap.classList.remove("fade-in");
+      wrap.classList.add("fade-out");
+    }
   },
 
   onAvatarClick() {

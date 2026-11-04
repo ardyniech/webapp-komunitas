@@ -32,7 +32,28 @@
         <div class="brand-tagline brand-tagline-text">Kas Transparan, Aspal Lancar</div>
       </div>
     </div>
-    <div id="user-header-badge" class="user-badge-header" onclick="App.toggleUserMenu(event)" style="cursor:pointer;" title="Buka Menu Pengguna"></div>
+    <div id="user-header-badge" class="user-badge-header" onclick="App.toggleUserCard(event)" style="cursor:pointer;" title="Buka Profil Pengguna"></div>
+    <!-- Smart User Card Popup (Click avatar di header) -->
+    <div id="user-card" class="smart-user-card" style="display:none;">
+      <div class="card-avatar-row">
+        <div class="card-avatar">🛵</div>
+        <div style="min-width:0; flex:1;">
+          <div id="user-card-name" class="card-name">Nama Anggota</div>
+          <div id="user-card-role" class="card-meta">Role: Anggota</div>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="btn btn-primary" onclick="App.switchTab('profil'); App.toggleUserCard(event);">
+          👤 Lengkapi & Edit Profil
+        </button>
+        <button class="btn btn-outline" onclick="App.toggleUserMenu(event); App.toggleUserCard(event);">
+          📋 Menu Lengkap Basecamp
+        </button>
+        <button class="btn btn-outline" style="color:var(--warna-merah); border-color:rgba(239,68,68,0.3);" onclick="App.logout();">
+          🚪 Keluar
+        </button>
+      </div>
+    </div>
     <!-- Dropdown Menu Pengguna (Section 6.15) -->
     <div id="user-dropdown-menu" class="user-dropdown-menu">
       <button class="dropdown-item" onclick="App.switchTab('profil'); App.closeUserMenu();">
@@ -435,14 +456,18 @@
         </div>
 
         <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:12px; margin-bottom:14px;">
-          <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">DATA PRIBADI & DOMISILI</div>
+          <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">DATA PRIBADI & KELENGKAPAN</div>
           <form onsubmit="App.saveProfilData(event)">
             <div class="form-group">
-              <label>Nama Panggilan</label>
+              <label>Nama Lengkap (Sesuai KTP)</label>
+              <input type="text" id="prof-nama-lengkap" class="form-control" placeholder="Nama lengkap">
+            </div>
+            <div class="form-group">
+              <label>Nama Panggilan / Julukan Aspal</label>
               <input type="text" id="prof-nama-panggilan" class="form-control" placeholder="Contoh: Bang Agus">
             </div>
             <div class="form-group">
-              <label>Nomor WhatsApp</label>
+              <label>Nomor WhatsApp Aktif</label>
               <input type="tel" id="prof-whatsapp" class="form-control" placeholder="08123456789">
             </div>
             <div class="form-group">
@@ -450,11 +475,45 @@
               <input type="text" id="prof-domisili" class="form-control" placeholder="Contoh: Senayan, Jaksel">
             </div>
             <div class="form-group">
+              <label>Kontak Darurat (Nama & Hubungan)</label>
+              <input type="text" id="prof-kontak-darurat-nama" class="form-control" placeholder="Contoh: Siti (Istri)">
+            </div>
+            <div class="form-group">
+              <label>Nomor Telepon Darurat</label>
+              <input type="tel" id="prof-kontak-darurat-telp" class="form-control" placeholder="Contoh: 081987654321">
+            </div>
+            <div class="form-group">
               <label>Bio Singkat</label>
               <textarea id="prof-bio" class="form-control" rows="2" placeholder="Driver santuy, pantang pulang sebelum gacor!"></textarea>
             </div>
-            <button type="submit" class="btn btn-primary" style="padding:10px;">💾 Simpan Pembaruan Profil</button>
+            <button type="submit" class="btn btn-primary" style="padding:10px;">💾 Simpan Kelengkapan Data</button>
           </form>
+        </div>
+
+        <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:12px; margin-bottom:14px;">
+          <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">UPLOAD DOKUMEN ANGGOTA (KTP / SIM / STNK)</div>
+          <p style="font-size:0.75rem; color:var(--text-muted); margin:0;">Upload berkas dokumen untuk validasi pengurus basecamp (Format: JPG/PNG/PDF, maks 2MB).</p>
+          <form onsubmit="App.uploadDokumenAnggota(event)">
+            <div class="form-group">
+              <label>Jenis Dokumen</label>
+              <select id="doc-kategori" class="form-control">
+                <option value="ktp">Kartu Tanda Penduduk (KTP)</option>
+                <option value="sim">Surat Izin Mengemudi (SIM)</option>
+                <option value="stnk">STNK Kendaraan</option>
+                <option value="lainnya">Dokumen / Piagam Lainnya</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Judul / Keterangan Dokumen</label>
+              <input type="text" id="doc-judul" class="form-control" placeholder="Contoh: KTP Agus Santoso" required>
+            </div>
+            <div class="form-group">
+              <label>Pilih Berkas</label>
+              <input type="file" id="doc-file" class="form-control" accept=".jpg,.jpeg,.png,.webp,.pdf" required>
+            </div>
+            <button type="submit" class="btn btn-outline" style="padding:9px; border-color:var(--warna-utama);">📤 Unggah Dokumen</button>
+          </form>
+          <div id="doc-list-user" style="margin-top:10px; font-size:0.8rem;"></div>
         </div>
 
         <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:10px; margin-bottom:14px;">

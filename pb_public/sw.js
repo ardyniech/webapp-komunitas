@@ -1,5 +1,5 @@
 // Service Worker for Basecamp Komunitas PWA
-const CACHE_NAME = 'basecamp-cache-v1';
+const CACHE_NAME = 'basecamp-cache-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -7,16 +7,18 @@ const ASSETS_TO_CACHE = [
   './teks.js',
   './hero.js',
   './app.js',
-  './manifest.json'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (e) => {
+  self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (e) => {
@@ -30,15 +32,26 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
+// Network-first for html/js/css to ensure live changes load immediately in normal browser mode
 self.addEventListener('fetch', (e) => {
-  // Only cache static assets, never cache PocketBase API requests
+  // Never cache API requests
   if (e.request.url.includes('/api/')) {
     return;
   }
 
+  // Network first, fallback to cache
   e.respondWith(
-    caches.match(e.request).then((res) => {
-      return res || fetch(e.request);
-    })
+    fetch(e.request)
+      .then((networkRes) => {
+        if (networkRes && networkRes.status === 200) {
+          const clone = networkRes.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+        }
+        return networkRes;
+      })
+      .catch(() => {
+        return caches.match(e.request);
+      })
   );
 });
+
