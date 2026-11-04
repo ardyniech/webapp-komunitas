@@ -1509,6 +1509,7 @@ const App = {
               <span class="badge" style="background:${statusColor}; color:#000; font-size:0.72rem; font-weight:700; padding:3px 10px; border-radius:12px; text-transform:uppercase;">
                 ${ev.status}
               </span>
+              ${this.user && (this.user.role === "admin" || this.user.role === "pengurus") ? `<button class="btn btn-outline" style="width:auto; padding:3px 8px; font-size:0.7rem; margin-left:6px;" onclick="App.ubahStatusEvent('${ev.id}','${ev.status}')">⚙️ Status</button>` : ''}
             </div>
 
             ${ev.deskripsi ? `
@@ -1583,6 +1584,23 @@ const App = {
     } catch (e) {
       console.warn("Could not load events", e);
       listEl.innerHTML = `<div style="color:var(--warna-merah); font-size:0.8rem;">Gagal memuat kegiatan komunitas.</div>`;
+    }
+  },
+
+  async ubahStatusEvent(eventId, currentStatus) {
+    const next = prompt(`Status baru (usulan/disetujui/persiapan/berlangsung/selesai/lpj_diajukan/ditutup/dibatalkan):`, currentStatus);
+    if (!next || next === currentStatus) return;
+    try {
+      const res = await fetch(`${this.apiBase}/collections/event/records/${eventId}`, {
+        method: "PATCH",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ status: next.trim() })
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.message || "Gagal"); }
+      Hero.setExpression("senang", "Status event udah diperbarui bro!");
+      await this.loadEvents();
+    } catch (e) {
+      alert("Gagal ubah status: " + e.message);
     }
   },
 
