@@ -284,6 +284,9 @@
             <button class="btn btn-outline" style="width: auto; padding: 8px 10px; font-size: 0.8rem;" onclick="App.exportKasCSV()" title="Ekspor CSV">
               📥 CSV
             </button>
+            <button class="btn btn-outline" style="width: auto; padding: 8px 10px; font-size: 0.8rem;" onclick="App.cetakLaporanKas()" title="Cetak Rekap Kas">
+              🖨️ Cetak
+            </button>
           </div>
         </div>
 
@@ -356,6 +359,19 @@
           </div>
         </div>
 
+        <!-- WIZARD SETUP IDENTITAS KOMUNITAS (ADMIN - Plan §6.2 & §6.13) -->
+        <div id="admin-setup-komunitas-section" style="margin-bottom: 24px; display:none;">
+          <div class="kas-card" style="border-left:3px solid var(--warna-utama); align-items:center;">
+            <div>
+              <div style="font-weight:700; font-size:0.95rem;">🎨 Identitas & Personalisasi Komunitas</div>
+              <div style="font-size:0.75rem; color:var(--text-sub);">Ubah nama pangkalan, warna tema, slogan, dan iuran default</div>
+            </div>
+            <button class="btn btn-primary" style="width:auto; padding:6px 14px; font-size:0.78rem;" onclick="App.openSetupKomunitasModal()">
+              Atur Basecamp
+            </button>
+          </div>
+        </div>
+
         <!-- PENGATURAN KONFIGURASI KEBIJAKAN (ADMIN & PENGURUS - Plan §6.13) -->
         <div id="admin-konfigurasi-section" style="margin-bottom: 24px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -403,6 +419,7 @@
               <div id="profil-nama-display" style="font-size:1.15rem; font-weight:700;">Nama Anggota</div>
               <div id="profil-role-display" style="font-size:0.75rem; color:var(--text-sub);">Anggota Basecamp</div>
               <div id="profil-wa-display" style="font-size:0.78rem; color:var(--text-muted); margin-top:3px;">📱 WhatsApp</div>
+              <div id="profil-badges-container" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;"></div>
             </div>
           </div>
           <!-- Bar Kelengkapan Profil -->
@@ -438,6 +455,12 @@
             </div>
             <button type="submit" class="btn btn-primary" style="padding:10px;">💾 Simpan Pembaruan Profil</button>
           </form>
+        </div>
+
+        <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:10px; margin-bottom:14px;">
+          <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">DATA SAYA & PRIVASI (Plan §6.11)</div>
+          <button class="btn btn-outline" onclick="App.showProfilPublikPreview()">👁️ Tinjau Profil Publik Saya</button>
+          <button class="btn btn-outline" onclick="App.unduhDataPribadi()">📥 Unduh Data Pribadi Saya (JSON)</button>
         </div>
 
         <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:10px; margin-bottom:14px;">
@@ -950,6 +973,53 @@
         <button class="btn btn-outline" onclick="App.closeLPJModal()">Batal</button>
         <button class="btn btn-primary" onclick="App.submitLPJEvent()">Kirim LPJ ke Pengurus</button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SETUP KOMUNITAS (Plan §6.2) -->
+  <div id="modal-setup-komunitas" class="modal-overlay">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Identitas & Personalisasi Basecamp</h3>
+        <button onclick="App.closeSetupKomunitasModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      <div class="form-group">
+        <label>Nama Komunitas / Pangkalan</label>
+        <input type="text" id="setup-nama" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label>Tagline / Slogan</label>
+        <input type="text" id="setup-tagline" class="form-control">
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div class="form-group">
+          <label>Warna Utama (Hex)</label>
+          <input type="text" id="setup-warna-utama" class="form-control" placeholder="#1FA463">
+        </div>
+        <div class="form-group">
+          <label>Warna Aksen (Hex)</label>
+          <input type="text" id="setup-warna-aksen" class="form-control" placeholder="#FFB020">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Iuran Default (Rp/bulan)</label>
+        <input type="number" id="setup-iuran-default" class="form-control" min="0">
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 18px;">
+        <button class="btn btn-outline" onclick="App.closeSetupKomunitasModal()">Batal</button>
+        <button class="btn btn-primary" onclick="App.submitSetupKomunitas()">Simpan Perubahan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PROFIL PUBLIK PREVIEW (Plan §6.11) -->
+  <div id="modal-profil-publik" class="modal-overlay" onclick="App.closeProfilPublikPreview()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Profil Publik</h3>
+        <button onclick="App.closeProfilPublikPreview()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      <div id="profil-publik-card-body"></div>
     </div>
   </div>
 

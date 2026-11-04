@@ -864,3 +864,69 @@ body.mode-hemat-animasi * {
 .status-badge.berfungsi { background: rgba(31, 164, 99, 0.2); color: var(--warna-utama); }
 .status-badge.dalam_pengerjaan { background: rgba(255, 176, 32, 0.2); color: var(--warna-aksen); }
 .status-badge.belum_dibuat { background: var(--bg-input); color: var(--text-muted); }
+
+/* Badge Generic */
+.badge {
+  display: inline-block;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* Print styling (Plan §6.6 §9) */
+@media print {
+  .ambient-bg,
+  #bottom-nav,
+  #hero-widget,
+  .user-badge-header,
+  .btn,
+  #filter-kas-jenis,
+  #filter-kas-search,
+  .modal-overlay {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 11pt;
+  }
+
+  .app-header {
+    border-bottom: 2px solid #000;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+  }
+
+  .brand-name-text {
+    color: #000 !important;
+    font-size: 16pt !important;
+  }
+
+  .brand-tagline-text {
+    color: #555 !important;
+  }
+
+  .kas-card {
+    background: #fff !important;
+    border: 1px solid #ccc !important;
+    color: #000 !important;
+    page-break-inside: avoid;
+    margin-bottom: 8px;
+    box-shadow: none !important;
+  }
+
+  .kas-keterangan {
+    color: #000 !important;
+  }
+
+  .kas-sub {
+    color: #666 !important;
+  }
+
+  .kas-nominal {
+    color: #000 !important;
+    font-weight: 700;
+  }
+}

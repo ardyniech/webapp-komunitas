@@ -143,6 +143,9 @@ const App = {
     const navAnggota = document.getElementById("nav-btn-anggota");
     if (navAnggota) navAnggota.style.display = (this.user.role === "admin") ? "flex" : "none";
 
+    const setupSection = document.getElementById("admin-setup-komunitas-section");
+    if (setupSection) setupSection.style.display = (this.user.role === "admin") ? "block" : "none";
+
     this.switchTab("markas");
     Hero.setExpression("senang", Teks.hero.welcome_dash);
   },
@@ -980,6 +983,21 @@ const App = {
 
     if (pctText) pctText.innerText = `${pct}%`;
     if (barFill) barFill.style.width = `${pct}%`;
+
+    // Render Gamifikasi Badges (Plan §6.6 §7)
+    const badgeContainer = document.getElementById("profil-badges-container");
+    if (badgeContainer) {
+      const badges = [];
+      const isLunas = (this.allIuran || []).some(i => i.anggota === this.user.id && i.periode === this.currentPeriod && i.status === "lunas");
+      if (isLunas) {
+        badges.push('<span class="badge" style="background:#10b981; color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:10px;">⛽ Pejuang Tertib</span>');
+      }
+      if (this.user.role === "admin" || this.user.role === "pengurus" || this.user.role === "bendahara") {
+        badges.push('<span class="badge" style="background:var(--warna-aksen); color:#000; font-size:0.7rem; padding:2px 8px; border-radius:10px;">🛡️ Pengawal Aspal</span>');
+      }
+      badges.push('<span class="badge" style="background:var(--bg-input); color:var(--text-primary); font-size:0.7rem; padding:2px 8px; border-radius:10px; border:1px solid var(--border-color);">🛵 Rider Satu Aspal</span>');
+      badgeContainer.innerHTML = badges.join("");
+    }
   },
 
   async saveProfilData(e) {
@@ -2844,6 +2862,145 @@ const App = {
         else btn.style.display = "";
       });
     } catch (e) {}
+  },
+
+  // ============================================================
+  // CETAK LAPORAN KAS (Plan §6.6 §9)
+  // ============================================================
+  cetakLaporanKas() {
+    Hero.setExpression("senang", "Menyiapkan lembar cetak laporan kas basecamp!");
+    setTimeout(() => window.print(), 300);
+  },
+
+  // ============================================================
+  // PROFIL PUBLIK & UNDUH DATA (Plan §6.11)
+  // ============================================================
+  async showProfilPublikPreview() {
+    const modal = document.getElementById("modal-profil-publik");
+    const body = document.getElementById("profil-publik-card-body");
+    if (!modal || !body || !this.user) return;
+    body.innerHTML = `<div class="empty-state">⏳ Memuat profil publik...</div>`;
+    modal.classList.add("show");
+
+    try {
+      const res = await fetch(`${this.apiBase}/collections/profil_publik/records?filter=(user='${this.user.id}')`, {
+        headers: this.getAuthHeaders()
+      });
+      const data = await res.json();
+      const p = (data.items && data.items.length) ? data.items[0] : null;
+
+      const namaTampil = p ? p.nama_tampil : (this.user.nama || this.user.username);
+      const bidang = p && p.bidang_terlihat ? (typeof p.bidang_terlihat === "string" ? JSON.parse(p.bidang_terlihat) : p.bidang_terlihat) : {};
+
+      body.innerHTML = `
+        <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
+          <div style="width:54px; height:54px; border-radius:50%; background:var(--warna-utama); display:flex; align-items:center; justify-content:center; font-size:24px;">🛵</div>
+          <div>
+            <div style="font-weight:700; font-size:1.1rem;">${this.escapeHtml(namaTampil)}</div>
+            <div style="font-size:0.75rem; color:var(--text-sub);">${(this.user.role || 'anggota').toUpperCase()} • BASECAMP</div>
+          </div>
+        </div>
+        <div style="background:var(--bg-input); border-radius:10px; padding:12px; font-size:0.83rem; line-height:1.7;">
+          <div><strong>WhatsApp:</strong> ${this.escapeHtml(bidang.whatsapp || '(Disembunyikan oleh Anda)')}</div>
+          <div><strong>Domisili:</strong> ${this.escapeHtml(bidang.domisili || '(Disembunyikan oleh Anda)')}</div>
+          <div><strong>Bio:</strong> ${this.escapeHtml(bidang.bio || '(Disembunyikan oleh Anda)')}</div>
+        </div>
+        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:10px;">
+          ℹ️ Ini adalah tampilan profil publik Anda yang terlihat oleh sesama anggota di pangkalan. Bidang yang Anda sembunyikan terlindungi dan tidak bocor ke publik.
+        </div>
+      `;
+    } catch (e) {
+      body.innerHTML = `<div style="color:var(--warna-merah);">Gagal memuat profil publik.</div>`;
+    }
+  },
+
+  closeProfilPublikPreview() {
+    const modal = document.getElementById("modal-profil-publik");
+    if (modal) modal.classList.remove("show");
+  },
+
+  async unduhDataPribadi() {
+    if (!this.user) return;
+    try {
+      Hero.setExpression("berpikir", "Menyiapkan arsip data pribadi kamu...");
+      const dataExport = {
+        profil: {
+          id: this.user.id,
+          username: this.user.username,
+          nama: this.user.nama,
+          nama_panggilan: this.user.nama_panggilan,
+          whatsapp: this.user.whatsapp || this.user.kontak,
+          domisili: this.user.domisili,
+          bio: this.user.bio,
+          role: this.user.role,
+          status: this.user.status,
+          tanggal_gabung: this.user.created
+        },
+        riwayat_iuran: (this.allIuran || []).filter(i => i.anggota === this.user.id),
+        tanggal_unduh: new Date().toISOString()
+      };
+
+      const blob = new Blob([JSON.stringify(dataExport, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `data_pribadi_${this.user.username}_${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      Hero.setExpression("senang", "Data pribadi berhasil diunduh dalam format JSON aman.");
+    } catch (e) {
+      alert("Gagal mengunduh data pribadi: " + e.message);
+    }
+  },
+
+  // ============================================================
+  // SETUP / ATUR IDENTITAS KOMUNITAS (Plan §6.2)
+  // ============================================================
+  openSetupKomunitasModal() {
+    const modal = document.getElementById("modal-setup-komunitas");
+    if (!modal || !this.komunitas) return;
+    document.getElementById("setup-nama").value = this.komunitas.nama || "";
+    document.getElementById("setup-tagline").value = this.komunitas.tagline || "";
+    document.getElementById("setup-warna-utama").value = this.komunitas.warna_utama || "#1FA463";
+    document.getElementById("setup-warna-aksen").value = this.komunitas.warna_aksen || "#FFB020";
+    document.getElementById("setup-iuran-default").value = this.komunitas.iuran_default || 20000;
+    modal.classList.add("show");
+  },
+
+  closeSetupKomunitasModal() {
+    const modal = document.getElementById("modal-setup-komunitas");
+    if (modal) modal.classList.remove("show");
+  },
+
+  async submitSetupKomunitas() {
+    if (!this.komunitas) return;
+    const nama = document.getElementById("setup-nama")?.value.trim();
+    const tagline = document.getElementById("setup-tagline")?.value.trim();
+    const warna_utama = document.getElementById("setup-warna-utama")?.value.trim();
+    const warna_aksen = document.getElementById("setup-warna-aksen")?.value.trim();
+    const iuran_default = Number(document.getElementById("setup-iuran-default")?.value) || 0;
+
+    if (!nama) { alert("Nama komunitas tidak boleh kosong!"); return; }
+
+    try {
+      const res = await fetch(`${this.apiBase}/collections/komunitas/records/${this.komunitas.id}`, {
+        method: "PATCH",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ nama, tagline, warna_utama, warna_aksen, iuran_default })
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Gagal menyimpan identitas");
+      }
+      this.komunitas = await res.json();
+      await this.loadKomunitasBranding();
+      Hero.setExpression("senang", "Identitas basecamp berhasil diperbarui! Tampilan langsung berubah.");
+      this.closeSetupKomunitasModal();
+    } catch (e) {
+      alert("Gagal update komunitas: " + e.message);
+    }
   },
 
   // ============================================================
