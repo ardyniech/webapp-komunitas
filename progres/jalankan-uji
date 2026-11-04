@@ -133,6 +133,7 @@ async function main() {
       throw new Error("Instance PocketBase sementara gagal siap dalam 6 detik!");
     }
     log("PocketBase sementara aktif dan migrasi database tuntas.");
+    await sleep(2000);
 
     // 5. Seed Test Users into Sandbox DB via SQLite for speed
     const dbPath = path.join(tmpDataDir, 'data.db');

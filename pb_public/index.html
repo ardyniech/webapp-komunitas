@@ -38,6 +38,24 @@
       <button class="dropdown-item" onclick="App.switchTab('profil'); App.closeUserMenu();">
         <span>👤</span> <span>Profil Saya</span>
       </button>
+      <button class="dropdown-item" onclick="App.switchTab('pengumuman'); App.closeUserMenu();">
+        <span>📣</span> <span>Pengumuman</span>
+      </button>
+      <button class="dropdown-item" onclick="App.switchTab('forum'); App.closeUserMenu();">
+        <span>💬</span> <span>Forum Diskusi</span>
+      </button>
+      <button class="dropdown-item" onclick="App.switchTab('panduan'); App.closeUserMenu();">
+        <span>📚</span> <span>Panduan & Bantuan</span>
+      </button>
+      <button class="dropdown-item" onclick="App.switchTab('polling'); App.closeUserMenu();">
+        <span>🗳️</span> <span>Polling & Voting</span>
+      </button>
+      <button class="dropdown-item" onclick="App.switchTab('agenda'); App.closeUserMenu();">
+        <span>📅</span> <span>Agenda & Notulen</span>
+      </button>
+      <button class="dropdown-item" onclick="App.switchTab('pengaduan'); App.closeUserMenu();">
+        <span>🛡️</span> <span>Lapor Dewan Etik</span>
+      </button>
       <button class="dropdown-item" onclick="App.switchTab('struktur'); App.closeUserMenu();">
         <span>🏛️</span> <span>Struktur Basecamp</span>
       </button>
@@ -46,6 +64,9 @@
       </button>
       <button class="dropdown-item" onclick="App.switchTab('event'); App.closeUserMenu();">
         <span>🎉</span> <span>Event & Kegiatan</span>
+      </button>
+      <button class="dropdown-item" onclick="App.switchTab('kuesioner'); App.closeUserMenu();">
+        <span>📝</span> <span>Uji & Kuesioner</span>
       </button>
       <button class="dropdown-item" onclick="App.switchTab('progres'); App.closeUserMenu();">
         <span>🚀</span> <span>Progres Aplikasi</span>
@@ -157,6 +178,8 @@
       
       <!-- TAB 1: MARKAS (DASHBOARD) -->
       <section id="panel-markas" class="view-panel active">
+        <!-- Banner Penunjukan Panitia Event (Plan §6.8 B) -->
+        <div id="dash-panitia-banner" style="display:none; margin-bottom:14px; padding:12px 14px; background:rgba(255, 176, 32, 0.15); border:1px solid var(--warna-aksen); border-radius:12px;"></div>
         <!-- Dompet Kas Card -->
         <div class="dompet-card">
           <div class="dompet-title">DOMPET KAS BASECAMP</div>
@@ -202,8 +225,20 @@
           <div id="dash-members-chips" class="members-grid"></div>
         </div>
 
-        <!-- Menu Pintas Basecamp (F3c, F3c-2, F3g) -->
+        <!-- Menu Pintas Basecamp -->
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px;">
+          <button class="btn btn-outline" style="flex-direction: column; padding: 10px 6px; font-size: 0.75rem; text-align: center; border-radius: 12px; height: auto;" onclick="App.switchTab('pengumuman')">
+            <span style="font-size: 20px; margin-bottom: 4px;">📣</span>
+            <span>Pengumuman</span>
+          </button>
+          <button class="btn btn-outline" style="flex-direction: column; padding: 10px 6px; font-size: 0.75rem; text-align: center; border-radius: 12px; height: auto;" onclick="App.switchTab('forum')">
+            <span style="font-size: 20px; margin-bottom: 4px;">💬</span>
+            <span>Forum</span>
+          </button>
+          <button class="btn btn-outline" style="flex-direction: column; padding: 10px 6px; font-size: 0.75rem; text-align: center; border-radius: 12px; height: auto;" onclick="App.switchTab('event')">
+            <span style="font-size: 20px; margin-bottom: 4px;">🎉</span>
+            <span>Event</span>
+          </button>
           <button class="btn btn-outline" style="flex-direction: column; padding: 10px 6px; font-size: 0.75rem; text-align: center; border-radius: 12px; height: auto;" onclick="App.switchTab('struktur')">
             <span style="font-size: 20px; margin-bottom: 4px;">🏛️</span>
             <span>Struktur</span>
@@ -212,10 +247,17 @@
             <span style="font-size: 20px; margin-bottom: 4px;">📜</span>
             <span>Aturan</span>
           </button>
-          <button class="btn btn-outline" style="flex-direction: column; padding: 10px 6px; font-size: 0.75rem; text-align: center; border-radius: 12px; height: auto;" onclick="App.switchTab('event')">
-            <span style="font-size: 20px; margin-bottom: 4px;">🎉</span>
-            <span>Event</span>
+          <button class="btn btn-outline" style="flex-direction: column; padding: 10px 6px; font-size: 0.75rem; text-align: center; border-radius: 12px; height: auto;" onclick="App.switchTab('polling')">
+            <span style="font-size: 20px; margin-bottom: 4px;">🗳️</span>
+            <span>Polling</span>
           </button>
+        </div>
+
+        <!-- Pengumuman Penting di Dashboard -->
+        <div id="dash-pengumuman-container" style="margin-bottom:16px; display:none;">
+          <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub); margin-bottom:6px;">📣 PENGUMUMAN PENTING</div>
+          <div id="dash-pengumuman-list"></div>
+          <button onclick="App.switchTab('pengumuman')" style="background:none; border:none; color:var(--warna-utama); font-size:0.78rem; cursor:pointer; padding:4px 0;">Lihat semua pengumuman →</button>
         </div>
 
         <!-- 5 Transaksi Terakhir -->
@@ -308,6 +350,22 @@
           </div>
           <div>
             <input type="checkbox" id="toggle-mode-terang" style="width: 20px; height: 20px;">
+          </div>
+        </div>
+
+        <!-- PENGATURAN KONFIGURASI KEBIJAKAN (ADMIN & PENGURUS - Plan §6.13) -->
+        <div id="admin-konfigurasi-section" style="margin-bottom: 24px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div>
+              <div style="font-weight:700; font-size:0.95rem;">Kebijakan & Konfigurasi Basecamp</div>
+              <div style="font-size:0.75rem; color:var(--text-sub);">Parameter komunitas yang dapat disesuaikan</div>
+            </div>
+            <button class="btn btn-outline" style="width:auto; padding:5px 12px; font-size:0.75rem;" onclick="App.toggleKonfigurasiEditor()">
+              ⚙️ Kelola
+            </button>
+          </div>
+          <div id="konfigurasi-editor-container" style="display:none; background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:12px;">
+            <div id="konfigurasi-list-items"><div class="empty-state">Memuat konfigurasi...</div></div>
           </div>
         </div>
 
@@ -439,6 +497,163 @@
         </div>
 
         <div id="aturan-pasal-list"></div>
+      </section>
+
+      <!-- TAB 11: PENGUMUMAN (F3d-2) -->
+      <section id="panel-pengumuman" class="view-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:700;">📣 Pengumuman</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Info dan berita terkini dari pengurus basecamp</div>
+          </div>
+          <button class="btn btn-outline" style="width:auto; padding:6px 10px; font-size:0.75rem;" onclick="App.loadPengumuman()">🔄</button>
+        </div>
+        <div id="pengumuman-list"><div class="empty-state">Memuat pengumuman...</div></div>
+      </section>
+
+      <!-- TAB 12: FORUM (F3d) -->
+      <section id="panel-forum" class="view-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:700;">💬 Forum Diskusi</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Ngobrol, tanya jawab, dan saling info sesama driver</div>
+          </div>
+          <button class="btn btn-primary" style="width:auto; padding:6px 12px; font-size:0.78rem;" onclick="App.openBuatTopik()">+ Topik Baru</button>
+        </div>
+        <!-- Filter Forum -->
+        <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+          <select id="filter-forum-kat" class="form-control" style="width:auto; flex:1; min-width:120px; font-size:0.8rem;">
+            <option value="">Semua Kategori</option>
+            <option value="umum">Umum</option>
+            <option value="tanya_jawab">Tanya Jawab</option>
+            <option value="saran">Saran</option>
+            <option value="info_orderan">Info Orderan</option>
+            <option value="curhat">Curhat</option>
+          </select>
+          <button class="btn btn-outline" style="width:auto; padding:6px 10px; font-size:0.75rem;" onclick="App.loadForum()">🔄</button>
+        </div>
+        <div id="forum-list"><div class="empty-state">Memuat topik diskusi...</div></div>
+
+        <!-- Detail Topik (tersembunyi awalnya) -->
+        <div id="forum-detail" style="display:none;">
+          <button onclick="App.closeForum()" style="background:none; border:none; color:var(--warna-utama); font-size:0.9rem; cursor:pointer; padding:0; margin-bottom:14px;">← Kembali ke Daftar</button>
+          <div id="forum-topik-header"></div>
+          <div id="forum-balasan-list"></div>
+          <div id="forum-balas-form" style="margin-top:16px;">
+            <textarea id="forum-balas-isi" class="form-control" rows="3" placeholder="Ketik balasan kamu di sini bro..."></textarea>
+            <button class="btn btn-primary" style="margin-top:8px;" onclick="App.kirimBalasan()">Kirim Balasan</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 13: PANDUAN (F3d) -->
+      <section id="panel-panduan" class="view-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:700;">📚 Panduan & Bantuan</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Artikel tips dan cara menyelesaikan masalah umum</div>
+          </div>
+        </div>
+        <input type="text" id="panduan-search" class="form-control" placeholder="🔍 Cari panduan..." oninput="App.filterPanduan()" style="margin-bottom:12px;">
+        <div id="panduan-list"><div class="empty-state">Memuat panduan...</div></div>
+        <!-- Detail Panduan -->
+        <div id="panduan-detail" style="display:none;">
+          <button onclick="App.closePanduan()" style="background:none; border:none; color:var(--warna-utama); font-size:0.9rem; cursor:pointer; padding:0; margin-bottom:14px;">← Kembali ke Daftar</button>
+          <div id="panduan-detail-content"></div>
+        </div>
+      </section>
+
+      <!-- TAB 14: POLLING (F3f) -->
+      <section id="panel-polling" class="view-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:700;">🗳️ Polling & Voting</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Suara bersama untuk keputusan komunitas</div>
+          </div>
+          <button class="btn btn-outline" style="width:auto; padding:6px 10px; font-size:0.75rem;" onclick="App.loadPolling()">🔄</button>
+        </div>
+        <div id="polling-list"><div class="empty-state">Memuat polling...</div></div>
+      </section>
+
+      <!-- TAB 15: AGENDA & NOTULEN (F3f-2) -->
+      <section id="panel-agenda" class="view-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:700;">📅 Agenda & Notulen</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Jadwal kumpul dan catatan rapat basecamp</div>
+          </div>
+          <button class="btn btn-outline" style="width:auto; padding:6px 10px; font-size:0.75rem;" onclick="App.loadAgenda()">🔄</button>
+        </div>
+        <div id="agenda-list"><div class="empty-state">Memuat agenda...</div></div>
+        <!-- Detail Agenda -->
+        <div id="agenda-detail" style="display:none;">
+          <button onclick="App.closeAgenda()" style="background:none; border:none; color:var(--warna-utama); font-size:0.9rem; cursor:pointer; padding:0; margin-bottom:14px;">← Kembali ke Daftar</button>
+          <div id="agenda-detail-content"></div>
+        </div>
+      </section>
+
+      <!-- TAB 16: PENGADUAN (F3f-3) -->
+      <section id="panel-pengaduan" class="view-panel">
+        <div style="margin-bottom:14px;">
+          <h2 style="font-size:1.15rem; font-weight:700;">🛡️ Lapor ke Dewan Etik</h2>
+          <div style="font-size:0.75rem; color:var(--text-sub);">Laporan masalah ditangani dengan serius dan rahasia</div>
+        </div>
+        <!-- Tabs: Buat Laporan / Cek Status -->
+        <div class="auth-toggle-tabs" style="margin-bottom:16px;">
+          <button class="auth-tab-btn active" id="btn-pengaduan-tab-baru" onclick="App.switchPengaduanTab('baru')">Buat Laporan</button>
+          <button class="auth-tab-btn" id="btn-pengaduan-tab-cek" onclick="App.switchPengaduanTab('cek')">Cek Status</button>
+        </div>
+        <!-- Form Laporan Baru -->
+        <div id="pengaduan-panel-baru">
+          <div class="confirm-warning-box" style="margin-bottom:14px;">
+            🛡️ Laporan anonim tidak menyimpan identitas kamu. Simpan kode cek yang diberikan untuk memantau status.
+          </div>
+          <div class="form-group">
+            <label>Kategori Laporan</label>
+            <select id="pengaduan-kategori" class="form-control">
+              <option value="pelanggaran_etika">Pelanggaran Etika</option>
+              <option value="perselisihan">Perselisihan Antar Anggota</option>
+              <option value="penyalahgunaan_wewenang">Penyalahgunaan Wewenang</option>
+              <option value="pelanggaran_keuangan">Dugaan Pelanggaran Keuangan</option>
+              <option value="lainnya">Lainnya</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Isi Laporan</label>
+            <textarea id="pengaduan-isi" class="form-control" rows="5" placeholder="Ceritakan kejadiannya dengan jelas, termasuk waktu dan tempat kalau ada..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="pengaduan-anonim" checked> Laporkan secara anonim (identitas tidak disimpan)
+            </label>
+          </div>
+          <!-- Honeypot -->
+          <input type="text" id="pengaduan-hp" style="display:none;" tabindex="-1" autocomplete="off">
+          <button class="btn btn-primary" onclick="App.kirimPengaduan()">Kirim Laporan</button>
+          <div id="pengaduan-result" style="margin-top:14px;"></div>
+        </div>
+        <!-- Panel Cek Status -->
+        <div id="pengaduan-panel-cek" style="display:none;">
+          <div class="form-group">
+            <label>Kode Cek Laporan</label>
+            <input type="text" id="pengaduan-kode-cek" class="form-control" placeholder="Contoh: RPT-ABC123" style="text-transform:uppercase;">
+          </div>
+          <button class="btn btn-primary" onclick="App.cekStatusPengaduan()">Cek Status</button>
+          <div id="pengaduan-status-result" style="margin-top:14px;"></div>
+        </div>
+      </section>
+
+      <!-- TAB 17: KUESIONER (F3e) -->
+      <section id="panel-kuesioner" class="view-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:700;">📝 Uji & Kuesioner</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Uji pemahaman aturan dan survei komunitas</div>
+          </div>
+          <button class="btn btn-outline" style="width:auto; padding:6px 10px; font-size:0.75rem;" onclick="App.loadKuesioner()">🔄</button>
+        </div>
+        <div id="kuesioner-list"><div class="empty-state">Memuat kuesioner...</div></div>
+        <div id="kuesioner-quiz" style="display:none;"></div>
       </section>
 
       <!-- TAB 10: EVENT & KEGIATAN (F3g) -->

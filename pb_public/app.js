@@ -210,6 +210,27 @@ const App = {
     } else if (tabName === "event") {
       Hero.setExpression("senang", "Pantau kegiatan basecamp, panitia, dan peta dana yang transparan.");
       this.loadEvents();
+    } else if (tabName === "pengumuman") {
+      Hero.setExpression("menjelaskan", "Cek info terbaru dari pengurus basecamp bro!");
+      this.loadPengumuman();
+    } else if (tabName === "forum") {
+      Hero.setExpression("senang", "Ngobrol seru bareng kawan-kawan pangkalan!");
+      this.loadForum();
+    } else if (tabName === "panduan") {
+      Hero.setExpression("menjelaskan", "Ada masalah? Cari panduan dulu sebelum nanya ya bro.");
+      this.loadPanduan();
+    } else if (tabName === "polling") {
+      Hero.setExpression("waspada", "Suara kamu penting! Ikut polling sebelum batas waktu ya.");
+      this.loadPolling();
+    } else if (tabName === "agenda") {
+      Hero.setExpression("menjelaskan", "Pantau jadwal kumpul dan notulen rapat basecamp.");
+      this.loadAgenda();
+    } else if (tabName === "pengaduan") {
+      Hero.setExpression("waspada", "Laporan kamu aman. Dewan Etik yang menangani dengan serius.");
+      this.initPengaduanTab();
+    } else if (tabName === "kuesioner") {
+      Hero.setExpression("menjelaskan", "Uji pemahaman aturan basecamp. Santai aja bro, yang penting jujur.");
+      this.loadKuesioner();
     }
   },
 
@@ -264,6 +285,10 @@ const App = {
     this.renderKasList();
     this.renderIuran();
     if (this.user.role === "admin") this.renderAnggota();
+    // Load pengumuman untuk dashboard (non-blocking)
+    this.loadPengumuman().catch(() => {});
+    // Load banner penunjukan panitia (non-blocking)
+    this.loadDashPanitiaBanner().catch(() => {});
   },
 
   async fetchKas() {
@@ -1610,6 +1635,770 @@ const App = {
         this.closeUserMenu();
       }
     });
+  },
+
+  // ============================================================
+  // PENGUMUMAN (F3d-2 / Plan §6.6 §1)
+  // ============================================================
+  _allPengumuman: [],
+
+  async loadPengumuman() {
+    const el = document.getElementById("pengumuman-list");
+    if (el) el.innerHTML = `<div class="empty-state">⏳ Memuat pengumuman...</div>`;
+    try {
+      const res = await fetch(`${this.apiBase}/collections/pengumuman/records?sort=-disematkan,-created&perPage=30`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) throw new Error("Gagal memuat");
+      const data = await res.json();
+      this._allPengumuman = data.items || [];
+      this.renderPengumuman();
+      this.renderDashPengumuman();
+    } catch (e) {
+      if (el) el.innerHTML = `<div class="empty-state">⚠️ Gagal memuat pengumuman. Coba segarkan.</div>`;
+    }
+  },
+
+  renderPengumuman() {
+    const el = document.getElementById("pengumuman-list");
+    if (!el) return;
+    if (!this._allPengumuman.length) {
+      el.innerHTML = `<div class="empty-state">📭 Belum ada pengumuman dari pengurus.</div>`;
+      return;
+    }
+    el.innerHTML = this._allPengumuman.map(p => {
+      const kadaluarsa = p.kadaluarsa ? new Date(p.kadaluarsa) < new Date() : false;
+      return `<div class="card-item pengumuman-card${p.disematkan ? ' disematkan' : ''}${kadaluarsa ? ' kadaluarsa' : ''}" style="margin-bottom:10px; padding:14px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border-color);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+          <div style="font-weight:700; font-size:0.95rem;">${p.disematkan ? '📌 ' : ''}${this.escapeHtml(p.judul)}</div>
+          ${p.penting ? `<span style="background:#ef4444; color:#fff; border-radius:8px; padding:2px 7px; font-size:0.68rem; font-weight:700; flex-shrink:0;">PENTING</span>` : ''}
+        </div>
+        <div style="color:var(--text-sub); font-size:0.8rem; margin:6px 0;">${this.formatTanggal(p.created)}</div>
+        <div style="font-size:0.88rem; line-height:1.6; white-space:pre-wrap;">${this.escapeHtml(p.isi || '')}</div>
+        ${kadaluarsa ? `<div style="color:var(--text-muted); font-size:0.73rem; margin-top:6px;">⏰ Sudah kadaluarsa</div>` : ''}
+      </div>`;
+    }).join('');
+  },
+
+  renderDashPengumuman() {
+    const container = document.getElementById("dash-pengumuman-container");
+    const listEl = document.getElementById("dash-pengumuman-list");
+    if (!container || !listEl) return;
+    const pinned = this._allPengumuman.filter(p => p.disematkan || p.penting).slice(0, 3);
+    if (!pinned.length) { container.style.display = "none"; return; }
+    container.style.display = "block";
+    listEl.innerHTML = pinned.map(p => `
+      <div style="padding:10px 12px; background:var(--bg-card); border-radius:10px; border-left:3px solid ${p.penting ? '#ef4444' : 'var(--warna-utama)'}; margin-bottom:8px; cursor:pointer;" onclick="App.switchTab('pengumuman')">
+        <div style="font-weight:600; font-size:0.88rem;">${p.disematkan ? '📌 ' : ''}${this.escapeHtml(p.judul)}</div>
+        <div style="font-size:0.75rem; color:var(--text-sub);">${this.formatTanggal(p.created)}</div>
+      </div>
+    `).join('');
+  },
+
+  // ============================================================
+  // FORUM (F3d / Plan §6.4)
+  // ============================================================
+  _allForum: [],
+  _currentTopikId: null,
+  _currentTopik: null,
+
+  async loadForum() {
+    const el = document.getElementById("forum-list");
+    if (el) el.innerHTML = `<div class="empty-state">⏳ Memuat topik...</div>`;
+    document.getElementById("forum-list").style.display = "block";
+    document.getElementById("forum-detail").style.display = "none";
+    try {
+      const kat = document.getElementById("filter-forum-kat")?.value || "";
+      const filter = kat ? `&filter=(kategori='${kat}')` : "";
+      const res = await fetch(`${this.apiBase}/collections/forum_topik/records?sort=-disematkan,-created&perPage=30${filter}&expand=penulis`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) throw new Error("Gagal");
+      const data = await res.json();
+      this._allForum = data.items || [];
+      this.renderForumList();
+    } catch (e) {
+      if (el) el.innerHTML = `<div class="empty-state">⚠️ Gagal memuat forum.</div>`;
+    }
+  },
+
+  renderForumList() {
+    const el = document.getElementById("forum-list");
+    if (!el) return;
+    if (!this._allForum.length) {
+      el.innerHTML = `<div class="empty-state">💬 Belum ada topik diskusi. Jadilah yang pertama buka obrolan!</div>`;
+      return;
+    }
+    const katLabel = { umum: "Umum", tanya_jawab: "Tanya Jawab", saran: "Saran", info_orderan: "Info Orderan", curhat: "Curhat", lainnya: "Lainnya" };
+    el.innerHTML = this._allForum.map(t => {
+      const penulis = t.expand?.penulis?.nama || t.expand?.penulis?.username || "Anonim";
+      return `<div class="card-item forum-topik-card" onclick="App.openTopik('${t.id}')" style="margin-bottom:10px; padding:12px 14px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border-color); cursor:pointer;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+          <div style="font-weight:700; font-size:0.92rem;">${t.disematkan ? '📌 ' : ''}${this.escapeHtml(t.judul)}${t.dikunci ? ' 🔒' : ''}</div>
+          <span style="background:var(--bg-input); border-radius:8px; padding:2px 7px; font-size:0.68rem; color:var(--text-sub); flex-shrink:0;">${katLabel[t.kategori] || t.kategori}</span>
+        </div>
+        <div style="font-size:0.75rem; color:var(--text-sub); margin-top:4px;">${this.escapeHtml(penulis)} · ${this.formatTanggal(t.created)}</div>
+      </div>`;
+    }).join('');
+  },
+
+  async openTopik(id) {
+    document.getElementById("forum-list").style.display = "none";
+    document.getElementById("forum-detail").style.display = "block";
+    document.getElementById("forum-topik-header").innerHTML = `<div class="empty-state">⏳ Memuat topik...</div>`;
+    document.getElementById("forum-balasan-list").innerHTML = "";
+    this._currentTopikId = id;
+    try {
+      const [topikRes, balasnRes] = await Promise.all([
+        fetch(`${this.apiBase}/collections/forum_topik/records/${id}?expand=penulis`, { headers: this.getAuthHeaders() }),
+        fetch(`${this.apiBase}/collections/forum_balasan/records?filter=(topik='${id}')&sort=created&perPage=50&expand=penulis`, { headers: this.getAuthHeaders() })
+      ]);
+      const topik = await topikRes.json();
+      const balasData = await balasnRes.json();
+      this._currentTopik = topik;
+      const penulis = topik.expand?.penulis?.nama || topik.expand?.penulis?.username || "Anonim";
+      document.getElementById("forum-topik-header").innerHTML = `
+        <div style="margin-bottom:14px; padding:14px; background:var(--bg-card); border-radius:12px; border:1px solid var(--border-color);">
+          <div style="font-weight:700; font-size:1.05rem; margin-bottom:6px;">${this.escapeHtml(topik.judul)}</div>
+          <div style="font-size:0.75rem; color:var(--text-sub);">oleh ${this.escapeHtml(penulis)} · ${this.formatTanggal(topik.created)}</div>
+          <div style="font-size:0.88rem; line-height:1.6; margin-top:10px; white-space:pre-wrap;">${this.escapeHtml(topik.isi || '')}</div>
+          ${topik.dikunci ? `<div style="margin-top:10px; padding:8px; background:rgba(239,68,68,0.1); border-radius:8px; color:#ef4444; font-size:0.8rem;">🔒 Topik ini dikunci, tidak bisa dibalas.</div>` : ''}
+        </div>
+        <div style="font-weight:700; font-size:0.85rem; color:var(--text-sub); margin-bottom:8px;">${balasData.items?.length || 0} BALASAN</div>`;
+      const balasEl = document.getElementById("forum-balasan-list");
+      if (!balasData.items?.length) {
+        balasEl.innerHTML = `<div style="padding:10px 0; color:var(--text-muted); font-size:0.85rem;">Belum ada balasan. Jadi yang pertama bro!</div>`;
+      } else {
+        balasEl.innerHTML = balasData.items.map(b => {
+          const bp = b.expand?.penulis?.nama || b.expand?.penulis?.username || "Anonim";
+          const isMine = b.penulis === this.user?.id;
+          return `<div style="margin-bottom:10px; padding:12px 14px; background:var(--bg-card); border-radius:10px; border:1px solid var(--border-color); ${isMine ? 'border-left:3px solid var(--warna-utama);' : ''}">
+            <div style="font-weight:600; font-size:0.82rem; color:var(--text-sub); margin-bottom:6px;">${this.escapeHtml(bp)} · ${this.formatTanggal(b.created)}</div>
+            <div style="font-size:0.88rem; line-height:1.6; white-space:pre-wrap;">${this.escapeHtml(b.isi || '')}</div>
+          </div>`;
+        }).join('');
+      }
+      const balasFrm = document.getElementById("forum-balas-form");
+      if (balasFrm) balasFrm.style.display = topik.dikunci ? "none" : "block";
+    } catch (e) {
+      document.getElementById("forum-topik-header").innerHTML = `<div class="empty-state">⚠️ Gagal memuat topik.</div>`;
+    }
+  },
+
+  closeForum() {
+    document.getElementById("forum-list").style.display = "block";
+    document.getElementById("forum-detail").style.display = "none";
+    this._currentTopikId = null;
+  },
+
+  async kirimBalasan() {
+    const isi = document.getElementById("forum-balas-isi")?.value?.trim();
+    if (!isi) { alert("Isi balasan tidak boleh kosong bro!"); return; }
+    if (!this._currentTopikId) return;
+    try {
+      const res = await fetch(`${this.apiBase}/collections/forum_balasan/records`, {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ topik: this._currentTopikId, isi, penulis: this.user.id })
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.message || "Gagal"); }
+      document.getElementById("forum-balas-isi").value = "";
+      await this.openTopik(this._currentTopikId);
+      Hero.setExpression("senang", "Mantap! Balasan kamu udah masuk bro!");
+    } catch (e) {
+      alert("Gagal kirim balasan: " + e.message);
+    }
+  },
+
+  openBuatTopik() {
+    const judul = prompt("Judul topik diskusi kamu:");
+    if (!judul?.trim()) return;
+    const isi = prompt("Isi/deskripsi topik:");
+    if (!isi?.trim()) return;
+    const kategori = prompt("Kategori (umum/tanya_jawab/saran/info_orderan/curhat/lainnya):", "umum");
+    this.submitTopikBaru(judul.trim(), isi.trim(), kategori?.trim() || "umum");
+  },
+
+  async submitTopikBaru(judul, isi, kategori) {
+    try {
+      const res = await fetch(`${this.apiBase}/collections/forum_topik/records`, {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ judul, isi, kategori, penulis: this.user.id, disematkan: false, dikunci: false })
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.message || "Gagal"); }
+      Hero.setExpression("senang", "Topik baru berhasil dibuat. Gas ngobrolnya bro!");
+      await this.loadForum();
+    } catch (e) {
+      alert("Gagal buat topik: " + e.message);
+    }
+  },
+
+  // ============================================================
+  // PANDUAN (F3d / Plan §6.4)
+  // ============================================================
+  _allPanduan: [],
+
+  async loadPanduan() {
+    const el = document.getElementById("panduan-list");
+    if (el) el.innerHTML = `<div class="empty-state">⏳ Memuat panduan...</div>`;
+    if (document.getElementById("panduan-detail")) {
+      document.getElementById("panduan-detail").style.display = "none";
+      document.getElementById("panduan-list").style.display = "block";
+    }
+    try {
+      const res = await fetch(`${this.apiBase}/collections/panduan/records?filter=(diterbitkan=true)&sort=-created&perPage=50`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) throw new Error("Gagal");
+      const data = await res.json();
+      this._allPanduan = data.items || [];
+      this.renderPanduanList(this._allPanduan);
+    } catch (e) {
+      if (el) el.innerHTML = `<div class="empty-state">⚠️ Gagal memuat panduan.</div>`;
+    }
+  },
+
+  filterPanduan() {
+    const q = (document.getElementById("panduan-search")?.value || "").toLowerCase();
+    const filtered = q ? this._allPanduan.filter(p => (p.judul + p.ringkasan + (p.tag || "")).toLowerCase().includes(q)) : this._allPanduan;
+    this.renderPanduanList(filtered);
+  },
+
+  renderPanduanList(items) {
+    const el = document.getElementById("panduan-list");
+    if (!el) return;
+    if (!items.length) {
+      el.innerHTML = `<div class="empty-state">📚 Belum ada panduan yang diterbitkan.</div>`;
+      return;
+    }
+    const katLabel = { masalah_umum: "Masalah Umum", aturan: "Aturan", tutorial: "Tutorial", keselamatan: "Keselamatan", keuangan: "Keuangan", lainnya: "Lainnya" };
+    const katColor = { masalah_umum: "#3b82f6", aturan: "#8b5cf6", tutorial: "var(--warna-utama)", keselamatan: "#ef4444", keuangan: "#f59e0b", lainnya: "var(--text-sub)" };
+    el.innerHTML = items.map(p => `
+      <div onclick="App.openPanduan('${p.id}')" style="margin-bottom:10px; padding:12px 14px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border-color); cursor:pointer;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+          <div style="font-weight:700; font-size:0.92rem;">${this.escapeHtml(p.judul)}</div>
+          <span style="background:${katColor[p.kategori] || 'var(--text-sub)'}22; color:${katColor[p.kategori] || 'var(--text-sub)'}; border-radius:8px; padding:2px 7px; font-size:0.68rem; font-weight:600; flex-shrink:0;">${katLabel[p.kategori] || p.kategori}</span>
+        </div>
+        ${p.ringkasan ? `<div style="font-size:0.8rem; color:var(--text-sub); margin-top:4px;">${this.escapeHtml(p.ringkasan)}</div>` : ''}
+        ${p.tag ? `<div style="margin-top:5px;">${p.tag.split(',').map(t => `<span style="background:var(--bg-input); border-radius:6px; padding:1px 6px; font-size:0.68rem; margin-right:4px;">${this.escapeHtml(t.trim())}</span>`).join('')}</div>` : ''}
+      </div>
+    `).join('');
+  },
+
+  openPanduan(id) {
+    const p = this._allPanduan.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById("panduan-list").style.display = "none";
+    const detail = document.getElementById("panduan-detail");
+    detail.style.display = "block";
+    document.getElementById("panduan-detail-content").innerHTML = `
+      <div style="padding:14px; background:var(--bg-card); border-radius:12px; border:1px solid var(--border-color);">
+        <div style="font-weight:700; font-size:1.1rem; margin-bottom:8px;">${this.escapeHtml(p.judul)}</div>
+        ${p.ringkasan ? `<div style="font-size:0.85rem; color:var(--text-sub); margin-bottom:12px; font-style:italic;">${this.escapeHtml(p.ringkasan)}</div>` : ''}
+        <div style="font-size:0.9rem; line-height:1.7; white-space:pre-wrap;">${this.escapeHtml(p.isi || '')}</div>
+        <div style="margin-top:16px; padding-top:12px; border-top:1px solid var(--border-color); display:flex; gap:10px; align-items:center;">
+          <span style="font-size:0.75rem; color:var(--text-muted);">Bagikan ke WhatsApp:</span>
+          <a href="https://wa.me/?text=${encodeURIComponent(p.judul + '\n\n' + (p.ringkasan || '') + '\n\nBaca panduan lengkap di Basecamp Ojol.')}" target="_blank" style="color:var(--warna-utama); font-size:0.8rem; text-decoration:none;">📲 Bagikan</a>
+        </div>
+      </div>`;
+  },
+
+  closePanduan() {
+    document.getElementById("panduan-list").style.display = "block";
+    document.getElementById("panduan-detail").style.display = "none";
+  },
+
+  // ============================================================
+  // POLLING (F3f / Plan §6.6 §4)
+  // ============================================================
+  async loadPolling() {
+    const el = document.getElementById("polling-list");
+    if (el) el.innerHTML = `<div class="empty-state">⏳ Memuat polling...</div>`;
+    try {
+      const now = new Date().toISOString();
+      const res = await fetch(`${this.apiBase}/collections/polling/records?sort=-created&perPage=20&expand=dibuat_oleh`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) throw new Error("Gagal");
+      const data = await res.json();
+      const items = data.items || [];
+      // Ambil suara user untuk tiap polling
+      const myVotesRes = await fetch(`${this.apiBase}/collections/polling_suara/records?filter=(anggota='${this.user.id}')&perPage=50`, {
+        headers: this.getAuthHeaders()
+      });
+      const myVotesData = myVotesRes.ok ? await myVotesRes.json() : { items: [] };
+      const myVotes = {};
+      (myVotesData.items || []).forEach(v => { myVotes[v.polling] = v.pilihan; });
+      this.renderPolling(items, myVotes);
+    } catch (e) {
+      if (el) el.innerHTML = `<div class="empty-state">⚠️ Gagal memuat polling.</div>`;
+    }
+  },
+
+  renderPolling(items, myVotes) {
+    const el = document.getElementById("polling-list");
+    if (!el) return;
+    if (!items.length) {
+      el.innerHTML = `<div class="empty-state">🗳️ Belum ada polling aktif saat ini.</div>`;
+      return;
+    }
+    el.innerHTML = items.map(p => {
+      const opsi = (() => { try { return JSON.parse(p.opsi || "[]"); } catch { return []; } })();
+      const tutup = p.batas_waktu ? new Date(p.batas_waktu) < new Date() : false;
+      const sudahVote = myVotes[p.id];
+      const pembuat = p.expand?.dibuat_oleh?.nama || p.expand?.dibuat_oleh?.username || "Pengurus";
+      return `<div style="margin-bottom:14px; padding:14px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border-color);">
+        <div style="font-weight:700; font-size:0.98rem; margin-bottom:4px;">${this.escapeHtml(p.pertanyaan)}</div>
+        <div style="font-size:0.73rem; color:var(--text-sub); margin-bottom:10px;">oleh ${this.escapeHtml(pembuat)} ${tutup ? '· ⏹️ Sudah ditutup' : (p.batas_waktu ? '· ⏰ Tutup ' + this.formatTanggal(p.batas_waktu) : '')}</div>
+        ${sudahVote || tutup
+          ? opsi.map(o => `<div style="margin-bottom:6px; padding:8px 10px; border-radius:8px; background:var(--bg-input); border:1px solid ${o === sudahVote ? 'var(--warna-utama)' : 'var(--border-color)'}; font-size:0.85rem;">${o === sudahVote ? '✅ ' : ''}${this.escapeHtml(o)}</div>`).join('')
+          : opsi.map((o, i) => `<button onclick="App.submitVote('${p.id}','${o.replace(/'/g,"\\'")}',this.closest('[data-pid]'))" data-pid="${p.id}" style="display:block; width:100%; margin-bottom:6px; padding:8px 10px; border-radius:8px; background:var(--bg-input); border:1px solid var(--border-color); color:var(--text-primary); font-size:0.85rem; cursor:pointer; text-align:left;">${this.escapeHtml(o)}</button>`).join('')
+        }
+        ${sudahVote ? `<div style="font-size:0.75rem; color:var(--warna-utama); margin-top:6px;">✓ Kamu sudah memilih${p.anonim ? '' : ': ' + this.escapeHtml(sudahVote)}</div>` : ''}
+      </div>`;
+    }).join('');
+  },
+
+  async submitVote(pollingId, pilihan, container) {
+    try {
+      const res = await fetch(`${this.apiBase}/collections/polling_suara/records`, {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ polling: pollingId, anggota: this.user.id, pilihan })
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.message || "Gagal"); }
+      Hero.setExpression("senang", "Suara kamu udah masuk bro! Makasih udah ikut polling.");
+      await this.loadPolling();
+    } catch (e) {
+      alert("Gagal voting: " + (e.message || "Sudah pernah vote atau terjadi kesalahan."));
+    }
+  },
+
+  // ============================================================
+  // AGENDA & NOTULEN (F3f-2 / Plan §6.6 §3)
+  // ============================================================
+  async loadAgenda() {
+    const el = document.getElementById("agenda-list");
+    if (el) el.innerHTML = `<div class="empty-state">⏳ Memuat agenda...</div>`;
+    document.getElementById("agenda-list").style.display = "block";
+    document.getElementById("agenda-detail").style.display = "none";
+    try {
+      const res = await fetch(`${this.apiBase}/collections/agenda/records?sort=-tanggal&perPage=20`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) throw new Error("Gagal");
+      const data = await res.json();
+      this.renderAgendaList(data.items || []);
+    } catch (e) {
+      if (el) el.innerHTML = `<div class="empty-state">⚠️ Gagal memuat agenda.</div>`;
+    }
+  },
+
+  renderAgendaList(items) {
+    const el = document.getElementById("agenda-list");
+    if (!el) return;
+    if (!items.length) {
+      el.innerHTML = `<div class="empty-state">📅 Belum ada agenda yang dijadwalkan.</div>`;
+      return;
+    }
+    const now = new Date();
+    el.innerHTML = items.map(a => {
+      const tgl = new Date(a.tanggal);
+      const isMendatang = tgl >= now;
+      return `<div onclick="App.openAgendaDetail('${a.id}')" style="margin-bottom:10px; padding:12px 14px; border-radius:12px; background:var(--bg-card); border:1px solid ${isMendatang ? 'var(--warna-utama)' : 'var(--border-color)'}; cursor:pointer; display:flex; gap:12px; align-items:flex-start;">
+        <div style="text-align:center; min-width:40px; background:${isMendatang ? 'var(--warna-utama)' : 'var(--bg-input)'}; border-radius:8px; padding:4px 6px;">
+          <div style="font-size:1.2rem; font-weight:700; color:${isMendatang ? '#fff' : 'var(--text-primary)'};">${tgl.getDate()}</div>
+          <div style="font-size:0.65rem; color:${isMendatang ? 'rgba(255,255,255,0.8)' : 'var(--text-sub)'};">${tgl.toLocaleDateString('id-ID', {month:'short'})}</div>
+        </div>
+        <div>
+          <div style="font-weight:700; font-size:0.92rem;">${this.escapeHtml(a.judul)}</div>
+          ${a.lokasi ? `<div style="font-size:0.78rem; color:var(--text-sub); margin-top:3px;">📍 ${this.escapeHtml(a.lokasi)}</div>` : ''}
+          ${a.catatan ? `<div style="font-size:0.78rem; color:var(--text-muted); margin-top:3px;">${this.escapeHtml(a.catatan).substring(0, 80)}${a.catatan.length > 80 ? '...' : ''}</div>` : ''}
+          <div style="font-size:0.68rem; color:var(--text-muted); margin-top:4px;">Klik untuk lihat notulen & kehadiran</div>
+        </div>
+      </div>`;
+    }).join('');
+  },
+
+  async openAgendaDetail(id) {
+    document.getElementById("agenda-list").style.display = "none";
+    const detail = document.getElementById("agenda-detail");
+    const content = document.getElementById("agenda-detail-content");
+    detail.style.display = "block";
+    content.innerHTML = `<div class="empty-state">⏳ Memuat detail agenda...</div>`;
+    try {
+      const [agRes, notRes, hadRes] = await Promise.all([
+        fetch(`${this.apiBase}/collections/agenda/records/${id}`, { headers: this.getAuthHeaders() }),
+        fetch(`${this.apiBase}/collections/notulen/records?filter=(agenda='${id}')&expand=penulis`, { headers: this.getAuthHeaders() }),
+        fetch(`${this.apiBase}/collections/kehadiran/records?filter=(agenda='${id}')&expand=anggota&perPage=50`, { headers: this.getAuthHeaders() })
+      ]);
+      const ag = await agRes.json();
+      const notData = await notRes.json();
+      const hadData = await hadRes.json();
+      const notulen = notData.items?.[0];
+      const kehadiran = hadData.items || [];
+      const myHadir = kehadiran.find(k => k.anggota === this.user?.id);
+      const statLabel = { hadir: "✅ Hadir", izin: "📋 Izin", tidak_hadir: "❌ Tidak Hadir" };
+      content.innerHTML = `
+        <div style="padding:14px; background:var(--bg-card); border-radius:12px; border:1px solid var(--border-color); margin-bottom:12px;">
+          <div style="font-weight:700; font-size:1.05rem;">${this.escapeHtml(ag.judul)}</div>
+          <div style="font-size:0.8rem; color:var(--text-sub); margin-top:4px;">📅 ${this.formatTanggal(ag.tanggal)}${ag.lokasi ? ' · 📍 ' + this.escapeHtml(ag.lokasi) : ''}</div>
+          ${ag.catatan ? `<div style="font-size:0.88rem; line-height:1.6; margin-top:10px; white-space:pre-wrap;">${this.escapeHtml(ag.catatan)}</div>` : ''}
+        </div>
+        ${notulen ? `<div style="padding:14px; background:var(--bg-card); border-radius:12px; border:1px solid var(--border-color); margin-bottom:12px;">
+          <div style="font-weight:700; font-size:0.88rem; margin-bottom:6px;">📝 Notulen Rapat</div>
+          <div style="font-size:0.85rem; line-height:1.6; white-space:pre-wrap;">${this.escapeHtml(notulen.isi || '')}</div>
+          ${notulen.keputusan ? `<div style="margin-top:10px; padding:8px; background:rgba(31,164,99,0.1); border-radius:8px;">
+            <div style="font-weight:600; font-size:0.8rem; color:var(--warna-utama);">📋 Keputusan:</div>
+            <div style="font-size:0.83rem; white-space:pre-wrap;">${this.escapeHtml(notulen.keputusan)}</div>
+          </div>` : ''}
+        </div>` : `<div style="padding:12px; background:var(--bg-input); border-radius:10px; margin-bottom:12px; color:var(--text-muted); font-size:0.83rem;">📝 Notulen belum tersedia</div>`}
+        <div style="padding:14px; background:var(--bg-card); border-radius:12px; border:1px solid var(--border-color);">
+          <div style="font-weight:700; font-size:0.88rem; margin-bottom:8px;">👥 Kehadiran (${kehadiran.length} tercatat)</div>
+          ${!kehadiran.length ? '<div style="color:var(--text-muted); font-size:0.83rem;">Belum ada data kehadiran</div>' : kehadiran.map(k => {
+            const nama = k.expand?.anggota?.nama || k.expand?.anggota?.username || "?";
+            return `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid var(--border-color); font-size:0.83rem;">
+              <span>${this.escapeHtml(nama)}</span>
+              <span>${statLabel[k.status] || k.status}</span>
+            </div>`;
+          }).join('')}
+          ${!myHadir ? `<div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <span style="font-size:0.8rem; color:var(--text-sub);">Tandai kehadiranmu:</span>
+            ${['hadir','izin','tidak_hadir'].map(s => `<button onclick="App.tandaiHadir('${id}','${s}')" style="padding:5px 10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-input); color:var(--text-primary); font-size:0.78rem; cursor:pointer;">${statLabel[s]}</button>`).join('')}
+          </div>` : `<div style="margin-top:8px; font-size:0.8rem; color:var(--warna-utama);">Status kamu: ${statLabel[myHadir.status]}</div>`}
+        </div>`;
+    } catch (e) {
+      content.innerHTML = `<div class="empty-state">⚠️ Gagal memuat detail agenda.</div>`;
+    }
+  },
+
+  async tandaiHadir(agendaId, status) {
+    try {
+      const res = await fetch(`${this.apiBase}/collections/kehadiran/records`, {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ agenda: agendaId, anggota: this.user.id, status })
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.message || "Gagal"); }
+      Hero.setExpression("senang", "Kehadiran kamu udah tercatat bro!");
+      await this.openAgendaDetail(agendaId);
+    } catch (e) {
+      alert("Gagal tandai kehadiran: " + e.message);
+    }
+  },
+
+  closeAgenda() {
+    document.getElementById("agenda-list").style.display = "block";
+    document.getElementById("agenda-detail").style.display = "none";
+  },
+
+  // ============================================================
+  // PENGADUAN (F3f-3 / Plan §6.6 §2)
+  // ============================================================
+  initPengaduanTab() {
+    this.switchPengaduanTab('baru');
+  },
+
+  switchPengaduanTab(tab) {
+    ['baru', 'cek'].forEach(t => {
+      document.getElementById(`btn-pengaduan-tab-${t}`)?.classList.toggle('active', t === tab);
+      document.getElementById(`pengaduan-panel-${t}`)?.style && (document.getElementById(`pengaduan-panel-${t}`).style.display = t === tab ? 'block' : 'none');
+    });
+  },
+
+  async kirimPengaduan() {
+    const isi = document.getElementById("pengaduan-isi")?.value?.trim();
+    const kategori = document.getElementById("pengaduan-kategori")?.value;
+    const anonim = document.getElementById("pengaduan-anonim")?.checked ?? true;
+    const hp = document.getElementById("pengaduan-hp")?.value;
+    const resultEl = document.getElementById("pengaduan-result");
+
+    if (hp) return; // Honeypot check
+    if (!isi || isi.length < 20) {
+      resultEl.innerHTML = `<div class="confirm-warning-box">⚠️ Isi laporan terlalu singkat bro. Ceritakan dengan lebih jelas ya.</div>`;
+      return;
+    }
+
+    const kode = "RPT-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const body = { kategori, isi, anonim, kode_cek: kode, status: "baru" };
+    if (!anonim) body.pelapor = this.user.id;
+
+    try {
+      resultEl.innerHTML = `<div class="empty-state">⏳ Mengirim laporan...</div>`;
+      const res = await fetch(`${this.apiBase}/collections/pengaduan/records`, {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.message || "Gagal"); }
+      resultEl.innerHTML = `<div style="padding:14px; border-radius:12px; background:rgba(31,164,99,0.1); border:1px solid var(--warna-utama);">
+        <div style="font-weight:700; color:var(--warna-utama); margin-bottom:6px;">✅ Laporan berhasil dikirim!</div>
+        <div style="font-size:0.85rem; margin-bottom:8px;">Simpan kode ini untuk memantau status laporan kamu:</div>
+        <div style="font-size:1.3rem; font-weight:900; letter-spacing:3px; text-align:center; padding:10px; background:var(--bg-card); border-radius:8px;">${kode}</div>
+        <div style="font-size:0.75rem; color:var(--text-sub); margin-top:8px;">Kode cek: <strong>${kode}</strong>. Screenshot halaman ini untuk menyimpan kode.</div>
+      </div>`;
+      document.getElementById("pengaduan-isi").value = "";
+      Hero.setExpression("senang", "Laporan kamu udah sampai ke Dewan Etik. Simpan kode ceknya ya bro!");
+    } catch (e) {
+      resultEl.innerHTML = `<div class="confirm-warning-box">⚠️ Gagal kirim laporan: ${this.escapeHtml(e.message)}</div>`;
+    }
+  },
+
+  async cekStatusPengaduan() {
+    const kode = (document.getElementById("pengaduan-kode-cek")?.value || "").trim().toUpperCase();
+    const resultEl = document.getElementById("pengaduan-status-result");
+    if (!kode) { resultEl.innerHTML = `<div class="confirm-warning-box">⚠️ Masukkan kode cek laporan dulu bro.</div>`; return; }
+    try {
+      resultEl.innerHTML = `<div class="empty-state">⏳ Mencari laporan...</div>`;
+      const res = await fetch(`${this.apiBase}/collections/pengaduan/records?filter=(kode_cek='${kode}')&perPage=1`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) throw new Error("Gagal");
+      const data = await res.json();
+      if (!data.items?.length) {
+        resultEl.innerHTML = `<div class="confirm-warning-box">⚠️ Kode tidak ditemukan. Pastikan kamu memasukkan kode yang benar.</div>`;
+        return;
+      }
+      const p = data.items[0];
+      const statColor = { baru: "#f59e0b", diproses: "#3b82f6", selesai: "#10b981", ditolak: "#ef4444" };
+      const statLabel = { baru: "🟡 Menunggu diproses", diproses: "🔵 Sedang diproses Dewan Etik", selesai: "🟢 Selesai ditangani", ditolak: "🔴 Ditolak" };
+      resultEl.innerHTML = `<div style="padding:14px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border-color);">
+        <div style="font-weight:700; margin-bottom:6px;">Status Laporan: <span style="color:${statColor[p.status] || '#888'};">${statLabel[p.status] || p.status}</span></div>
+        <div style="font-size:0.8rem; color:var(--text-sub);">Kategori: ${this.escapeHtml(p.kategori)} · Dilaporkan: ${this.formatTanggal(p.created)}</div>
+        ${p.catatan_dewan ? `<div style="margin-top:10px; padding:8px; background:var(--bg-input); border-radius:8px; font-size:0.85rem;"><strong>Catatan Dewan Etik:</strong><br>${this.escapeHtml(p.catatan_dewan)}</div>` : ''}
+      </div>`;
+    } catch (e) {
+      resultEl.innerHTML = `<div class="confirm-warning-box">⚠️ Gagal cek status.</div>`;
+    }
+  },
+
+  // ============================================================
+  // KONFIGURASI EDITOR (F1b / Plan §6.13)
+  // ============================================================
+  _konfigurasiLoaded: false,
+
+  async toggleKonfigurasiEditor() {
+    const container = document.getElementById("konfigurasi-editor-container");
+    if (!container) return;
+    const isVisible = container.style.display !== "none";
+    container.style.display = isVisible ? "none" : "block";
+    if (!isVisible && !this._konfigurasiLoaded) {
+      await this.loadKonfigurasi();
+    }
+  },
+
+  async loadKonfigurasi() {
+    const el = document.getElementById("konfigurasi-list-items");
+    if (el) el.innerHTML = `<div class="empty-state">⏳ Memuat konfigurasi...</div>`;
+    try {
+      const res = await fetch(`${this.apiBase}/collections/konfigurasi/records?sort=kunci&perPage=200`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) throw new Error("Gagal memuat");
+      const data = await res.json();
+      const items = data.items || [];
+      this._konfigurasiLoaded = true;
+      this.renderKonfigurasi(items);
+    } catch (e) {
+      if (el) el.innerHTML = `<div class="empty-state">⚠️ Gagal memuat konfigurasi. ${this.escapeHtml(e.message)}</div>`;
+    }
+  },
+
+  renderKonfigurasi(items) {
+    const el = document.getElementById("konfigurasi-list-items");
+    if (!el) return;
+    if (!items.length) {
+      el.innerHTML = `<div class="empty-state">Belum ada parameter konfigurasi.</div>`;
+      return;
+    }
+    const canEdit = this.user && (this.user.role === "admin" || this.user.role === "pengurus");
+    el.innerHTML = items.map(k => {
+      const nilaiStr = (typeof k.nilai === "object") ? JSON.stringify(k.nilai) : (k.nilai ?? "");
+      return `<div style="padding:10px 12px; border-bottom:1px solid var(--border-color); display:flex; flex-direction:column; gap:4px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <div style="font-weight:700; font-size:0.88rem;">${this.escapeHtml(k.kunci)}</div>
+          ${canEdit ? `<button class="btn btn-outline" style="width:auto; padding:3px 8px; font-size:0.72rem;" onclick="App.editKonfigurasi('${k.id}','${this.escapeHtml(k.kunci)}')">✏️ Ubah</button>` : ''}
+        </div>
+        <div style="font-size:0.82rem; color:var(--text-sub); word-break:break-all;">Nilai: <strong>${this.escapeHtml(nilaiStr)}</strong></div>
+        ${k.deskripsi ? `<div style="font-size:0.75rem; color:var(--text-muted);">${this.escapeHtml(k.deskripsi)}</div>` : ''}
+        <div style="font-size:0.7rem; color:var(--text-muted);">Wewenang: ${this.escapeHtml(k.wewenang || '-')}</div>
+      </div>`;
+    }).join('');
+  },
+
+  async editKonfigurasi(id, kunci) {
+    const current = (this._allKonfigurasi || []).find(x => x.id === id);
+    const newVal = prompt(`Nilai baru untuk "${kunci}" (JSON atau teks):`, current ? JSON.stringify(current.nilai) : "");
+    if (newVal === null) return;
+    let parsed = newVal;
+    try { parsed = JSON.parse(newVal); } catch (_) { /* keep as text */ }
+    try {
+      const res = await fetch(`${this.apiBase}/collections/konfigurasi/records/${id}`, {
+        method: "PATCH",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ nilai: parsed, diubah_oleh: this.user.id, diubah_pada: new Date().toISOString() })
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.message || "Gagal"); }
+      Hero.setExpression("senang", "Konfigurasi udah diperbarui bro!");
+      this._konfigurasiLoaded = false;
+      await this.loadKonfigurasi();
+    } catch (e) {
+      alert("Gagal ubah konfigurasi: " + e.message);
+    }
+  },
+
+  // ============================================================
+  // DASH PANITIA BANNER (F3g / Plan §6.8 B)
+  // ============================================================
+  async loadDashPanitiaBanner() {
+    const el = document.getElementById("dash-panitia-banner");
+    if (!el || !this.user) return;
+    try {
+      const res = await fetch(`${this.apiBase}/collections/event_panitia/records?filter=(anggota='${this.user.id}' && aktif=true)&expand=event`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      const items = data.items || [];
+      if (!items.length) { el.style.display = "none"; return; }
+      const ev = items[0].expand?.event;
+      const namaEvent = ev ? ev.judul : "event";
+      const seksi = items[0].seksi || "-";
+      el.style.display = "block";
+      el.innerHTML = `🎉 Kamu ditunjuk di <strong>${this.escapeHtml(namaEvent)}</strong> sebagai seksi <strong>${this.escapeHtml(seksi)}</strong>. <button onclick="App.switchTab('event')" style="background:none;border:none;color:var(--warna-utama);cursor:pointer;font-weight:700;">Lihat event →</button>`;
+    } catch (e) {
+      if (el) el.style.display = "none";
+    }
+  },
+
+  // ============================================================
+  // KUESIONER (F3e / Plan §6.5)
+  // ============================================================
+  _allKuesioner: [],
+  _currentKuesioner: null,
+  _currentQuestions: [],
+  _quizAnswers: {},
+
+  async loadKuesioner() {
+    const el = document.getElementById("kuesioner-list");
+    const quizEl = document.getElementById("kuesioner-quiz");
+    if (quizEl) quizEl.style.display = "none";
+    if (el) { el.style.display = "block"; el.innerHTML = `<div class="empty-state">⏳ Memuat kuesioner...</div>`; }
+    try {
+      const res = await fetch(`${this.apiBase}/collections/kuesioner/records?filter=(aktif=true)&sort=-created&perPage=30`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) throw new Error("Gagal memuat");
+      const data = await res.json();
+      this._allKuesioner = data.items || [];
+      this.renderKuesionerList();
+    } catch (e) {
+      if (el) el.innerHTML = `<div class="empty-state">⚠️ Gagal memuat kuesioner.</div>`;
+    }
+  },
+
+  renderKuesionerList() {
+    const el = document.getElementById("kuesioner-list");
+    if (!el) return;
+    if (!this._allKuesioner.length) {
+      el.innerHTML = `<div class="empty-state">📝 Belum ada kuesioner aktif.</div>`;
+      return;
+    }
+    el.innerHTML = this._allKuesioner.map(k => `
+      <div style="margin-bottom:10px; padding:12px 14px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border-color);">
+        <div style="font-weight:700; font-size:0.95rem;">${this.escapeHtml(k.judul)}</div>
+        ${k.deskripsi ? `<div style="font-size:0.8rem; color:var(--text-sub); margin-top:4px;">${this.escapeHtml(k.deskripsi)}</div>` : ''}
+        <div style="font-size:0.73rem; color:var(--text-muted); margin-top:6px;">Jenis: ${this.escapeHtml(k.jenis)} · Nilai lulus: ${k.nilai_lulus || 70}%</div>
+        <button class="btn btn-primary" style="margin-top:8px; width:auto; padding:6px 12px; font-size:0.78rem;" onclick="App.startQuiz('${k.id}')">Mulai Uji</button>
+      </div>
+    `).join('');
+  },
+
+  async startQuiz(id) {
+    const k = this._allKuesioner.find(x => x.id === id);
+    if (!k) return;
+    this._currentKuesioner = k;
+    this._quizAnswers = {};
+    const listEl = document.getElementById("kuesioner-list");
+    const quizEl = document.getElementById("kuesioner-quiz");
+    if (listEl) listEl.style.display = "none";
+    if (quizEl) { quizEl.style.display = "block"; quizEl.innerHTML = `<div class="empty-state">⏳ Memuat soal...</div>`; }
+    try {
+      const res = await fetch(`${this.apiBase}/collections/pertanyaan/records?filter=(kuesioner='${id}')&sort=urutan&perPage=100`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) throw new Error("Gagal memuat soal");
+      const data = await res.json();
+      this._currentQuestions = data.items || [];
+      this.renderQuiz();
+    } catch (e) {
+      if (quizEl) quizEl.innerHTML = `<div class="empty-state">⚠️ Gagal memuat soal.</div>`;
+    }
+  },
+
+  renderQuiz() {
+    const quizEl = document.getElementById("kuesioner-quiz");
+    if (!quizEl) return;
+    const qs = this._currentQuestions;
+    if (!qs.length) {
+      quizEl.innerHTML = `<div class="empty-state">Belum ada soal untuk kuesioner ini.</div><button class="btn btn-outline" onclick="App.loadKuesioner()">Kembali</button>`;
+      return;
+    }
+    quizEl.innerHTML = `
+      <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:12px;">${this.escapeHtml(this._currentKuesioner.judul)}</h3>
+      ${qs.map((q, idx) => {
+        const opsi = (() => { try { return JSON.parse(q.opsi || "[]"); } catch { return []; } })();
+        return `<div style="margin-bottom:14px; padding:12px; border-radius:12px; background:var(--bg-card); border:1px solid var(--border-color);">
+          <div style="font-weight:600; font-size:0.9rem; margin-bottom:8px;">${idx+1}. ${this.escapeHtml(q.teks)}</div>
+          ${opsi.length ? opsi.map(o => `<label style="display:block; margin-bottom:4px; font-size:0.85rem;"><input type="radio" name="q_${q.id}" value="${this.escapeHtml(o)}" onchange="App.setQuizAnswer('${q.id}','${this.escapeHtml(o)}')"> ${this.escapeHtml(o)}</label>`).join('') : `<textarea class="form-control" rows="2" placeholder="Jawaban kamu..." onchange="App.setQuizAnswer('${q.id}', this.value)"></textarea>`}
+        </div>`;
+      }).join('')}
+      <button class="btn btn-primary" onclick="App.submitQuiz()">Kirim Jawaban</button>
+      <button class="btn btn-outline" style="margin-left:8px;" onclick="App.loadKuesioner()">Batal</button>
+    `;
+  },
+
+  setQuizAnswer(qId, val) {
+    this._quizAnswers[qId] = val;
+  },
+
+  async submitQuiz() {
+    if (!this._currentKuesioner) return;
+    const jawaban = this._currentQuestions.map(q => ({ pertanyaan: q.id, jawaban: this._quizAnswers[q.id] ?? null }));
+    try {
+      const res = await fetch(`${this.apiBase}/collections/hasil/records`, {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({
+          kuesioner: this._currentKuesioner.id,
+          jawaban: jawaban,
+          mulai: new Date().toISOString()
+        })
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.message || "Gagal"); }
+      const data = await res.json();
+      Hero.setExpression("senang", "Jawaban kamu udah masuk bro!");
+      const quizEl = document.getElementById("kuesioner-quiz");
+      if (quizEl) {
+        quizEl.innerHTML = `<div style="padding:14px; border-radius:12px; background:rgba(31,164,99,0.1); border:1px solid var(--warna-utama);">
+          <div style="font-weight:700; color:var(--warna-utama); margin-bottom:6px;">✅ Uji selesai!</div>
+          <div style="font-size:0.9rem;">Nilai kamu: <strong>${data.nilai ?? '-'}%</strong> ${data.lulus ? '· ✅ Lulus' : '· ❌ Belum lulus'}</div>
+          <button class="btn btn-outline" style="margin-top:10px;" onclick="App.loadKuesioner()">Kembali ke daftar</button>
+        </div>`;
+      }
+    } catch (e) {
+      alert("Gagal kirim jawaban: " + e.message);
+    }
+  },
+
+  // ============================================================
+  // HELPER: Format Tanggal
+  // ============================================================
+  formatTanggal(dt) {
+    if (!dt) return "";
+    const d = new Date(dt);
+    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
   },
 
   escapeHtml(str) {
