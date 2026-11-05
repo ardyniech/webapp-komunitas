@@ -38,6 +38,7 @@ const ASSETS_TO_CACHE = [
   './js/kuesioner-dokumen.js',
   './js/konfigurasi.js',
   './js/progres.js',
+  './js/progres-bug.js',
   './js/core-events.js',
   './js/scan-bugs.js',
   './js/loading.js',
