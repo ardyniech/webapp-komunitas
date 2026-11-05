@@ -33,7 +33,9 @@ window.AppModules = window.AppModules || {};
 
       const dasar = parseFloat(pctHeadline.textContent) || 0;
       const penalti = Number(bug.penalti) || 0;
-      const akhir = Math.max(0, Math.round((dasar - penalti) * 10) / 10);
+      // Proporsional + lantai 5%: akhir = dasar * max(0.05, 1 - penalti/50)
+      const faktor = Math.max(0.05, 1 - penalti / 50);
+      const akhir = Math.max(0, Math.round(dasar * faktor * 10) / 10);
 
       // 3) Turunkan angka progres secara jujur
       pctHeadline.innerText = `${akhir}%`;
@@ -58,11 +60,11 @@ window.AppModules = window.AppModules || {};
             : `laporan scan belum tersedia — progres ditampilkan apa adanya.`);
       } else {
         banner.innerHTML =
-          `<strong>🐛 Bug Hunter (jujur):</strong> ` +
-          `${dasar}% &minus; penalti ${penalti} ` +
-          `(<b>${bug.kritikal} kritikal×3</b> + <b>${bug.tinggi} tinggi×2</b> + ` +
-          `<b>${bug.sedang} sedang×0.5</b> + <b>${bug.low} low×0.1</b>, rumus: ${bug.rumus}) ` +
-          `= <b>${akhir}%</b>. Perbaiki bug untuk menaikkan nilai.`;
+          `<strong>🐛 Bug Hunter (jujur, brutal tapi tidak nol):</strong> ` +
+          `progres fitur ${dasar}% × faktor kualitas ${Math.round(faktor * 100)}% ` +
+          `= <b>${akhir}%</b>. Penalti ${penalti} poin dari ${bug.total_findings} bug ` +
+          `(${bug.kritikal} kritikal×3 + ${bug.tinggi} tinggi×2 + ${bug.sedang} sedang×0.5). ` +
+          `UI tetap bisa diakses, tapi nilai dibatasi sampai bug diperbaiki.`;
       }
 
       if (summarySub && bug.ada_data) {

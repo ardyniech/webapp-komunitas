@@ -40,10 +40,15 @@ function hitungPenalti(report) {
   };
 }
 
+// Proporsional + lantai 5%: progres tidak pernah 0 selama UI bisa diakses,
+// tapi tetap brutal — penalti 50 memangkas nilai jadi 5% dari progres dasar.
+// akhir = dasar * max(0.05, 1 - penalti/50)
+// Contoh: dasar 15, penalti 29 -> 15 * 0.42 = 6.3
 function terapkanPenalti(persenDasar, penalti) {
   const d = Number(persenDasar) || 0;
   const p = Number(penalti) || 0;
-  return Math.max(0, Math.round((d - p) * 10) / 10);
+  const faktor = Math.max(0.05, 1 - p / 50);
+  return Math.max(0, Math.round(d * faktor * 10) / 10);
 }
 
 module.exports = { hitungPenalti, terapkanPenalti };
