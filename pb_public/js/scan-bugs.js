@@ -14,7 +14,8 @@ window.AppModules.ScanBugs = {
     listEl.innerHTML = `<div class="empty-state">Memuat laporan scan bug...</div>`;
 
     try {
-      const res = await fetch("scan-report.json", { cache: "no-store" });
+      // Gunakan path absolut agar bekerja di semua route (/drg/ dll)
+      const res = await fetch("/scan-report.json", { cache: "no-store" });
       if (!res.ok) throw new Error("Laporan scan tidak tersedia (HTTP " + res.status + ")");
       const data = await res.json();
 
