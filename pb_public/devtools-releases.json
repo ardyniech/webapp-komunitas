@@ -1,0 +1,328 @@
+{
+  "generated_at": "2026-11-05T21:01:39.595Z",
+  "branch": "master",
+  "total_commits": 39,
+  "last_30": [
+    {
+      "hash": "d4245bd",
+      "date": "2026-11-05",
+      "subject": "docs(webapp-komunitas): tambah README.md implementasi + SOP dev",
+      "files_changed": 1,
+      "files": [
+        "README.md"
+      ]
+    },
+    {
+      "hash": "728d354",
+      "date": "2026-11-05",
+      "subject": "fix(webapp-komunitas): penalti bug proporsional dengan lantai 5% (tidak lagi 0%)",
+      "files_changed": 2,
+      "files": [
+        "pb_hooks/lib/bug_progres.js",
+        "pb_public/js/progres-bug.js"
+      ]
+    },
+    {
+      "hash": "62b39fc",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): bug scan menurunkan nilai progres (dev tool atomik)",
+      "files_changed": 5,
+      "files": [
+        "pb_hooks/bug_penalties.pb.js",
+        "pb_hooks/lib/bug_progres.js",
+        "pb_public/index.html",
+        "pb_public/js/progres-bug.js",
+        "pb_public/sw.js"
+      ]
+    },
+    {
+      "hash": "e9bec74",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): progres tab tampilkan fitur benih/anak/matur",
+      "files_changed": 2,
+      "files": [
+        "pb_hooks/progres.pb.js",
+        "pb_public/js/progres.js"
+      ]
+    },
+    {
+      "hash": "3efa2a8",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): progres tab auto-deteksi fitur baru",
+      "files_changed": 2,
+      "files": [
+        "pb_hooks/progres.pb.js",
+        "pb_public/js/progres.js"
+      ]
+    },
+    {
+      "hash": "bed1119",
+      "date": "2026-11-05",
+      "subject": "fix(webapp-komunitas): scan bug juga tersedia via /drg/ path",
+      "files_changed": 2,
+      "files": [
+        "pb_public/drg/scan-report.json",
+        "scripts/scan-bugs.js"
+      ]
+    },
+    {
+      "hash": "8d516ca",
+      "date": "2026-11-05",
+      "subject": "fix(webapp-komunitas): scan bug bekerja di root dan /drg/",
+      "files_changed": 1,
+      "files": [
+        "pb_public/js/scan-bugs.js"
+      ]
+    },
+    {
+      "hash": "6f27820",
+      "date": "2026-11-05",
+      "subject": "fix(webapp-komunitas): scan bug gagal via /drg/ (HTML alih-alih JSON)",
+      "files_changed": 1,
+      "files": [
+        "pb_public/js/scan-bugs.js"
+      ]
+    },
+    {
+      "hash": "2b84f31",
+      "date": "2026-11-05",
+      "subject": "fix(webapp-komunitas): deteksi SW lama + tombol bersihkan cache di Bug Hunter",
+      "files_changed": 1,
+      "files": [
+        "pb_public/js/scan-bugs.js"
+      ]
+    },
+    {
+      "hash": "b9924ab",
+      "date": "2026-11-05",
+      "subject": "fix(webapp-komunitas): SW bypass cache untuk scan-report.json",
+      "files_changed": 1,
+      "files": [
+        "pb_public/sw.js"
+      ]
+    },
+    {
+      "hash": "07fea47",
+      "date": "2026-11-05",
+      "subject": "fix(webapp-komunitas): scan hasil tidak tampil — ID elemen tidak cocok",
+      "files_changed": 3,
+      "files": [
+        "pb_public/index.html",
+        "pb_public/js/core-events.js",
+        "pb_public/js/scan-bugs.js"
+      ]
+    },
+    {
+      "hash": "5c4585b",
+      "date": "2026-11-05",
+      "subject": "fix(webapp-komunitas): scan hasil tidak tampil karena SW cache lama",
+      "files_changed": 4,
+      "files": [
+        "pb_public/index.html",
+        "pb_public/js/core-events.js",
+        "pb_public/js/scan-bugs.js",
+        "pb_public/sw.js"
+      ]
+    },
+    {
+      "hash": "dc462ff",
+      "date": "2026-11-05",
+      "subject": "fix(webapp-komunitas): scan bug hasil tidak muncul di frontend",
+      "files_changed": 1,
+      "files": [
+        "pb_public/js/scan-bugs.js"
+      ]
+    },
+    {
+      "hash": "340dfd4",
+      "date": "2026-11-05",
+      "subject": "refine(webapp-komunitas): tab Bug Hunter muncul di bottom nav",
+      "files_changed": 2,
+      "files": [
+        "pb_public/index.html",
+        "pb_public/sw.js"
+      ]
+    },
+    {
+      "hash": "5b80e74",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): page Bug Hunter khusus + scan otomatis via timer",
+      "files_changed": 4,
+      "files": [
+        "pb_public/index.html",
+        "pb_public/js/core-events.js",
+        "pb_public/scan-report.json",
+        "scripts/scan-bugs.js"
+      ]
+    },
+    {
+      "hash": "db64d23",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): tambah bug hunter & halaman scan bug otomatis",
+      "files_changed": 6,
+      "files": [
+        "pb_public/index.html",
+        "pb_public/js/core-events.js",
+        "pb_public/js/scan-bugs.js",
+        "pb_public/scan-report.json",
+        "pb_public/sw.js",
+        "scripts/scan-bugs.js"
+      ]
+    },
+    {
+      "hash": "467c0ff",
+      "date": "2026-11-05",
+      "subject": "refine(webapp-komunitas): progres tab jujur & auto-update",
+      "files_changed": 2,
+      "files": [
+        "pb_hooks/progres.pb.js",
+        "pb_public/js/progres.js"
+      ]
+    },
+    {
+      "hash": "524917b",
+      "date": "2026-11-05",
+      "subject": "refine(webapp-komunitas): perbaiki bug profil & anggota hasil deep bug hunt",
+      "files_changed": 4,
+      "files": [
+        "pb_hooks/lib/profil.js",
+        "pb_public/index.html",
+        "pb_public/js/anggota-bidang.js",
+        "pb_public/js/profil.js"
+      ]
+    },
+    {
+      "hash": "a14f966",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): tingkatkan profil & tambah halaman manajemen anggota",
+      "files_changed": 24,
+      "files": [
+        "pb_hooks/audit.pb.js",
+        "pb_hooks/auth_pendaftaran.pb.js",
+        "pb_hooks/lib/profil.js",
+        "pb_hooks/profil_publik.pb.js",
+        "pb_hooks/profil_validasi.pb.js",
+        "pb_migrations/1730000010_profil_anggota_manajemen.js",
+        "pb_public/app.css",
+        "pb_public/app.js"
+      ]
+    },
+    {
+      "hash": "bc136fa",
+      "date": "2026-11-04",
+      "subject": "fix: restore bottom nav click event listener and fix profil_publik hook scope error on user profile update",
+      "files_changed": 2,
+      "files": [
+        "pb_hooks/profil_publik.pb.js",
+        "pb_public/js/core-events.js"
+      ]
+    },
+    {
+      "hash": "deaafa9",
+      "date": "2026-11-04",
+      "subject": "refactor(frontend): decompose monolithic app.js into atomic modules under 200 lines each",
+      "files_changed": 26,
+      "files": [
+        "pb_public/app.js",
+        "pb_public/index.html",
+        "pb_public/js/anggota.js",
+        "pb_public/js/astrologi.js",
+        "pb_public/js/auth.js",
+        "pb_public/js/core-events.js",
+        "pb_public/js/event-lpj.js",
+        "pb_public/js/event-peta-dana.js"
+      ]
+    },
+    {
+      "hash": "674e171",
+      "date": "2026-11-04",
+      "subject": "feat: add community logo upload, user profile photo, birthdate, and zodiac/shio character calculation",
+      "files_changed": 2,
+      "files": [
+        "pb_public/app.js",
+        "pb_public/index.html"
+      ]
+    },
+    {
+      "hash": "8816842",
+      "date": "2026-11-04",
+      "subject": "feat(pwa): network-first sw cache, smart header, profile document upload, and hero auto-hide",
+      "files_changed": 5,
+      "files": [
+        "pb_public/app.css",
+        "pb_public/app.js",
+        "pb_public/hero.js",
+        "pb_public/index.html",
+        "pb_public/sw.js"
+      ]
+    },
+    {
+      "hash": "a37c68a",
+      "date": "2026-11-04",
+      "subject": "feat(profil-setup): wizard setup identitas, preview profil publik, unduh data pribadi, badge gamifikasi, dan cetak kas",
+      "files_changed": 3,
+      "files": [
+        "pb_public/app.css",
+        "pb_public/app.js",
+        "pb_public/index.html"
+      ]
+    },
+    {
+      "hash": "eae6feb",
+      "date": "2026-11-04",
+      "subject": "feat(kas-event): wizard koreksi kas, wizard LPJ event, dokumen basecamp, dan audit log viewer",
+      "files_changed": 2,
+      "files": [
+        "pb_public/app.js",
+        "pb_public/index.html"
+      ]
+    },
+    {
+      "hash": "2b9e3ad",
+      "date": "2026-11-04",
+      "subject": "feat(event): susun panitia interaktif, registrasi peserta event, dan backup terjadwal",
+      "files_changed": 3,
+      "files": [
+        ".gitignore",
+        "pb_public/app.js",
+        "pb_public/index.html"
+      ]
+    },
+    {
+      "hash": "6ab6eeb",
+      "date": "2026-11-04",
+      "subject": "feat(komunitas): ubah status event dari UI (divalidasi hook)",
+      "files_changed": 1,
+      "files": [
+        "pb_public/app.js"
+      ]
+    },
+    {
+      "hash": "0a2b796",
+      "date": "2026-11-04",
+      "subject": "feat(komunitas): kelola panitia event dasar di UI",
+      "files_changed": 1,
+      "files": [
+        "pb_public/app.js"
+      ]
+    },
+    {
+      "hash": "b256b66",
+      "date": "2026-11-04",
+      "subject": "feat(komunitas): route backfill izin & tim untuk semua user",
+      "files_changed": 1,
+      "files": [
+        "pb_hooks/sync_izin.pb.js"
+      ]
+    },
+    {
+      "hash": "0cc91b4",
+      "date": "2026-11-04",
+      "subject": "feat(komunitas): audit log perubahan status event, ketua, pendaftaran",
+      "files_changed": 1,
+      "files": [
+        "pb_hooks/audit.pb.js"
+      ]
+    }
+  ]
+}

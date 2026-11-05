@@ -1113,3 +1113,24 @@ body.mode-hemat-animasi * {
   .anggota-item { flex-direction: column; align-items: flex-start; gap: 8px; }
   .anggota-item > div:last-child { align-self: flex-end; }
 }
+
+/* ── Dev Tools sub-tabs ── */
+.devtools-sub-tab {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-sub);
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.devtools-sub-tab.active {
+  background: var(--warna-utama);
+  color: #fff;
+  border-color: var(--warna-utama);
+}
+.devtools-sub-panel {
+  margin-top: 10px;
+}

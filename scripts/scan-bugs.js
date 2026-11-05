@@ -110,11 +110,22 @@ if (indexHtml) {
 
 // ── 4. Cek ID elemen yang direferensi di JS tapi tidak ada di HTML ──
 const jsAll = jsFiles.map(jf => readFileSafe(jf)).filter(Boolean).join("\n");
+// ID yang dibuat dinamis di JS (tidak akan ada di index.html): jangan laporkan.
+const dynamicIds = new Set();
+{
+  const re1 = /\.setAttribute\(['"]id['"]\s*,\s*['"]([^'"]+)['"]\)/g;
+  const re2 = /\.id\s*=\s*['"]([^'"]+)['"]/g;
+  let m;
+  while ((m = re1.exec(jsAll)) !== null) dynamicIds.add(m[1]);
+  while ((m = re2.exec(jsAll)) !== null) dynamicIds.add(m[1]);
+}
+// Pola id dinamis bertemplate (mis. `id="xxx-${y}"`): dideteksi sebagai pola, bukan id pasti.
 const getElementByIdMatches = jsAll.match(/document\.getElementById\(['"]([^'"]+)['"]\)/g) || [];
 for (const ref of getElementByIdMatches) {
   const id = ref.match(/['"]([^'"]+)['"]/)[1];
+  if (id.includes("${") || id.includes("+")) continue; // template dinamis — lewati
   totalChecked++;
-  if (!htmlIds.has(id)) {
+  if (!htmlIds.has(id) && !dynamicIds.has(id)) {
     addFinding("missing_html_id", "medium", "pb_public/js/*.js", -1,
       "ID elemen '" + id + "' dipanggil via document.getElementById tetapi tidak ada di index.html.",
       "Tambahkan elemen dengan id='" + id + "' di index.html atau hapus pemanggilan.");
@@ -190,7 +201,7 @@ if (indexHtml) {
   for (const ref of scriptRefs) {
     const match = ref.match(/src="([^"]+)"/);
     if (!match) continue;
-    const src = match[1];
+    const src = match[1].split("?")[0]; // strip cache-busting ?v=8
     const filePath = path.join(publicDir, src.replace("./", ""));
     totalChecked++;
     if (!fs.existsSync(filePath)) {

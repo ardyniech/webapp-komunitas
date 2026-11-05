@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-11-05T21:01:39.045Z",
+  "uptime_sec": 400121,
+  "uptime_str": "111j 8m 41d",
+  "ram_total_mb": 7924,
+  "ram_used_mb": 3027,
+  "ram_free_mb": 4896,
+  "ram_pct": 38,
+  "udp_inuse": 4,
+  "udp_waspada": false,
+  "top_fds": [
+    {
+      "pid": "330359",
+      "cmd": "postgres",
+      "fds": 190
+    },
+    {
+      "pid": "330678",
+      "cmd": "postgres",
+      "fds": 188
+    },
+    {
+      "pid": "329283",
+      "cmd": "postgres",
+      "fds": 186
+    }
+  ],
+  "disk_used_pct": "42%",
+  "disk_avail": "122G",
+  "pocketbase": "active",
+  "platform": "linux",
+  "node": "v26.13.0"
+}

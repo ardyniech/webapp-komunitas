@@ -1,0 +1,220 @@
+{
+  "generated_at": "2026-11-05T21:01:38.911Z",
+  "branch": "master",
+  "dirty_count": 37,
+  "dirty": [
+    {
+      "code": "M",
+      "file": "b_migrations/1730000001_init_users.js"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/drg/scan-report.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/js/event-lpj.js"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/js/event.js"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/js/forum-panduan.js"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/js/kas.js"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/js/pelengkap.js"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/js/wizard-kas.js"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/scan-report.json"
+    },
+    {
+      "code": "M",
+      "file": "scripts/scan-bugs.js"
+    },
+    {
+      "code": "??",
+      "file": "data/"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/devtools-diagnose.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/devtools-diagnose.md"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/devtools-drift.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/devtools-git.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/devtools-heartbeat.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/devtools-inventory.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/devtools-logs.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/devtools-releases.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/drg/devtools-diagnose.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/drg/devtools-diagnose.md"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/drg/devtools-drift.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/drg/devtools-git.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/drg/devtools-heartbeat.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/drg/devtools-inventory.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/drg/devtools-logs.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/drg/devtools-releases.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/js/event-detail.js"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/js/loading.js"
+    },
+    {
+      "code": "??",
+      "file": "scripts/dt-all.js"
+    },
+    {
+      "code": "??",
+      "file": "scripts/dt-diagnose.js"
+    },
+    {
+      "code": "??",
+      "file": "scripts/dt-drift.js"
+    },
+    {
+      "code": "??",
+      "file": "scripts/dt-git.js"
+    },
+    {
+      "code": "??",
+      "file": "scripts/dt-heartbeat.js"
+    },
+    {
+      "code": "??",
+      "file": "scripts/dt-inventory.js"
+    },
+    {
+      "code": "??",
+      "file": "scripts/dt-logs.js"
+    },
+    {
+      "code": "??",
+      "file": "scripts/dt-releases.js"
+    }
+  ],
+  "last_commit_per_dir": [
+    {
+      "dir": "pb_hooks",
+      "hash": "728d354",
+      "subject": "fix(webapp-komunitas): penalti bug proporsional dengan lantai 5% (tidak lagi 0%)",
+      "date": "2026-11-05"
+    },
+    {
+      "dir": "pb_public/js",
+      "hash": "728d354",
+      "subject": "fix(webapp-komunitas): penalti bug proporsional dengan lantai 5% (tidak lagi 0%)",
+      "date": "2026-11-05"
+    },
+    {
+      "dir": "pb_public",
+      "hash": "728d354",
+      "subject": "fix(webapp-komunitas): penalti bug proporsional dengan lantai 5% (tidak lagi 0%)",
+      "date": "2026-11-05"
+    },
+    {
+      "dir": "progres",
+      "hash": "a14f966",
+      "subject": "feat(webapp-komunitas): tingkatkan profil & tambah halaman manajemen anggota",
+      "date": "2026-11-05"
+    },
+    {
+      "dir": "scripts",
+      "hash": "bed1119",
+      "subject": "fix(webapp-komunitas): scan bug juga tersedia via /drg/ path",
+      "date": "2026-11-05"
+    },
+    {
+      "dir": "pb_migrations",
+      "hash": "a14f966",
+      "subject": "feat(webapp-komunitas): tingkatkan profil & tambah halaman manajemen anggota",
+      "date": "2026-11-05"
+    }
+  ],
+  "recent": [
+    {
+      "hash": "d4245bd",
+      "date": "2026-11-05",
+      "subject": "docs(webapp-komunitas): tambah README.md implementasi + SOP dev"
+    },
+    {
+      "hash": "728d354",
+      "date": "2026-11-05",
+      "subject": "fix(webapp-komunitas): penalti bug proporsional dengan lantai 5% (tidak lagi 0%)"
+    },
+    {
+      "hash": "62b39fc",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): bug scan menurunkan nilai progres (dev tool atomik)"
+    },
+    {
+      "hash": "e9bec74",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): progres tab tampilkan fitur benih/anak/matur"
+    },
+    {
+      "hash": "3efa2a8",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): progres tab auto-deteksi fitur baru"
+    }
+  ]
+}

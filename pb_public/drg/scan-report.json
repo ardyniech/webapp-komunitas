@@ -1,22 +1,14 @@
 {
-  "scanned_at": "2026-11-05T19:47:13.201Z",
-  "total_checked": 502,
-  "total_findings": 32,
+  "scanned_at": "2026-11-05T21:04:58.429Z",
+  "total_checked": 503,
+  "total_findings": 26,
   "by_severity": {
-    "critical": 1,
-    "high": 7,
+    "critical": 0,
+    "high": 2,
     "medium": 24,
     "low": 0
   },
   "findings": [
-    {
-      "type": "syntax_error",
-      "severity": "critical",
-      "file": "pb_public/js/event-detail.js",
-      "line": -1,
-      "message": "Syntax error: Identifier 'tab' has already been declared",
-      "suggestion": "Perbaiki sintaks JavaScript pada baris yang disebutkan."
-    },
     {
       "type": "missing_html_id",
       "severity": "medium",
@@ -208,46 +200,6 @@
       "line": -1,
       "message": "ID elemen 'modal-wizard-kas' dipanggil via document.getElementById tetapi tidak ada di index.html.",
       "suggestion": "Tambahkan elemen dengan id='modal-wizard-kas' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_file",
-      "severity": "high",
-      "file": "pb_public/index.html",
-      "line": -1,
-      "message": "File skrip 'js/progres.js?v=7' direferensi di index.html tetapi tidak ada di filesystem.",
-      "suggestion": "Buat file 'js/progres.js?v=7' atau hapus referensi di index.html."
-    },
-    {
-      "type": "missing_file",
-      "severity": "high",
-      "file": "pb_public/index.html",
-      "line": -1,
-      "message": "File skrip 'js/core-events.js?v=7' direferensi di index.html tetapi tidak ada di filesystem.",
-      "suggestion": "Buat file 'js/core-events.js?v=7' atau hapus referensi di index.html."
-    },
-    {
-      "type": "missing_file",
-      "severity": "high",
-      "file": "pb_public/index.html",
-      "line": -1,
-      "message": "File skrip 'js/scan-bugs.js?v=7' direferensi di index.html tetapi tidak ada di filesystem.",
-      "suggestion": "Buat file 'js/scan-bugs.js?v=7' atau hapus referensi di index.html."
-    },
-    {
-      "type": "missing_file",
-      "severity": "high",
-      "file": "pb_public/index.html",
-      "line": -1,
-      "message": "File skrip 'js/loading.js?v=7' direferensi di index.html tetapi tidak ada di filesystem.",
-      "suggestion": "Buat file 'js/loading.js?v=7' atau hapus referensi di index.html."
-    },
-    {
-      "type": "missing_file",
-      "severity": "high",
-      "file": "pb_public/index.html",
-      "line": -1,
-      "message": "File skrip 'app.js?v=7' direferensi di index.html tetapi tidak ada di filesystem.",
-      "suggestion": "Buat file 'app.js?v=7' atau hapus referensi di index.html."
     },
     {
       "type": "missing_modal",

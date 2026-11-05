@@ -1,22 +1,14 @@
 {
-  "scanned_at": "2026-11-05T19:03:36.190Z",
-  "total_checked": 496,
-  "total_findings": 28,
+  "scanned_at": "2026-11-05T21:04:58.429Z",
+  "total_checked": 503,
+  "total_findings": 26,
   "by_severity": {
-    "critical": 1,
+    "critical": 0,
     "high": 2,
-    "medium": 25,
+    "medium": 24,
     "low": 0
   },
   "findings": [
-    {
-      "type": "syntax_error",
-      "severity": "critical",
-      "file": "pb_public/js/event-detail.js",
-      "line": -1,
-      "message": "Syntax error: Identifier 'tab' has already been declared",
-      "suggestion": "Perbaiki sintaks JavaScript pada baris yang disebutkan."
-    },
     {
       "type": "missing_html_id",
       "severity": "medium",
@@ -176,14 +168,6 @@
       "line": -1,
       "message": "ID elemen 'form-pengaduan-dewan' dipanggil via document.getElementById tetapi tidak ada di index.html.",
       "suggestion": "Tambahkan elemen dengan id='form-pengaduan-dewan' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'btn-refresh-scan' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='btn-refresh-scan' di index.html atau hapus pemanggilan."
     },
     {
       "type": "missing_html_id",

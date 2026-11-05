@@ -1,0 +1,9 @@
+#!/bin/sh
+# Pre-commit quality gate webapp-komunitas
+# Pasang: git config core.hooksPath .githooks
+# Artinya: tolak commit bila ada syntax error atau bug kritikal.
+# Lewati hanya bila sangat yakin: git commit --no-verify
+
+set -e
+ROOT=$(git rev-parse --show-toplevel)
+node "$ROOT/scripts/quality-gate.js"

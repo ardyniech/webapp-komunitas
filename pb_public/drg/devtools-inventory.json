@@ -1,0 +1,299 @@
+{
+  "generated_at": "2026-11-05T21:01:39.285Z",
+  "routes": [
+    {
+      "method": "GET",
+      "route": "/api/komunitas/cek-status",
+      "file": "auth_pendaftaran.pb.js"
+    },
+    {
+      "method": "POST",
+      "route": "/api/komunitas/daftar",
+      "file": "auth_pendaftaran.pb.js"
+    },
+    {
+      "method": "POST",
+      "route": "/api/komunitas/logout-all",
+      "file": "profil_validasi.pb.js"
+    },
+    {
+      "method": "GET",
+      "route": "/api/komunitas/penalti-bug",
+      "file": "bug_penalties.pb.js"
+    },
+    {
+      "method": "POST",
+      "route": "/api/komunitas/pendaftaran/:id/proses",
+      "file": "auth_pendaftaran.pb.js"
+    },
+    {
+      "method": "POST",
+      "route": "/api/komunitas/permintaan-hapus-data",
+      "file": "profil_validasi.pb.js"
+    },
+    {
+      "method": "GET",
+      "route": "/api/komunitas/progres",
+      "file": "progres.pb.js"
+    },
+    {
+      "method": "GET",
+      "route": "/api/komunitas/status/:kode",
+      "file": "auth_pendaftaran.pb.js"
+    },
+    {
+      "method": "POST",
+      "route": "/api/komunitas/sync-izin",
+      "file": "sync_izin.pb.js"
+    },
+    {
+      "method": "POST",
+      "route": "/api/komunitas/sync-profil-publik",
+      "file": "profil_publik.pb.js"
+    }
+  ],
+  "routes_count": 10,
+  "collections": [
+    "agenda",
+    "aturan_pasal",
+    "aturan_pengesahan",
+    "aturan_persetujuan_anggota",
+    "aturan_sanksi",
+    "aturan_versi",
+    "bidang_profil",
+    "dokumen",
+    "event",
+    "event_anggaran",
+    "event_dana",
+    "event_dokumentasi",
+    "event_laporan",
+    "event_panitia",
+    "event_peserta",
+    "event_transaksi",
+    "event_tugas",
+    "forum_balasan",
+    "forum_topik",
+    "hasil",
+    "iuran",
+    "jabatan",
+    "kas",
+    "keberatan",
+    "kehadiran",
+    "keputusan_etik",
+    "komunitas",
+    "konfigurasi",
+    "kuesioner",
+    "kunci_jawaban",
+    "log_aktivitas",
+    "notulen",
+    "panduan",
+    "pembinaan",
+    "pemetaan_izin",
+    "pendaftaran",
+    "pengaduan",
+    "pengumuman",
+    "pertanyaan",
+    "polling",
+    "polling_suara",
+    "profil_publik",
+    "progres_fase",
+    "progres_fitur",
+    "progres_konfirmasi",
+    "progres_rilis",
+    "progres_uji",
+    "referensi",
+    "siklus_penyaringan",
+    "unit"
+  ],
+  "collections_count": 50,
+  "hook_handlers": [
+    {
+      "file": "aturan.pb.js",
+      "handlers": 4
+    },
+    {
+      "file": "audit.pb.js",
+      "handlers": 4
+    },
+    {
+      "file": "auth_pendaftaran.pb.js",
+      "handlers": 5
+    },
+    {
+      "file": "bug_penalties.pb.js",
+      "handlers": 1
+    },
+    {
+      "file": "event_status.pb.js",
+      "handlers": 2
+    },
+    {
+      "file": "event_transaksi.pb.js",
+      "handlers": 3
+    },
+    {
+      "file": "izin.pb.js",
+      "handlers": 7
+    },
+    {
+      "file": "keputusan_etik.pb.js",
+      "handlers": 3
+    },
+    {
+      "file": "konfigurasi.pb.js",
+      "handlers": 1
+    },
+    {
+      "file": "kuesioner.pb.js",
+      "handlers": 1
+    },
+    {
+      "file": "pengaduan.pb.js",
+      "handlers": 2
+    },
+    {
+      "file": "profil_publik.pb.js",
+      "handlers": 9
+    },
+    {
+      "file": "profil_validasi.pb.js",
+      "handlers": 3
+    },
+    {
+      "file": "progres.pb.js",
+      "handlers": 1
+    },
+    {
+      "file": "sync_izin.pb.js",
+      "handlers": 1
+    }
+  ],
+  "js_files": [
+    {
+      "file": "pb_public/js/event-detail.js",
+      "kb": 11
+    },
+    {
+      "file": "pb_public/js/pelengkap.js",
+      "kb": 11
+    },
+    {
+      "file": "pb_public/js/event-peta-dana.js",
+      "kb": 9
+    },
+    {
+      "file": "pb_public/js/profil.js",
+      "kb": 8
+    },
+    {
+      "file": "pb_public/js/struktur-aturan.js",
+      "kb": 8
+    },
+    {
+      "file": "pb_public/js/anggota.js",
+      "kb": 7
+    },
+    {
+      "file": "pb_public/js/core-events.js",
+      "kb": 7
+    },
+    {
+      "file": "pb_public/js/forum-panduan.js",
+      "kb": 7
+    },
+    {
+      "file": "pb_public/js/progres.js",
+      "kb": 7
+    },
+    {
+      "file": "pb_public/js/kas.js",
+      "kb": 6
+    },
+    {
+      "file": "pb_public/js/scan-bugs.js",
+      "kb": 6
+    },
+    {
+      "file": "pb_public/js/wizard-kas.js",
+      "kb": 6
+    },
+    {
+      "file": "pb_public/js/anggota-aksi.js",
+      "kb": 5
+    },
+    {
+      "file": "pb_public/js/auth.js",
+      "kb": 5
+    },
+    {
+      "file": "pb_public/js/event-lpj.js",
+      "kb": 5
+    },
+    {
+      "file": "pb_public/js/iuran.js",
+      "kb": 5
+    },
+    {
+      "file": "pb_public/js/komunitas.js",
+      "kb": 5
+    },
+    {
+      "file": "pb_public/js/pendaftaran.js",
+      "kb": 5
+    },
+    {
+      "file": "pb_public/js/profil-publik.js",
+      "kb": 5
+    },
+    {
+      "file": "pb_public/js/anggota-bidang.js",
+      "kb": 4
+    },
+    {
+      "file": "pb_public/js/astrologi.js",
+      "kb": 4
+    },
+    {
+      "file": "pb_public/js/event.js",
+      "kb": 4
+    },
+    {
+      "file": "pb_public/js/kuesioner-dokumen.js",
+      "kb": 4
+    },
+    {
+      "file": "pb_public/js/loading.js",
+      "kb": 4
+    },
+    {
+      "file": "pb_public/js/konfigurasi.js",
+      "kb": 3
+    },
+    {
+      "file": "pb_public/js/koreksi-kas.js",
+      "kb": 3
+    },
+    {
+      "file": "pb_public/js/markas.js",
+      "kb": 3
+    },
+    {
+      "file": "pb_public/js/profil-dokumen.js",
+      "kb": 3
+    },
+    {
+      "file": "pb_public/js/profil-form.js",
+      "kb": 3
+    },
+    {
+      "file": "pb_public/js/progres-bug.js",
+      "kb": 3
+    },
+    {
+      "file": "pb_public/js/profil-aktivitas.js",
+      "kb": 2
+    }
+  ],
+  "js_count": 31,
+  "js_total_kb": 168
+}

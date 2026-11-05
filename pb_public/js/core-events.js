@@ -73,6 +73,7 @@ window.AppModules.CoreEvents = {
     else if (tabName === "pengaduan" && this.initPengaduanTab) this.initPengaduanTab();
     else if (tabName === "kuesioner" && this.loadKuesioner) this.loadKuesioner();
     else if (tabName === "dokumen" && this.loadDokumen) this.loadDokumen();
+    else if (tabName === "devtools" && this.devtoolsLoadAll) this.devtoolsLoadAll();
     else if (tabName === "bug-hunter" && this.loadScanBugs) {
       this.loadScanBugs();
     } else if (tabName === "bug-hunter") {

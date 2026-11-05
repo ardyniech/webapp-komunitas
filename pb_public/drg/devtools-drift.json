@@ -1,0 +1,200 @@
+{
+  "generated_at": "2026-11-05T21:01:39.137Z",
+  "registry_fase": [
+    "F0",
+    "F1",
+    "F1b",
+    "F1c",
+    "F2",
+    "F2b",
+    "F3",
+    "F3b",
+    "F3c",
+    "F3c-2",
+    "F3d",
+    "F3e",
+    "F3g",
+    "F4"
+  ],
+  "registry_fitur_count": 16,
+  "plan_sections_count": 31,
+  "plan_sections": [
+    {
+      "line": 5,
+      "title": "1. Tujuan"
+    },
+    {
+      "line": 9,
+      "title": "2. Prinsip (wajib)"
+    },
+    {
+      "line": 17,
+      "title": "3. Stack"
+    },
+    {
+      "line": 29,
+      "title": "4. Peran pengguna"
+    },
+    {
+      "line": 40,
+      "title": "5. Skema data"
+    },
+    {
+      "line": 74,
+      "title": "5.1 Aturan akses (API rules PocketBase)"
+    },
+    {
+      "line": 83,
+      "title": "5.2 Skema Tambahan (fitur komunitas)"
+    },
+    {
+      "line": 166,
+      "title": "5.3 Aturan Akses Tambahan"
+    },
+    {
+      "line": 184,
+      "title": "5.4 Skema Event Komunitas"
+    },
+    {
+      "line": 234,
+      "title": "5.5 Aturan Akses Event"
+    },
+    {
+      "line": 248,
+      "title": "5.6 Skema Aturan Komunitas dan Konfigurasi"
+    },
+    {
+      "line": 285,
+      "title": "5.7 Aturan Akses Aturan dan Konfigurasi"
+    },
+    {
+      "line": 297,
+      "title": "5.8 Skema Profil, Pendaftaran, dan Fleksibilitas"
+    },
+    {
+      "line": 340,
+      "title": "5.9 Aturan Akses Profil, Pendaftaran, dan Fleksibilitas"
+    },
+    {
+      "line": 351,
+      "title": "5.10 Skema Progres Pengembangan"
+    },
+    {
+      "line": 383,
+      "title": "6. Fitur MVP"
+    },
+    {
+      "line": 399,
+      "title": "6.1 Tampilan dan Interaksi"
+    },
+    {
+      "line": 474,
+      "title": "6.2 Personalisasi Komunitas"
+    },
+    {
+      "line": 486,
+      "title": "6.3 Struktur Komunitas"
+    },
+    {
+      "line": 496,
+      "title": "6.4 Forum dan Panduan"
+    },
+    {
+      "line": 513,
+      "title": "6.5 Uji Anggota dan Penyaringan Berkala"
+    },
+    {
+      "line": 539,
+      "title": "6.6 Fitur Pelengkap"
+    },
+    {
+      "line": 553,
+      "title": "6.7 Batas Beban untuk Fitur Tambahan"
+    },
+    {
+      "line": 564,
+      "title": "6.8 Event Komunitas"
+    },
+    {
+      "line": 649,
+      "title": "6.9 Aturan Komunitas yang Bisa Dipersonalisasi"
+    },
+    {
+      "line": 706,
+      "title": "6.10 Kelengkapan Tata Kelola"
+    },
+    {
+      "line": 719,
+      "title": "6.11 Menu Profil Anggota"
+    },
+    {
+      "line": 740,
+      "title": "6.12 Pendaftaran Anggota Baru"
+    },
+    {
+      "line": 786,
+      "title": "6.13 Fleksibilitas: Semua Bisa Diatur, Tidak Kaku"
+    },
+    {
+      "line": 844,
+      "title": "6.14 Halaman Progres Pengembangan (otomatis)"
+    },
+    {
+      "line": 918,
+      "title": "6.15 Menu Pengguna dan Keluar (Logout)"
+    }
+  ],
+  "hooks": [
+    "aturan.pb.js",
+    "audit.pb.js",
+    "auth_pendaftaran.pb.js",
+    "bug_penalties.pb.js",
+    "event_status.pb.js",
+    "event_transaksi.pb.js",
+    "izin.pb.js",
+    "keputusan_etik.pb.js",
+    "konfigurasi.pb.js",
+    "kuesioner.pb.js",
+    "pengaduan.pb.js",
+    "profil_publik.pb.js",
+    "profil_validasi.pb.js",
+    "progres.pb.js",
+    "sync_izin.pb.js"
+  ],
+  "hooks_count": 15,
+  "js_files": [
+    "pb_public/js/anggota-aksi.js",
+    "pb_public/js/anggota-bidang.js",
+    "pb_public/js/anggota.js",
+    "pb_public/js/astrologi.js",
+    "pb_public/js/auth.js",
+    "pb_public/js/core-events.js",
+    "pb_public/js/event-detail.js",
+    "pb_public/js/event-lpj.js",
+    "pb_public/js/event-peta-dana.js",
+    "pb_public/js/event.js",
+    "pb_public/js/forum-panduan.js",
+    "pb_public/js/iuran.js",
+    "pb_public/js/kas.js",
+    "pb_public/js/komunitas.js",
+    "pb_public/js/konfigurasi.js",
+    "pb_public/js/koreksi-kas.js",
+    "pb_public/js/kuesioner-dokumen.js",
+    "pb_public/js/loading.js",
+    "pb_public/js/markas.js",
+    "pb_public/js/pelengkap.js",
+    "pb_public/js/pendaftaran.js",
+    "pb_public/js/profil-aktivitas.js",
+    "pb_public/js/profil-dokumen.js",
+    "pb_public/js/profil-form.js",
+    "pb_public/js/profil-publik.js",
+    "pb_public/js/profil.js",
+    "pb_public/js/progres-bug.js",
+    "pb_public/js/progres.js",
+    "pb_public/js/scan-bugs.js",
+    "pb_public/js/struktur-aturan.js",
+    "pb_public/js/wizard-kas.js"
+  ],
+  "js_count": 31,
+  "catatan": "Perbandingan kasar: bagian PLAN yang tidak punya jejak di registry/hook/js kandidat untuk ditinjau manual. Bukan vonis otomatis."
+}
