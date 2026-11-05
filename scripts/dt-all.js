@@ -14,6 +14,7 @@ const steps = [
   "dt-inventory.js",
   "dt-releases.js",
   "dt-logs.js",
+  "dt-links.js",
   "dt-diagnose.js", // harus terakhir: membaca scan-report.json dari scan-bugs
 ];
 

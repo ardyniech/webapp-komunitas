@@ -256,6 +256,24 @@ if (indexHtml && jsAll) {
   }
 }
 
+// ── 8b. Cek tombol mati: <button> tanpa onclick, bukan submit, tanpa data-tab ──
+if (indexHtml) {
+  const btnRe = /<button([^>]*)>/g;
+  let bm;
+  while ((bm = btnRe.exec(indexHtml)) !== null) {
+    const attrs = bm[1];
+    if (/onclick=/.test(attrs)) continue;
+    if (/type="submit"/.test(attrs)) continue; // ditangani form onsubmit
+    if (/data-tab=/.test(attrs)) continue; // ditangani listener nav generik
+    totalChecked++;
+    const cls = (attrs.match(/class="([^"]+)"/) || [])[1] || "";
+    const txt = (attrs.match(/>([^<]{1,30})</) || [])[1] || "";
+    addFinding("missing_handler", "low", "pb_public/index.html", -1,
+      "Tombol mati (tanpa onclick) class='" + cls + "'" + (txt ? " teks='" + txt.trim() + "'" : "") + ".",
+      "Tambah onclick ke fungsi App.* atau tangani via form/addEventListener.");
+  }
+}
+
 // ── 9. Koleksi penting ada di DB ──
 const dbPath = path.join(projectRoot, "pb_data", "data.db");
 const requiredCollections = ["users", "profil_publik", "pendaftaran", "bidang_profil", "log_aktivitas", "kas", "iuran", "progres_fase", "progres_fitur", "progres_uji"];

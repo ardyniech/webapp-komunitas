@@ -8,7 +8,38 @@ window.AppModules.DevToolsInfo = {
     this.renderDrift();
     this.renderInventory();
     this.renderReleases();
+    this.renderLinks();
     this.renderFlags();
+  },
+
+  // Audit tautan hidup: file statis + route hook + builtin PocketBase
+  async renderLinks() {
+    const el = document.getElementById("devtools-links-list");
+    if (!el) return;
+    el.innerHTML = `<div class="empty-state">Memuat audit tautan...</div>`;
+    try {
+      const d = await this.devtoolsFetch("devtools-links.json");
+      const dead = (d.total_dead || 0) === 0;
+      const routeBadges = (d.route_checks || [])
+        .map(
+          (r) =>
+            `<span class="badge" style="background:${r.hidup ? "var(--warna-utama)" : "var(--warna-merah)"};color:#fff;font-size:0.68rem;margin:1px;padding:2px 7px;border-radius:10px;" title="${r.test_url || ""}">${this.esc(r.method)} ${this.esc(r.route)} · ${r.http}</span>`
+        )
+        .join("");
+      el.innerHTML =
+        `<div style="font-size:0.82rem;margin-bottom:6px;">` +
+        (dead
+          ? `<b style="color:var(--warna-utama);">✅ Semua tautan hidup</b> — ${d.static_total} file statis + ${d.routes_total} route hook merespons.`
+          : `<b style="color:var(--warna-merah);">${d.total_dead} tautan MATI</b> (lihat bawah).`) +
+        ` <span style="color:var(--text-muted);font-size:0.75rem;">Live curl, ${this.esc(d.generated_at)}</span></div>` +
+        `<div style="font-weight:700;font-size:0.78rem;margin:6px 0 3px;">Route API (live)</div>${routeBadges}` +
+        (d.routes_dead && d.routes_dead.length
+          ? `<div style="font-weight:700;font-size:0.78rem;margin:8px 0 3px;color:var(--warna-merah);">Mati (${d.routes_dead.length})</div>` +
+            d.routes_dead.map((r) => `<div style="font-size:0.78rem;color:var(--warna-merah);">${this.esc(r.route)} → HTTP ${r.http}</div>`).join("")
+          : ``);
+    } catch (e) {
+      el.innerHTML = `<div class="empty-state" style="color:var(--warna-merah);">${this.esc(e.message)}</div>`;
+    }
   },
 
   async renderDrift() {

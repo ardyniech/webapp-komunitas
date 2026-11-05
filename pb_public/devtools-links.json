@@ -1,0 +1,107 @@
+{
+  "generated_at": "2026-11-05T21:36:04.654Z",
+  "static_total": 42,
+  "static_dead": [],
+  "routes_total": 10,
+  "routes_dead": [],
+  "route_checks": [
+    {
+      "method": "POST",
+      "route": "/api/komunitas/daftar",
+      "file": "auth_pendaftaran.pb.js",
+      "test_url": "http://100.117.176.41:8095/api/komunitas/daftar",
+      "http": 400,
+      "hidup": true
+    },
+    {
+      "method": "GET",
+      "route": "/api/komunitas/status/:kode",
+      "file": "auth_pendaftaran.pb.js",
+      "test_url": "http://100.117.176.41:8095/api/komunitas/status/REG-TEST",
+      "http": 404,
+      "hidup": true
+    },
+    {
+      "method": "GET",
+      "route": "/api/komunitas/cek-status",
+      "file": "auth_pendaftaran.pb.js",
+      "test_url": "http://100.117.176.41:8095/api/komunitas/cek-status",
+      "http": 400,
+      "hidup": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/komunitas/pendaftaran/:id/proses",
+      "file": "auth_pendaftaran.pb.js",
+      "test_url": "http://100.117.176.41:8095/api/komunitas/pendaftaran/testid123456/proses",
+      "http": 403,
+      "hidup": true
+    },
+    {
+      "method": "GET",
+      "route": "/api/komunitas/penalti-bug",
+      "file": "bug_penalties.pb.js",
+      "test_url": "http://100.117.176.41:8095/api/komunitas/penalti-bug",
+      "http": 200,
+      "hidup": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/komunitas/sync-profil-publik",
+      "file": "profil_publik.pb.js",
+      "test_url": "http://100.117.176.41:8095/api/komunitas/sync-profil-publik",
+      "http": 401,
+      "hidup": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/komunitas/logout-all",
+      "file": "profil_validasi.pb.js",
+      "test_url": "http://100.117.176.41:8095/api/komunitas/logout-all",
+      "http": 401,
+      "hidup": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/komunitas/permintaan-hapus-data",
+      "file": "profil_validasi.pb.js",
+      "test_url": "http://100.117.176.41:8095/api/komunitas/permintaan-hapus-data",
+      "http": 401,
+      "hidup": true
+    },
+    {
+      "method": "GET",
+      "route": "/api/komunitas/progres",
+      "file": "progres.pb.js",
+      "test_url": "http://100.117.176.41:8095/api/komunitas/progres",
+      "http": 200,
+      "hidup": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/komunitas/sync-izin",
+      "file": "sync_izin.pb.js",
+      "test_url": "http://100.117.176.41:8095/api/komunitas/sync-izin",
+      "http": 403,
+      "hidup": true
+    }
+  ],
+  "builtin": [
+    {
+      "path": "/api/health",
+      "http": 200,
+      "hidup": true
+    },
+    {
+      "path": "/api/collections",
+      "http": 401,
+      "hidup": true
+    },
+    {
+      "path": "/api/collections/users/records",
+      "http": 200,
+      "hidup": true
+    }
+  ],
+  "total_dead": 0
+}
