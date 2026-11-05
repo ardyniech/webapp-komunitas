@@ -1,0 +1,18 @@
+{
+  "scanned_at": "2026-11-05T18:53:51.441Z",
+  "total_findings": 1,
+  "by_severity": {
+    "high": 1,
+    "medium": 0,
+    "low": 0
+  },
+  "findings": [
+    {
+      "type": "syntax_error",
+      "severity": "high",
+      "file": "pb_public/js/event-detail.js",
+      "line": -1,
+      "message": "Syntax error: Identifier 'tab' has already been declared"
+    }
+  ]
+}

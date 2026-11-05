@@ -39,7 +39,9 @@ const ASSETS_TO_CACHE = [
   './js/konfigurasi.js',
   './js/progres.js',
   './js/core-events.js',
-  './js/loading.js'
+  './js/scan-bugs.js',
+  './js/loading.js',
+  './scan-report.json'
 ];
 
 self.addEventListener('install', (e) => {
