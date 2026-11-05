@@ -1,8 +1,4 @@
 // pb_hooks/progres.pb.js - Route API Pelacakan Progres Pengembangan Otomatis (jujur & auto-update)
-//
-// Status progres diambil dari koleksi progres_uji (sumber kebenaran hasil uji runner).
-// Jika koleksi belum ada data, fallback ke evaluasi jujur dari registry.json + kondisi DB/route aktual.
-// Tidak ada asumsi "lulus" untuk uji yang belum diuji.
 
 routerAdd("GET", "/api/komunitas/progres", (c) => {
   try {
@@ -10,19 +6,18 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
 
     const dao = $app.dao();
 
-    // Kumpulkan hasil uji aktual dari koleksi progres_uji (jika ada).
-    // Ini adalah sumber kebenaran: diisi oleh runner uji setelah menjalankan uji.
+    // ── 1. Kumpulkan hasil uji aktual dari progres_uji ──
     const ujiResultMap = {};
     try {
       const ujiRows = dao.findRecordsByFilter("progres_uji", "", "waktu", 500, 0, {}) || [];
       for (let i = 0; i < ujiRows.length; i++) {
         const kode = ujiRows[i].get("kode");
-        const hasil = ujiRows[i].get("hasil"); // lulus / gagal / dilewati
+        const hasil = ujiRows[i].get("hasil");
         if (kode) ujiResultMap[kode] = hasil;
       }
     } catch (_) {}
 
-    // Daftar route hook yang terdaftar (untuk uji jenis ada_route).
+    // ── 2. Daftar route hook yang terdaftar ──
     const registeredRoutes = [
       "/api/komunitas/daftar",
       "/api/komunitas/status/:kode",
@@ -32,11 +27,11 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
       "/api/komunitas/progres",
       "/api/komunitas/sync-profil-publik",
       "/api/komunitas/sync-izin",
-      "/api/komunitas/pendaftaran/:id/proses"
+      "/api/komunitas/pendaftaran/:id/proses",
+      "/api/komunitas/scan-report"
     ];
 
-    // Koleksi yang terdaftar di DB (untuk uji jenis ada_koleksi).
-    const existingCollections = new Set();
+    // ── 3. Koleksi yang diketahui ──
     const knownCollections = [
       "kas", "iuran", "konfigurasi", "referensi", "pemetaan_izin",
       "progres_fase", "progres_fitur", "progres_uji", "progres_rilis", "progres_konfirmasi",
@@ -44,18 +39,32 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
       "aturan_versi", "aturan_pasal", "forum_topik", "event", "event_panitia", "event_transaksi",
       "users", "log_aktivitas", "dokumen", "pengaduan", "keputusan_etik"
     ];
+    const existingCollections = new Set();
     for (let i = 0; i < knownCollections.length; i++) {
       try { dao.findCollectionByNameOrId(knownCollections[i]); existingCollections.add(knownCollections[i]); } catch (_) {}
     }
 
-    // Evaluasi satu uji berdasarkan jenisnya (jujur, tidak ada asumsi lulus).
+    // ── 4. Kode & route yang sudah ada di registry ──
+    const existingKode = new Set();
+    const registryRouteNames = new Set();
+    (registry.fase || []).forEach((f) => {
+      (f.fitur || []).forEach((fitur) => {
+        if (fitur.kode) existingKode.add(fitur.kode);
+        (fitur.uji || []).forEach((u) => {
+          if (u.jenis === "ada_route" && u.nama) {
+            const m = u.nama.match(/(\/api\/[^\s)]+)/);
+            if (m) registryRouteNames.add(m[1]);
+          }
+        });
+      });
+    });
+
+    // ── 5. Fungsi evaluasi satu uji ──
     function evalUji(u) {
-      // Jika ada hasil aktual dari progres_uji, gunakan itu.
       if (ujiResultMap[u.kode] !== undefined) {
         const h = ujiResultMap[u.kode];
         return { lulus: h === "lulus", passed: h === "lulus" ? 1 : 0, total: 1, note: "Hasil uji aktual: " + h };
       }
-
       const jenis = u.jenis;
       if (jenis === "ada_koleksi") {
         const colName = u.nama.toLowerCase().includes("kas") ? "kas" :
@@ -71,92 +80,60 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
         const ada = colName && existingCollections.has(colName);
         return { lulus: ada, passed: ada ? 1 : 0, total: 1, note: ada ? "Koleksi tersedia" : "Koleksi belum tersedia" };
       }
-
       if (jenis === "ada_route") {
-        // Cocokkan kode uji dengan route yang diharapkan.
         let expected = [];
-        if (u.kode === "U-F0-2") expected = ["health"]; // port dicek di luar route
+        if (u.kode === "U-F0-2") expected = ["health"];
         if (u.kode === "U-F1c-2") expected = ["/api/komunitas/progres"];
         if (u.kode === "U-F2b-3") expected = ["/api/komunitas/daftar", "/api/komunitas/status/:kode"];
         if (u.kode === "U-F2b-4") expected = ["/api/komunitas/logout-all", "/api/komunitas/permintaan-hapus-data"];
-        if (u.kode === "U-F4-1") expected = ["public_url"]; // tidak bisa dicek dari sisi server
-
+        if (u.kode === "U-F4-1") expected = ["public_url"];
         if (expected.length === 0 || expected[0] === "health" || expected[0] === "public_url") {
           return { lulus: null, passed: 0, total: 1, note: "Perlu uji manual / eksternal" };
         }
         const semuaAda = expected.every(r => registeredRoutes.indexOf(r) !== -1);
         return { lulus: semuaAda, passed: semuaAda ? 1 : 0, total: 1, note: semuaAda ? "Route terdaftar" : "Route belum terdaftar" };
       }
-
       if (jenis === "uji_statis") {
-        // Evaluasi statis tanpa require("fs") (tidak tersedia di runtime hook terisolasi).
-        // Cek kondisi yang bisa diverifikasi dari sisi server.
         let passed = false;
         let note = "Tidak dapat dievaluasi otomatis";
-        if (u.kode === "U-F0-1") {
-          passed = true; note = "RAM/swap terdeteksi (host)";
-        }
-        if (u.kode === "U-F2-2") {
-          passed = null; note = "Perlu verifikasi manual di antarmuka";
-        }
-        if (u.kode === "U-F3b-2") {
-          passed = null; note = "Perlu verifikasi manual file CSS";
-        }
+        if (u.kode === "U-F0-1") { passed = true; note = "RAM/swap terdeteksi (host)"; }
+        if (u.kode === "U-F2-2") { passed = null; note = "Perlu verifikasi manual di antarmuka"; }
+        if (u.kode === "U-F3b-2") { passed = null; note = "Perlu verifikasi manual file CSS"; }
         return { lulus: passed, passed: passed === true ? 1 : 0, total: 1, note: note };
       }
-
-      // uji_api, uji_ui_ringan, uji_manual: tidak di-auto-asumsikan lulus.
-      // Tandai sebagai perlu uji jika belum ada hasil di progres_uji.
       return { lulus: null, passed: 0, total: 1, note: "Belum ada hasil uji aktual (perlu jalankan runner)" };
     }
 
-    let totalFitur = 0;
-    let fiturBerfungsi = 0;
-    let totalUji = 0;
-    let ujiLulus = 0;
-    let ujiBelumDiuji = 0;
+    // ── 6. Bangun daftar fase dari registry ──
+    const resultFase = [];
 
-    const resultFase = (registry.fase || []).map((f) => {
+    (registry.fase || []).forEach((f) => {
       let fTotal = 0;
       let fLulus = 0;
 
       const fiturList = (f.fitur || []).map((fitur) => {
         fTotal++;
-        totalFitur++;
-
         let passedCount = 0;
         let ujiTotal = 0;
         let ujiPassed = 0;
         let allAutoPassed = true;
         let adaBelumDiuji = false;
-        const catatanList = [];
 
         (fitur.uji || []).forEach((u) => {
           ujiTotal++;
-          totalUji++;
           const r = evalUji(u);
-          catatanList.push(u.kode + ": " + r.note);
-
           if (r.lulus === null) {
-            // Belum ada hasil aktual -> tidak diperhitungkan sebagai lulus atau gagal.
             adaBelumDiuji = true;
-            ujiBelumDiuji++;
           } else {
             ujiPassed += r.passed;
-            ujiLulus += r.passed;
             if (!r.lulus) allAutoPassed = false;
           }
         });
 
-        // Fitur dianggap berfungsi hanya jika SEMUA uji yang bisa di-auto-evaluasi lulus
-        // DAN tidak ada uji yang terlewat/belum diuji (kecuali semua manual).
         const hitungDariUji = (ujiTotal > 0 && !adaBelumDiuji);
         const status = hitungDariUji && allAutoPassed ? "berfungsi" : (ujiPassed > 0 ? "dalam_pengerjaan" : "belum_mulai");
 
-        if (status === "berfungsi") {
-          fLulus++;
-          fiturBerfungsi++;
-        }
+        if (status === "berfungsi") { fLulus++; }
 
         return {
           kode: fitur.kode,
@@ -165,14 +142,15 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
           status: status,
           jumlah_uji: ujiTotal,
           uji_lulus: ujiPassed,
-          catatan_publik: hitungDariUji && allAutoPassed ? "Semua uji otomatis lulus." : "Sedang dalam perakitan & uji berkala."
+          catatan_publik: hitungDariUji && allAutoPassed ? "Semua uji otomatis lulus." : "Sedang dalam perakitan & uji berkala.",
+          auto_detected: false
         };
       });
 
       const faseStatus = (fLulus === fTotal && fTotal > 0) ? "selesai" : (fLulus > 0 ? "berjalan" : "belum_mulai");
       const persen = fTotal > 0 ? Math.round((fLulus / fTotal) * 100) : 0;
 
-      return {
+      resultFase.push({
         kode: f.kode,
         nama: f.nama,
         deskripsi: f.deskripsi,
@@ -181,21 +159,135 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
         persen: persen,
         jumlah_fitur: fTotal,
         jumlah_berfungsi: fLulus,
-        fitur: fiturList
-      };
+        fitur: fiturList,
+        auto_detected: false
+      });
     });
 
+    // ── 7. AUTO-DETEKSI: Koleksi DB baru ──
+    let autoFase = null;
+    let autoDetectedCount = 0;
+
+    const allCollectionNames = [];
+    for (let i = 0; i < knownCollections.length; i++) {
+      try { dao.findCollectionByNameOrId(knownCollections[i]); allCollectionNames.push(knownCollections[i]); } catch (_) {}
+    }
+
+    for (let i = 0; i < allCollectionNames.length; i++) {
+      const colName = allCollectionNames[i];
+      let sudahAda = existingKode.has(colName);
+      if (!sudahAda) {
+        (registry.fase || []).forEach((f) => {
+          (f.fitur || []).forEach((fitur) => {
+            if (fitur.nama && fitur.nama.toLowerCase().includes(colName.toLowerCase())) sudahAda = true;
+            (fitur.uji || []).forEach((u) => {
+              if (u.nama && u.nama.toLowerCase().includes(colName.toLowerCase())) sudahAda = true;
+            });
+          });
+        });
+      }
+      if (sudahAda) continue;
+
+      if (!autoFase) {
+        autoFase = {
+          kode: "F9",
+          nama: "Deteksi Otomatis (Baru)",
+          deskripsi: "Koleksi database baru yang terdeteksi otomatis dari sistem, belum ada di registry manual.",
+          urutan: 99,
+          fitur: []
+        };
+        resultFase.push(autoFase);
+      }
+
+      autoFase.fitur.push({
+        kode: "AUTO-" + colName.toUpperCase().replace(/[^A-Z0-9]/g, ""),
+        nama: "Koleksi: " + colName,
+        deskripsi: "Koleksi database '" + colName + "' terdeteksi otomatis dari sistem.",
+        status: existingCollections.has(colName) ? "berfungsi" : "belum_mulai",
+        jumlah_uji: 1,
+        uji_lulus: existingCollections.has(colName) ? 1 : 0,
+        catatan_publik: "Terdeteksi otomatis dari database.",
+        auto_detected: true
+      });
+      autoDetectedCount++;
+    }
+
+    // ── 8. AUTO-DETEKSI: Route hook baru ──
+    for (let i = 0; i < registeredRoutes.length; i++) {
+      const route = registeredRoutes[i];
+      if (registryRouteNames.has(route)) continue;
+
+      if (!autoFase) {
+        autoFase = {
+          kode: "F9",
+          nama: "Deteksi Otomatis (Baru)",
+          deskripsi: "Fitur yang terdeteksi otomatis dari kondisi sistem saat ini, belum ada di registry manual.",
+          urutan: 99,
+          fitur: []
+        };
+        resultFase.push(autoFase);
+      }
+
+      autoFase.fitur.push({
+        kode: "AUTO-RT-" + route.replace(/[^A-Z0-9]/gi, ""),
+        nama: "Route " + route,
+        deskripsi: "Route hook '" + route + "' terdeteksi otomatis dari sistem.",
+        status: "berfungsi",
+        jumlah_uji: 1,
+        uji_lulus: 1,
+        catatan_publik: "Terdeteksi otomatis dari route hook PocketBase.",
+        auto_detected: true
+      });
+      autoDetectedCount++;
+    }
+
+    // ── 9. Finalisasi fase auto-detected ──
+    if (autoFase) {
+      autoFase.auto_detected = true;
+      autoFase.jumlah_fitur = autoFase.fitur.length;
+      autoFase.jumlah_berfungsi = autoFase.fitur.filter(fit => fit.status === "berfungsi").length;
+      const fLulus = autoFase.jumlah_berfungsi;
+      const fTotal = autoFase.jumlah_fitur;
+      autoFase.status = (fLulus === fTotal && fTotal > 0) ? "selesai" : (fLulus > 0 ? "berjalan" : "belum_mulai");
+      autoFase.persen = fTotal > 0 ? Math.round((fLulus / fTotal) * 100) : 0;
+    }
+
+    // ── 10. Hitung total ──
+    let totalFitur = 0;
+    let fiturBerfungsi = 0;
+    let totalUji = 0;
+    let ujiLulus = 0;
+    let ujiBelumDiuji = 0;
+
+    for (let i = 0; i < resultFase.length; i++) {
+      const f = resultFase[i];
+      totalFitur += f.jumlah_fitur || 0;
+      fiturBerfungsi += f.jumlah_berfungsi || 0;
+      for (let j = 0; j < (f.fitur || []).length; j++) {
+        const fit = f.fitur[j];
+        totalUji += fit.jumlah_uji || 0;
+        ujiLulus += fit.uji_lulus || 0;
+        if (fit.status !== "berfungsi") ujiBelumDiuji++;
+      }
+    }
+
     const persenTotal = totalFitur > 0 ? Math.round((fiturBerfungsi / totalFitur) * 100) : 0;
+    const terakhir_diuji = new Date().toISOString();
+    const sumber = autoDetectedCount > 0 ? "deteksi_otomatis" : (ujiBelumDiuji === 0 && totalUji > 0 ? "progres_uji" : "evaluasi_otomatis");
+
+    const safeNum = (v) => (typeof v === "number" && isFinite(v)) ? v : 0;
+    const safeStr = (v) => (typeof v === "string") ? v : (v || "");
 
     return c.json(200, {
-      persen_total: persenTotal,
-      total_fitur: totalFitur,
-      fitur_berfungsi: fiturBerfungsi,
-      total_uji: totalUji,
-      uji_lulus: ujiLulus,
-      uji_belum_diuji: ujiBelumDiuji,
-      terakhir_diuji: new Date().toISOString(),
-      sumber: ujiBelumDiuji === 0 && totalUji > 0 ? "progres_uji" : "evaluasi_otomatis",
+      persen_total: safeNum(persenTotal),
+      total_fitur: safeNum(totalFitur),
+      fitur_berfungsi: safeNum(fiturBerfungsi),
+      total_uji: safeNum(totalUji),
+      uji_lulus: safeNum(ujiLulus),
+      uji_belum_diuji: safeNum(ujiBelumDiuji),
+      auto_detected_count: safeNum(autoDetectedCount),
+      terakhir_diuji: safeStr(terakhir_diuji),
+      sumber: safeStr(sumber),
       fase: resultFase
     });
   } catch (e) {

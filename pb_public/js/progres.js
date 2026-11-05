@@ -1,7 +1,12 @@
-// js/progres.js - Pelacakan Progres Pengembangan Berbasis Hasil Uki (jujur & auto-update)
+// js/progres.js - Pelacakan Progres Pengembangan Berbasis Hasil Uji (jujur & auto-update + auto-deteksi)
 window.AppModules = window.AppModules || {};
 
 window.AppModules.Progres = {
+  escapeHtml(s) {
+    if (!s) return "";
+    return String(s).replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t));
+  },
+
   async loadProgres() {
     try {
       const res = await fetch(`${this.apiBase}/komunitas/progres`);
@@ -18,12 +23,15 @@ window.AppModules.Progres = {
       if (barFill) barFill.style.width = `${data.persen_total || 0}%`;
 
       const selesaiFase = (data.fase || []).filter(f => f.status === "selesai").length;
+      const autoInfo = data.auto_detected_count
+        ? ` • ${data.auto_detected_count} fitur baru terdeteksi otomatis`
+        : "";
       const ujiInfo = data.uji_belum_diuji ? ` • ${data.uji_belum_diuji} uji belum diuji` : "";
       if (summarySub) {
-        summarySub.innerText =
+        summarySub.innerHTML =
           `${data.fitur_berfungsi || 0} dari ${data.total_fitur || 0} fitur lulus uji ` +
-          `(${selesaiFase} dari ${(data.fase || []).length} fase komplit)${ujiInfo} ` +
-          `(sumber: ${data.sumber || "evaluasi_otomatis"})`;
+          `(${selesaiFase} dari ${(data.fase || []).length} fase komplit)${autoInfo}${ujiInfo} ` +
+          `<span style="font-size:0.7rem; color:var(--text-muted);">(sumber: ${data.sumber || "evaluasi_otomatis"})</span>`;
       }
 
       if (roadmapWrap && data.fase) {
@@ -36,7 +44,7 @@ window.AppModules.Progres = {
             <div class="roadmap-pos ${cls}">
               <div class="pos-dot">${icon}</div>
               <div class="pos-info">
-                <div class="pos-title">${f.kode}: ${this.escapeHtml(f.nama)}</div>
+                <div class="pos-title">${f.kode}: ${this.escapeHtml(f.nama)}${f.auto_detected ? ' <span style="font-size:0.7rem;color:var(--warna-aksen);">★Otomatis</span>' : ''}</div>
                 <div class="pos-sub">${f.jumlah_berfungsi}/${f.jumlah_fitur} fitur • ${f.persen}%</div>
               </div>
             </div>
@@ -56,13 +64,16 @@ window.AppModules.Progres = {
           const fiturRows = (f.fitur || []).map(fit => {
             const isFiturDone = fit.status === "berfungsi";
             const fiturIcon = isFiturDone ? "✅" : "⏳";
+            const autoBadge = fit.auto_detected
+              ? ` <span class="badge" style="background:var(--warna-aksen); color:#fff; font-size:0.65rem; padding:1px 6px; border-radius:10px; margin-left:6px;">OTOMATIS</span>`
+              : "";
             const ujiText = fit.uji_lulus !== undefined
               ? ` (${fit.uji_lulus}/${fit.jumlah_uji} uji lulus)`
               : "";
             return `
               <div style="padding:10px; border-top:1px solid rgba(255,255,255,0.06); font-size:0.8rem;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                  <span style="font-weight:600;">${fiturIcon} ${fit.kode}: ${this.escapeHtml(fit.nama)}${ujiText}</span>
+                  <span style="font-weight:600;">${fiturIcon} ${fit.kode}: ${this.escapeHtml(fit.nama)}${autoBadge}${ujiText}</span>
                   <span style="font-size:0.72rem; color:var(--text-sub);">${fit.status}</span>
                 </div>
                 <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${this.escapeHtml(fit.deskripsi || '')}</div>
@@ -75,7 +86,7 @@ window.AppModules.Progres = {
             <details class="kas-card" style="margin-bottom:10px; display:block; padding:0; overflow:hidden;" ${isDone ? '' : 'open'}>
               <summary style="padding:14px; cursor:pointer; font-weight:700; display:flex; justify-content:space-between; align-items:center; list-style:none;">
                 <div>
-                  <div style="font-size:0.9rem;">${f.kode} — ${this.escapeHtml(f.nama)}</div>
+                  <div style="font-size:0.9rem;">${f.kode} — ${this.escapeHtml(f.nama)}${f.auto_detected ? ' <span style="font-size:0.7rem;color:var(--warna-aksen);">★Otomatis</span>' : ''}</div>
                   <div style="font-size:0.72rem; color:var(--text-sub); font-weight:normal; margin-top:2px;">${this.escapeHtml(f.deskripsi)}</div>
                 </div>
                 <div>${statusBadge}</div>
