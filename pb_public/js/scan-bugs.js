@@ -17,8 +17,30 @@ window.AppModules.ScanBugs = {
     try {
       // Cache-busting agar SW tidak melayani laporan lama
       const res = await fetch("/scan-report.json?t=" + Date.now(), { cache: "no-store" });
+      const text = await res.text();
       if (!res.ok) throw new Error("Laporan scan tidak tersedia (HTTP " + res.status + ")");
-      const data = await res.json();
+
+      // Deteksi jika respons bukan JSON (misal SW melayani HTML cache)
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        listEl.innerHTML = `
+          <div style="padding:16px; border:1px solid var(--warna-merah); border-radius:10px; background:rgba(239,68,68,0.1); margin-bottom:12px;">
+            <div style="font-weight:700; color:var(--warna-merah); margin-bottom:8px;">⚠️ Service Worker lama masih aktif</div>
+            <div style="font-size:0.82rem; color:var(--text-primary); margin-bottom:12px;">
+              Browser Anda masih menggunakan Service Worker versi lama yang menyimpan cache HTML. Laporan scan tidak dapat dimuat.
+            </div>
+            <button class="btn btn-primary" onclick="App.clearSwAndRefresh()" style="padding:8px 14px; font-size:0.82rem;">
+              🧹 Bersihkan Cache &amp; Muat Ulang Halaman
+            </button>
+            <div style="font-size:0.72rem; color:var(--text-muted); margin-top:8px;">
+              Atau tekan <strong>F12 → Application → Service Workers → Unregister</strong>, lalu refresh halaman.
+            </div>
+          </div>
+        `;
+        return;
+      }
 
       if (totalEl) totalEl.innerText = data.total_checked || "-";
       if (findingsEl) findingsEl.innerText = data.total_findings || "-";
@@ -63,6 +85,25 @@ window.AppModules.ScanBugs = {
 
   refreshScan() {
     this.loadScanBugs();
+  },
+
+  async clearSwAndRefresh() {
+    try {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const reg of registrations) {
+          await reg.unregister();
+        }
+      }
+    } catch (_) {}
+    // Hapus cache storage
+    try {
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        for (const key of keys) await caches.delete(key);
+      }
+    } catch (_) {}
+    window.location.reload();
   },
 
   escapeHtml(s) {
