@@ -300,7 +300,9 @@ function sinkron(userId, dao) {
 
     dao.saveRecord(publik)
   } catch (err) {
-    // Sinkronisasi profil publik tidak boleh menggagalkan operasi utama.
+    // Sinkronisasi profil publik tidak boleh menggagalkan operasi utama,
+    // tetapi error tetap dicatat ke journal untuk debugging.
+    console.error("[profil] sinkron gagal untuk user " + userId + ": " + err.message);
   }
 }
 

@@ -50,6 +50,19 @@ window.AppModules.AnggotaBidang = {
     const bisaAnggota = document.getElementById("bidang-bisa-anggota")?.checked;
     const terlihat = document.getElementById("bidang-terlihat")?.value || "pribadi";
     if (!kunci || !label) { alert("Kunci dan label wajib diisi!"); return; }
+    // Cek duplikasi kunci
+    try {
+      const cek = await fetch(`${this.apiBase}/collections/bidang_profil/records?filter=(kunci='${kunci}')&perPage=1`, {
+        headers: this.getAuthHeaders()
+      });
+      if (cek.ok) {
+        const data = await cek.json();
+        if ((data.items || []).length > 0) {
+          alert("Kunci '" + kunci + "' sudah digunakan. Gunakan kunci lain.");
+          return;
+        }
+      }
+    } catch (_) {}
     try {
       const opsiArr = opsi ? opsi.split(",").map(s => s.trim()).filter(Boolean) : [];
       const payload = {

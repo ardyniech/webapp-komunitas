@@ -6,7 +6,10 @@ window.AppModules.Profil = {
 
   profilSwitchSub(sub) {
     this.profilSubAktif = sub;
-    document.querySelectorAll(".sub-tab").forEach(b => b.classList.toggle("active", b.textContent.trim().includes(this.subLabel(sub))));
+    // Aktifkan tombol sub-tab berdasarkan data-sub atribut (lebih andal dari cocokan teks)
+    document.querySelectorAll(".sub-tab").forEach(b => {
+      b.classList.toggle("active", b.getAttribute("data-sub") === sub);
+    });
     document.querySelectorAll(".sub-tab-panel").forEach(p => p.classList.remove("active"));
     const el = document.getElementById("profil-sub-" + sub);
     if (el) el.classList.add("active");
