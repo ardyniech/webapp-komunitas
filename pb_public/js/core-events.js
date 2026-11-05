@@ -74,6 +74,7 @@ window.AppModules.CoreEvents = {
     else if (tabName === "kuesioner" && this.loadKuesioner) this.loadKuesioner();
     else if (tabName === "dokumen" && this.loadDokumen) this.loadDokumen();
     else if (tabName === "pengaturan" && this.loadScanBugs) this.loadScanBugs();
+    else if (tabName === "bug-hunter" && this.loadScanBugs) this.loadScanBugs();
   },
 
   setupEventListeners() {

@@ -101,6 +101,9 @@
       <button class="dropdown-item" onclick="App.switchTab('pengaturan'); App.closeUserMenu();">
         <span>⚙️</span> <span>Setelan Basecamp</span>
       </button>
+      <button class="dropdown-item" onclick="App.switchTab('bug-hunter'); App.closeUserMenu();">
+        <span>🐛</span> <span>Bug Hunter &amp; Scan</span>
+      </button>
       <button class="dropdown-item" style="color:var(--warna-merah);" onclick="App.logout(); App.closeUserMenu();">
         <span>🚪</span> <span>Keluar Basecamp</span>
       </button>
@@ -944,6 +947,45 @@
           <button class="btn btn-outline" style="width:auto; padding:6px 10px; font-size:0.75rem;" onclick="App.loadDokumen()">🔄</button>
         </div>
         <div id="dokumen-list"><div class="empty-state">Memuat berkas dokumen...</div></div>
+      </section>
+
+      <!-- TAB 19: BUG HUNTER & SCAN OTOMATIS -->
+      <section id="panel-bug-hunter" class="view-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:700;">🐛 Bug Hunter &amp; Scan Otomatis</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Pindai kode, hook, rute, berkas, dan database untuk menemukan potensi bug sebelum menyebabkan gangguan.</div>
+          </div>
+          <button class="btn btn-primary" style="width:auto; padding:6px 12px; font-size:0.78rem;" onclick="App.refreshScan()">
+            🔄 Jalankan Scan Sekarang
+          </button>
+        </div>
+
+        <div class="kas-card" style="margin-bottom:14px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+            <div style="font-size:0.8rem; color:var(--text-sub); font-weight:600;">Dicek: <span id="bh-total-checked">-</span> &nbsp;|&nbsp; Temuan: <span id="bh-total-findings">-</span></div>
+            <div style="font-size:0.72rem; color:var(--text-muted);">Terakhir: <span id="bh-scanned-at">-</span></div>
+          </div>
+          <div style="display:flex; gap:8px; margin-bottom:10px;">
+            <div class="stat-tile" style="flex:1; min-width:90px; background:rgba(239,68,68,0.1); border-color:var(--warna-merah);">
+              <div class="stat-nilai" id="bh-critical" style="color:var(--warna-merah);">0</div>
+              <div class="stat-label" style="color:var(--warna-merah); font-size:0.65rem;">KRITIKAL</div>
+            </div>
+            <div class="stat-tile" style="flex:1; min-width:90px; background:rgba(255,176,32,0.1); border-color:var(--warna-aksen);">
+              <div class="stat-nilai" id="bh-high" style="color:var(--warna-aksen);">0</div>
+              <div class="stat-label" style="color:var(--warna-aksen); font-size:0.65rem;">TINGGI</div>
+            </div>
+            <div class="stat-tile" style="flex:1; min-width:90px; background:rgba(255,176,32,0.1); border-color:var(--warna-aksen);">
+              <div class="stat-nilai" id="bh-medium" style="color:var(--warna-aksen);">0</div>
+              <div class="stat-label" style="color:var(--warna-aksen); font-size:0.65rem;">SEDANG</div>
+            </div>
+          </div>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">
+            <strong>Saran:</strong> Bug kritikal &amp; tinggi segera diperbaiki. Bug sedang adalah peringatan yang perlu dipantau.
+          </div>
+        </div>
+
+        <div id="bug-hunter-list"><div class="empty-state">Memuat laporan scan...</div></div>
       </section>
 
     </div>
