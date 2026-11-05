@@ -74,7 +74,12 @@ window.AppModules.CoreEvents = {
     else if (tabName === "kuesioner" && this.loadKuesioner) this.loadKuesioner();
     else if (tabName === "dokumen" && this.loadDokumen) this.loadDokumen();
     else if (tabName === "pengaturan" && this.loadScanBugs) this.loadScanBugs();
-    else if (tabName === "bug-hunter" && this.loadScanBugs) this.loadScanBugs();
+    else if (tabName === "bug-hunter" && this.loadScanBugs) {
+      this.loadScanBugs();
+    } else if (tabName === "bug-hunter") {
+      const listEl = document.getElementById("bug-hunter-list");
+      if (listEl) listEl.innerHTML = `<div class="empty-state" style="color:var(--warna-merah);">Modul scan belum siap. Silakan muat ulang halaman (Ctrl+F5) dan coba lagi.</div>`;
+    }
   },
 
   setupEventListeners() {

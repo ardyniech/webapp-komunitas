@@ -68,8 +68,10 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
-  // Auth dengan token jangan di-cache API (simpan terpisah diatas tapi benar): kita cache GET umum saja
+  // Auth dengan token jangan di-cache API
   if (req.url.includes('/api/collections/users/auth-with-password') || req.url.includes('/api/admins/auth-with-password')) return;
+  // Jangan cache file HTML secara dinamis — selalu ambil terbaru dari network
+  if (req.url.endsWith('.html') || req.url.endsWith('/')) return;
 
   const cacheName = req.url.includes('/api/') ? API_CACHE_NAME : CACHE_NAME;
 
