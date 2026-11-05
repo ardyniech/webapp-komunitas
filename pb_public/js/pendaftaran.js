@@ -38,7 +38,9 @@ window.AppModules.Pendaftaran = {
           whatsapp,
           domisili,
           password,
-          alasan_bergabung
+          alasan_bergabung,
+          setuju_privasi: setuju,
+          setuju_aturan: setuju
         })
       });
 
@@ -104,7 +106,7 @@ window.AppModules.Pendaftaran = {
 
       resultBox.innerHTML = `
         <div style="font-weight:700; margin-bottom:6px;">Status Pengajuan: <span style="color:${statusColor};">${statusLabel}</span></div>
-        <div>👤 Pendaftar: <strong>${this.escapeHtml(data.nama)}</strong></div>
+        <div>👤 Pendaftar: <strong>${this.escapeHtml(data.nama_lengkap || data.nama || '-')}</strong></div>
         <div>📱 Kontak: ${this.escapeHtml(data.whatsapp)}</div>
         <div style="margin-top:6px; font-size:0.78rem; color:var(--text-sub);">
           ${data.status === 'disetujui' ? 'Silakan masuk di tab <strong>Masuk</strong> menggunakan username atau email kamu!' : 'Pengurus basecamp sedang meninjau data kamu.'}

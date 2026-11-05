@@ -58,7 +58,7 @@ window.AppModules.Auth = {
     if (btnCatat) btnCatat.style.display = canManage ? "inline-flex" : "none";
 
     const navAnggota = document.getElementById("nav-btn-anggota");
-    if (navAnggota) navAnggota.style.display = (this.user.role === "admin") ? "flex" : "none";
+    if (navAnggota) navAnggota.style.display = this.isAuthenticated() ? "flex" : "none";
 
     const setupSection = document.getElementById("admin-setup-komunitas-section");
     if (setupSection) setupSection.style.display = (this.user.role === "admin") ? "block" : "none";
@@ -118,17 +118,17 @@ window.AppModules.Auth = {
     }
     try {
       Hero.setExpression("berpikir", "Mencabut seluruh sesi login...");
-      if (this.user) {
-        await fetch(`${this.apiBase}/collections/users/records/${this.user.id}`, {
-          method: "PATCH",
-          headers: this.getAuthHeaders(),
-          body: JSON.stringify({
-            tokenKey: Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2)
-          })
-        });
+      // Pakai route hook terpadu, bukan PATCH tokenKey langsung dari klien (Plan §5.9).
+      const res = await fetch(`${this.apiBase}/komunitas/logout-all`, {
+        method: "POST",
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Gagal mencabut sesi.");
       }
     } catch (e) {
-      console.warn("Could not invalidate remote tokenKey", e);
+      console.warn("Gagal logout-all via server:", e);
     }
     this.logout();
     alert("Kamu telah keluar dari semua perangkat.");

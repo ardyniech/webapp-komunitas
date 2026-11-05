@@ -1,5 +1,6 @@
-// Service Worker for Basecamp Komunitas PWA
-const CACHE_NAME = 'basecamp-cache-v4';
+// Service Worker for Basecamp Komunitas PWA — True Offline-First (Stale-While-Revalidate)
+const CACHE_NAME = 'basecamp-cache-v6';
+const API_CACHE_NAME = 'basecamp-api-v6';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -18,28 +19,34 @@ const ASSETS_TO_CACHE = [
   './js/iuran.js',
   './js/astrologi.js',
   './js/profil.js',
+  './js/profil-form.js',
+  './js/profil-aktivitas.js',
   './js/profil-dokumen.js',
   './js/profil-publik.js',
   './js/pendaftaran.js',
   './js/anggota.js',
+  './js/anggota-aksi.js',
+  './js/anggota-bidang.js',
   './js/komunitas.js',
   './js/struktur-aturan.js',
   './js/event.js',
   './js/event-peta-dana.js',
   './js/event-lpj.js',
+  './js/event-detail.js',
   './js/forum-panduan.js',
   './js/pelengkap.js',
   './js/kuesioner-dokumen.js',
   './js/konfigurasi.js',
   './js/progres.js',
-  './js/core-events.js'
+  './js/core-events.js',
+  './js/loading.js'
 ];
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+      return cache.addAll(ASSETS_TO_CACHE).catch(() => Promise.resolve());
     })
   );
 });
@@ -48,33 +55,39 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+        keys.filter((key) => key !== CACHE_NAME && key !== API_CACHE_NAME).map((key) => caches.delete(key))
       );
     })
   );
   self.clients.claim();
 });
 
-// Network-first for html/js/css to ensure live changes load immediately in normal browser mode
+// Stale-While-Revalidate untuk semua GET (HTML/JS/CSS/API sama-sama offline-first)
 self.addEventListener('fetch', (e) => {
-  // Never cache API requests
-  if (e.request.url.includes('/api/')) {
-    return;
-  }
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  // Auth dengan token jangan di-cache API (simpan terpisah diatas tapi benar): kita cache GET umum saja
+  if (req.url.includes('/api/collections/users/auth-with-password') || req.url.includes('/api/admins/auth-with-password')) return;
 
-  // Network first, fallback to cache
+  const cacheName = req.url.includes('/api/') ? API_CACHE_NAME : CACHE_NAME;
+
   e.respondWith(
-    fetch(e.request)
-      .then((networkRes) => {
-        if (networkRes && networkRes.status === 200) {
+    caches.match(req).then((cached) => {
+      const network = fetch(req).then((networkRes) => {
+        if (networkRes && networkRes.status === 200 && networkRes.ok) {
           const clone = networkRes.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+          caches.open(cacheName).then((cache) => cache.put(req, clone)).catch(() => {});
+        } else if (networkRes && networkRes.status === 200) {
+          // tetap cache walau ok false? tidak, skip
         }
         return networkRes;
-      })
-      .catch(() => {
-        return caches.match(e.request);
-      })
+      }).catch(() => {
+        // Offline: fallback ke cache
+        return cached || caches.match('./index.html');
+      });
+      // Kembalikan cache dulu jika ada (true offline-first), sambil refresh background
+      return cached || network;
+    })
   );
 });
 

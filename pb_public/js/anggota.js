@@ -1,97 +1,105 @@
-// js/anggota.js - Manajemen Anggota Basecamp & Verifikasi Pendaftaran
+// js/anggota.js - Direktori & Manajemen Anggota (Plan §5.9, §6.11, <200 baris)
 window.AppModules = window.AppModules || {};
 
 window.AppModules.Anggota = {
   async renderAnggota() {
-    if (this.user.role !== "admin") return;
-    const listEl = document.getElementById("anggota-list");
-    if (listEl) {
-      if ((this.allUsers || []).length === 0) {
-        listEl.innerHTML = `<div class="empty-state">Belum ada anggota.</div>`;
-      } else {
-        listEl.innerHTML = this.allUsers.map(u => `
-          <div class="anggota-item">
-            <div style="display:flex; align-items:center; gap:10px;">
-              <div style="font-size:24px;">🛵</div>
-              <div>
-                <div style="font-weight:700; font-size:0.9rem;">${this.escapeHtml(u.nama || u.username)}</div>
-                <div style="font-size:0.75rem; color:var(--text-sub);">
-                  ${u.whatsapp || u.kontak || '-'} • <span class="role-pill role-${u.role}">${u.role}</span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <button class="btn btn-outline" style="padding:4px 8px; font-size:0.75rem;" 
-                onclick="App.openEditRoleModal('${u.id}', '${u.role}')">
-                Ubah Role
-              </button>
-            </div>
-          </div>
-        `).join("");
-      }
-    }
-
-    const pendingWrap = document.getElementById("pendaftaran-pending-container");
-    const pendingListEl = document.getElementById("pendaftaran-pending-list");
-    if (pendingWrap && pendingListEl) {
-      try {
-        const res = await fetch(`${this.apiBase}/collections/pendaftaran/records?filter=(status='menunggu')&sort=-created`, {
-          headers: this.getAuthHeaders()
-        });
-        if (res.ok) {
-          const data = await res.json();
-          const items = data.items || [];
-          if (items.length > 0) {
-            pendingWrap.style.display = "block";
-            pendingListEl.innerHTML = items.map(p => `
-              <div class="anggota-item" style="border-left:3px solid var(--warna-aksen);">
-                <div>
-                  <div style="font-weight:700; font-size:0.9rem;">${this.escapeHtml(p.nama_lengkap)}</div>
-                  <div style="font-size:0.75rem; color:var(--text-sub);">
-                    📱 ${this.escapeHtml(p.whatsapp)} | 📍 ${this.escapeHtml(p.domisili || '-')}
-                  </div>
-                  <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">
-                    Alasan: "${this.escapeHtml(p.alasan_bergabung || '-')}"
-                  </div>
-                </div>
-                <div style="display:flex; gap:6px;">
-                  <button class="btn btn-primary" style="padding:4px 8px; font-size:0.75rem;" onclick="App.verifikasiPendaftaran('${p.id}', 'setujui')">
-                    ✓ Terima
-                  </button>
-                  <button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="App.verifikasiPendaftaran('${p.id}', 'tolak')">
-                    ✕ Tolak
-                  </button>
-                </div>
-              </div>
-            `).join("");
-          } else {
-            pendingWrap.style.display = "none";
-          }
-        }
-      } catch (e) {
-        console.warn("Could not load pending pendaftaran", e);
-      }
-    }
+    const canManage = this.bolehKelolaAnggota();
+    const btnTambah = document.getElementById("btn-tambah-anggota");
+    const btnBidang = document.getElementById("btn-kelola-bidang");
+    if (btnTambah) btnTambah.style.display = canManage ? "inline-flex" : "none";
+    if (btnBidang) btnBidang.style.display = canManage ? "inline-flex" : "none";
+    this.hitungStat();
+    this.renderList();
   },
 
-  async verifikasiPendaftaran(pendaftaranId, tindakan) {
-    if (!confirm(`Konfirmasi untuk ${tindakan.toUpperCase()} pendaftaran ini?`)) return;
-    try {
-      Hero.setExpression("berpikir", Teks.hero.loading);
-      const res = await fetch(`${this.apiBase}/komunitas/verifikasi-pendaftaran`, {
-        method: "POST",
-        headers: this.getAuthHeaders(),
-        body: JSON.stringify({ pendaftaran_id: pendaftaranId, tindakan: tindakan })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Gagal verifikasi");
-      Hero.setExpression("senang", `Pendaftaran berhasil di-${tindakan}!`);
-      await this.refreshData();
-    } catch (err) {
-      console.error(err);
-      Hero.setExpression("waspada", "Terjadi kendala saat verifikasi pendaftaran.");
-      alert("Gagal memproses verifikasi: " + err.message);
+  segarkanAnggota() {
+    Hero.setExpression("berpikir", "Mengambil data anggota...");
+    return this.fetchAnggotaData().then(() => this.renderAnggota());
+  },
+
+  hitungStat() {
+    const list = this.daftarAnggota();
+    const elTotal = document.getElementById("anggota-stat-total");
+    const elAktif = document.getElementById("anggota-stat-aktif");
+    const elPending = document.getElementById("anggota-stat-pending");
+    const elPengurus = document.getElementById("anggota-stat-pengurus");
+    if (elTotal) elTotal.textContent = list.length;
+    if (elAktif) elAktif.textContent = list.filter(a => a.status === "aktif").length;
+    if (elPending) elPending.textContent = list.filter(a => a.status === "menunggu").length;
+    if (elPengurus) elPengurus.textContent = list.filter(a => a.role === "pengurus" || a.role === "bendahara" || a.role === "admin").length;
+  },
+
+  daftarAnggota() {
+    return this.sumberAnggota ? this.sumberAnggota() : (this.bolehKelolaAnggota() ? this.allUsers || [] : this.allProfilPublik || []);
+  },
+
+  renderList() {
+    const listEl = document.getElementById("anggota-list");
+    const emptyEl = document.getElementById("anggota-empty");
+    if (!listEl) return;
+    const cari = (document.getElementById("anggota-search")?.value || "").toLowerCase();
+    const fRole = document.getElementById("anggota-filter-role")?.value || "all";
+    const fStatus = document.getElementById("anggota-filter-status")?.value || "all";
+
+    const list = this.daftarAnggota().filter(a => {
+      const nama = (a.nama || a.nama_lengkap || a.nama_tampil || a.username || "").toLowerCase();
+      const wa = (a.whatsapp || a.kontak || "").toLowerCase();
+      const role = (a.role || a.role_ringkas || "").toLowerCase();
+      const status = (a.status || a.aktif === false ? "nonaktif" : "aktif").toLowerCase();
+      const cocokCari = !cari || nama.includes(cari) || wa.includes(cari) || role.includes(cari);
+      const cocokRole = fRole === "all" || role === fRole;
+      const cocokStatus = fStatus === "all" || status === fStatus;
+      return cocokCari && cocokRole && cocokStatus;
+    });
+
+    const wrap = document.getElementById("anggota-list-wrap");
+    const canManage = this.bolehKelolaAnggota();
+
+    if (list.length === 0) {
+      listEl.innerHTML = `<div class="empty-state">Tidak ada anggota yang cocok.</div>`;
+      if (wrap) wrap.style.display = "none";
+      if (emptyEl) emptyEl.style.display = "block";
+      return;
     }
+    if (wrap) wrap.style.display = "";
+    if (emptyEl) emptyEl.style.display = "none";
+
+    listEl.innerHTML = list.map(a => this.anggotaItemHTML(a, canManage)).join("");
+  },
+
+  anggotaItemHTML(a, canManage) {
+    const nama = a.nama || a.nama_lengkap || a.nama_tampil || a.username || "Anggota";
+    const role = a.role || a.role_ringkas || "anggota";
+    const status = a.status !== undefined ? a.status : (a.aktif === false ? "nonaktif" : "aktif");
+    const wa = a.whatsapp || a.kontak || "-";
+    const domisili = a.domisili || "-";
+    const roleBadge = `<span class="role-pill role-${role}">${role}</span>`;
+    const statusBadge = status === "aktif" ? '<span class="badge" style="background:#10b981;color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:10px;">Aktif</span>' : `<span class="badge" style="background:var(--bg-input);color:var(--text-primary);font-size:0.7rem;padding:2px 8px;border-radius:10px;border:1px solid var(--border-color);">${status}</span>`;
+
+    let aksi = "";
+    if (canManage) {
+      aksi = `
+        <button class="btn btn-outline" style="padding:4px 8px;font-size:0.72rem;" onclick="App.openMemberDetail('${this.escapeJs(a.id)}')">Detail</button>
+        <button class="btn btn-primary" style="padding:4px 8px;font-size:0.72rem;" onclick="App.openEditMember('${this.escapeJs(a.id)}')">Ubah</button>
+      `;
+    }
+    return `
+      <div class="anggota-item" style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid var(--border-color);">
+        <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+          <div style="font-size:20px;">🛵</div>
+          <div style="min-width:0;">
+            <div style="font-weight:700; font-size:0.88rem;">${this.escapeHtml(nama)}</div>
+            <div style="font-size:0.72rem; color:var(--text-sub);">📱 ${this.escapeHtml(wa)} • ${this.escapeHtml(domisili)}</div>
+            <div style="font-size:0.72rem; color:var(--text-sub); margin-top:2px;">${roleBadge} ${statusBadge}</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:6px;">${aksi}</div>
+      </div>
+    `;
+  },
+
+  escapeJs(s) {
+    return String(s == null ? "" : s).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
   },
 
   openAddAnggotaModal() {
@@ -105,30 +113,32 @@ window.AppModules.Anggota = {
   },
 
   async submitAddAnggota() {
-    const username = document.getElementById("add-username")?.value.trim();
-    const nama = document.getElementById("add-nama")?.value.trim();
-    const kontak = document.getElementById("add-kontak")?.value.trim();
-    const password = document.getElementById("add-password")?.value;
-    const role = document.getElementById("add-role")?.value || "anggota";
+    const nama = document.getElementById("add-anggota-nama")?.value.trim();
+    const email = document.getElementById("add-anggota-email")?.value.trim();
+    const kontak = document.getElementById("add-anggota-kontak")?.value.trim();
+    const password = document.getElementById("add-anggota-pass")?.value;
+    const role = document.getElementById("add-anggota-role")?.value || "anggota";
 
-    if (!username || !nama || !password) {
-      alert("Harap lengkapi username, nama, dan password!");
+    if (!nama || !password) {
+      alert("Harap lengkapi nama dan password!");
       return;
     }
 
     try {
-      Hero.setExpression("berpikir", Teks.hero.loading);
+      Hero.setExpression("berpikir", "Membuat akun anggota baru...");
       const res = await fetch(`${this.apiBase}/collections/users/records`, {
         method: "POST",
         headers: this.getAuthHeaders(),
         body: JSON.stringify({
-          username,
+          email: email || (kontak + "@komunitas.local"),
+          username: "usr_" + (kontak || nama).replace(/[^a-zA-Z0-9]/g, "").slice(-6) + "_" + Math.floor(Math.random() * 1000),
           nama,
           kontak,
-          password,
-          passwordConfirm: password,
+          whatsapp: kontak,
           role,
           status: "aktif",
+          password,
+          passwordConfirm: password,
           tanggal_gabung: new Date().toISOString()
         })
       });
@@ -140,45 +150,11 @@ window.AppModules.Anggota = {
 
       Hero.setExpression("senang", "Akun anggota baru berhasil dibuat!");
       this.closeAddAnggotaModal();
-      document.getElementById("form-add-anggota")?.reset();
-      await this.refreshData();
+      const inputs = document.querySelectorAll("#modal-add-anggota input, #modal-add-anggota select");
+      inputs.forEach(i => { if (i.type !== "hidden") i.value = ""; });
+      await this.segarkanAnggota();
     } catch (e) {
       alert("Gagal menambahkan anggota: " + e.message);
-    }
-  },
-
-  openEditRoleModal(userId, currentRole) {
-    const modal = document.getElementById("modal-edit-role");
-    if (!modal) return;
-    document.getElementById("edit-role-user-id").value = userId;
-    document.getElementById("edit-role-select").value = currentRole;
-    modal.classList.add("show");
-  },
-
-  closeEditRoleModal() {
-    const modal = document.getElementById("modal-edit-role");
-    if (modal) modal.classList.remove("show");
-  },
-
-  async submitEditRole() {
-    const userId = document.getElementById("edit-role-user-id")?.value;
-    const newRole = document.getElementById("edit-role-select")?.value;
-    if (!userId || !newRole) return;
-
-    try {
-      Hero.setExpression("berpikir", Teks.hero.loading);
-      const res = await fetch(`${this.apiBase}/collections/users/records/${userId}`, {
-        method: "PATCH",
-        headers: this.getAuthHeaders(),
-        body: JSON.stringify({ role: newRole })
-      });
-
-      if (!res.ok) throw new Error("Gagal mengubah role");
-      Hero.setExpression("senang", "Role anggota berhasil diperbarui!");
-      this.closeEditRoleModal();
-      await this.refreshData();
-    } catch (e) {
-      alert("Gagal update role: " + e.message);
     }
   }
 };

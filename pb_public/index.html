@@ -15,6 +15,9 @@
   <link rel="stylesheet" href="app.css">
 </head>
 <body>
+  <div id="global-loading-bar" style="position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg, rgba(31,164,99,0.7), var(--warna-utama)); z-index:9999; transition:width 0.2s ease-out, opacity 0.3s; opacity:0; pointer-events:none;"></div>
+  <div id="global-loading-text" style="position:fixed; top:4px; right:8px; font-size:0.68rem; color:var(--warna-utama); z-index:9998; opacity:0; pointer-events:none; transition:opacity 0.3s; background:rgba(0,0,0,0.35); padding:2px 6px; border-radius:6px;">Memuat 0%</div>
+
   <!-- Ambient Floating Icons (CSS transform & opacity only, max 4 elements) -->
   <div class="ambient-bg" aria-hidden="true">
     <div class="ambient-icon">🛵</div>
@@ -335,15 +338,69 @@
         <div id="iuran-member-checklist"></div>
       </section>
 
-      <!-- TAB 4: ANGGOTA (ADMIN) -->
+      <!-- TAB 4: ANGGOTA (DIRECTORY + MANAJEMEN) -->
       <section id="panel-anggota" class="view-panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-          <h2 style="font-size: 1.15rem; font-weight: 700;">Daftar Anggota</h2>
-          <button class="btn btn-primary" style="width: auto; padding: 8px 12px; font-size: 0.8rem;" onclick="App.openAddAnggotaModal()">
-            + Tambah Anggota
-          </button>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+          <div>
+            <h2 style="font-size: 1.15rem; font-weight: 700; margin:0;">Daftar Anggota</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Lihat sesama anggota pangkalan &amp; kelola akun (khusus pengurus).</div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button id="btn-tambah-anggota" class="btn btn-primary" style="width: auto; padding: 8px 12px; font-size: 0.8rem;" onclick="App.openAddAnggotaModal()">
+              + Tambah Anggota
+            </button>
+            <button id="btn-kelola-bidang" class="btn btn-outline" style="width: auto; padding: 8px 12px; font-size: 0.8rem; display:none;" onclick="App.openBidangProfil()">
+              ⚙️ Kelola Bidang
+            </button>
+          </div>
         </div>
-        <div id="admin-members-list"></div>
+
+        <!-- Statistik anggota -->
+        <div class="anggota-stats-row" style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+          <div class="stat-tile" style="flex:1; min-width:110px;">
+            <div class="stat-nilai" id="anggota-stat-total">-</div>
+            <div class="stat-label">Total</div>
+          </div>
+          <div class="stat-tile" style="flex:1; min-width:110px;">
+            <div class="stat-nilai" id="anggota-stat-aktif">-</div>
+            <div class="stat-label">Aktif</div>
+          </div>
+          <div class="stat-tile" style="flex:1; min-width:110px;">
+            <div class="stat-nilai" id="anggota-stat-pending">-</div>
+            <div class="stat-label">Menunggu</div>
+          </div>
+          <div class="stat-tile" style="flex:1; min-width:110px;">
+            <div class="stat-nilai" id="anggota-stat-pengurus">-</div>
+            <div class="stat-label">Pengurus</div>
+          </div>
+        </div>
+
+        <!-- Pencarian & filter -->
+        <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:flex-end;">
+          <input type="text" id="anggota-search" class="form-control" placeholder="🔍 Cari nama, nomor WA, atau role..." style="flex:1; min-width:160px;" oninput="App.renderAnggota()">
+          <select id="anggota-filter-role" class="form-control" style="width:auto; min-width:140px;" onchange="App.renderAnggota()">
+            <option value="all">Semua Role</option>
+            <option value="superadmin">Superadmin</option>
+            <option value="admin">Admin</option>
+            <option value="pengurus">Pengurus</option>
+            <option value="bendahara">Bendahara</option>
+            <option value="anggota">Anggota</option>
+          </select>
+          <select id="anggota-filter-status" class="form-control" style="width:auto; min-width:140px;" onchange="App.renderAnggota()">
+            <option value="all">Semua Status</option>
+            <option value="aktif">Aktif</option>
+            <option value="menunggu">Menunggu</option>
+            <option value="nonaktif">Nonaktif</option>
+            <option value="ditolak">Ditolak</option>
+          </select>
+          <button class="btn btn-outline" onclick="App.segarkanAnggota()" style="width:auto; padding:8px 10px;">🔄</button>
+        </div>
+
+        <!-- Daftar anggota -->
+        <div id="anggota-list-wrap" style="max-height: 70vh; overflow-y: auto; border:1px solid var(--border-color); border-radius:12px; background:var(--bg-card);">
+          <div id="anggota-list"><div class="empty-state">Memuat daftar anggota...</div></div>
+        </div>
+        <div id="anggota-empty" style="display:none; padding:18px; text-align:center; color:var(--text-sub);">Tidak ada anggota yang cocok.</div>
       </section>
 
       <!-- TAB 5: PENGATURAN -->
@@ -432,134 +489,188 @@
 
       <!-- TAB 6: PROFIL (6.11) -->
       <section id="panel-profil" class="view-panel">
-        <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 14px;">Profil Saya</h2>
-        <div class="dompet-card" style="background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-color:var(--border-color); margin-bottom:14px;">
-          <div style="display:flex; align-items:center; gap:14px;">
-            <div id="profil-avatar-box" style="position:relative; cursor:pointer;" onclick="document.getElementById('prof-foto-input').click()" title="Klik untuk ganti foto profil">
-              <div id="profil-foto-img" style="width:62px; height:62px; border-radius:50%; background:var(--warna-utama); display:flex; align-items:center; justify-content:center; font-size:28px; overflow:hidden; border:2px solid rgba(255,255,255,0.2);">🛵</div>
-              <div style="position:absolute; bottom:-2px; right:-2px; background:#0f172a; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; font-size:11px; border:1px solid var(--border-color);">📷</div>
-              <input type="file" id="prof-foto-input" style="display:none;" accept="image/png,image/jpeg,image/webp" onchange="App.handleUploadFotoProfil(event)">
-            </div>
-            <div>
-              <div id="profil-nama-display" style="font-size:1.15rem; font-weight:700;">Nama Anggota</div>
-              <div id="profil-role-display" style="font-size:0.75rem; color:var(--text-sub);">Anggota Basecamp</div>
-              <div id="profil-wa-display" style="font-size:0.78rem; color:var(--text-muted); margin-top:3px;">📱 WhatsApp</div>
-              <div id="profil-badges-container" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;"></div>
-            </div>
-          </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <h2 style="font-size: 1.15rem; font-weight: 700; margin:0;">Profil Saya</h2>
+          <button class="btn btn-outline" style="width:auto; padding:6px 12px; font-size:0.78rem;" onclick="App.showProfilPublikPreview()">
+            👁️ Tinjau Publik
+          </button>
+        </div>
 
-          <!-- KARTU KARAKTER ZODIAK & SHIO (DITARIK OTOMATIS DARI TANGGAL LAHIR) -->
-          <div id="profil-astrologi-card" style="display:none; margin-top:14px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <div style="font-size:0.75rem; font-weight:700; color:var(--warna-aksen);">✨ KARAKTER & AURA ASPAL</div>
-              <div id="astro-umur-text" style="font-size:0.72rem; color:var(--text-muted);"></div>
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <div id="astro-zodiak-icon" style="font-size:24px;">♌</div>
-                <div>
-                  <div id="astro-zodiak-nama" style="font-size:0.82rem; font-weight:700;">Leo</div>
-                  <div id="astro-zodiak-desc" style="font-size:0.7rem; color:var(--text-sub); line-height:1.2;">Percaya diri, ksatria</div>
-                </div>
+        <!-- Sub-tabs Profil -->
+        <div class="sub-tabs" role="tablist">
+          <button class="sub-tab active" onclick="App.profilSwitchSub('ringkasan')" role="tab">📋 Ringkasan</button>
+          <button class="sub-tab" onclick="App.profilSwitchSub('datapribadi')" role="tab">👤 Data Pribadi</button>
+          <button class="sub-tab" onclick="App.profilSwitchSub('privasi')" role="tab">🔒 Privasi</button>
+          <button class="sub-tab" onclick="App.profilSwitchSub('aktivitas')" role="tab">🕓 Aktivitas</button>
+          <button class="sub-tab" onclick="App.profilSwitchSub('keamanan')" role="tab">🔐 Keamanan &amp; Data</button>
+        </div>
+
+        <!-- Ringkasan -->
+        <div id="profil-sub-ringkasan" class="sub-tab-panel active">
+          <div class="dompet-card" style="background:linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-color:var(--border-color); margin-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:14px;">
+              <div id="profil-avatar-box" style="position:relative; cursor:pointer;" onclick="document.getElementById('prof-foto-input').click()" title="Klik untuk ganti foto profil">
+                <div id="profil-foto-img" style="width:62px; height:62px; border-radius:50%; background:var(--warna-utama); display:flex; align-items:center; justify-content:center; font-size:28px; overflow:hidden; border:2px solid rgba(255,255,255,0.2);">🛵</div>
+                <div style="position:absolute; bottom:-2px; right:-2px; background:#0f172a; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; font-size:11px; border:1px solid var(--border-color);">📷</div>
+                <input type="file" id="prof-foto-input" style="display:none;" accept="image/png,image/jpeg,image/webp" onchange="App.handleUploadFotoProfil(event)">
               </div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <div id="astro-shio-icon" style="font-size:24px;">🐕</div>
-                <div>
-                  <div id="astro-shio-nama" style="font-size:0.82rem; font-weight:700;">Shio Anjing</div>
-                  <div id="astro-shio-desc" style="font-size:0.7rem; color:var(--text-sub); line-height:1.2;">Sangat setia, pelindung</div>
-                </div>
+              <div>
+                <div id="profil-nama-display" style="font-size:1.15rem; font-weight:700;">Nama Anggota</div>
+                <div id="profil-role-display" style="font-size:0.75rem; color:var(--text-sub);">Anggota Basecamp</div>
+                <div id="profil-wa-display" style="font-size:0.78rem; color:var(--text-muted); margin-top:3px;">📱 WhatsApp</div>
+                <div id="profil-badges-container" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;"></div>
               </div>
             </div>
+
+            <div id="profil-astrologi-card" style="display:none; margin-top:14px; padding:10px 12px; border-radius:10px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                <div style="font-size:0.75rem; font-weight:700; color:var(--warna-aksen);">✨ KARAKTER &amp; AURA ASPAL</div>
+                <div id="astro-umur-text" style="font-size:0.72rem; color:var(--text-muted);"></div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div id="astro-zodiak-icon" style="font-size:24px;">♌</div>
+                  <div>
+                    <div id="astro-zodiak-nama" style="font-size:0.82rem; font-weight:700;">Leo</div>
+                    <div id="astro-zodiak-desc" style="font-size:0.7rem; color:var(--text-sub); line-height:1.2;">Percaya diri, ksatria</div>
+                  </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div id="astro-shio-icon" style="font-size:24px;">🐕</div>
+                  <div>
+                    <div id="astro-shio-nama" style="font-size:0.82rem; font-weight:700;">Shio Anjing</div>
+                    <div id="astro-shio-desc" style="font-size:0.7rem; color:var(--text-sub); line-height:1.2;">Sangat setia, pelindung</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bar Kelengkapan Profil -->
+            <div style="margin-top:16px; border-top:1px solid rgba(255,255,255,0.1); padding-top:12px;">
+              <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:6px;">
+                <span>Kelengkapan Profil</span>
+                <span id="profil-pct-text">80%</span>
+              </div>
+              <div class="bensin-bar-wrap" style="height:10px;">
+                <div id="profil-bar-fill" class="bensin-bar-fill" style="width:80%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Pribadi -->
+        <div id="profil-sub-datapribadi" class="sub-tab-panel">
+          <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:12px; margin-bottom:14px;">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">DATA PRIBADI &amp; KELENGKAPAN</div>
+            <form id="form-profil-pribadi" onsubmit="App.saveProfilData(event)">
+              <div class="form-group">
+                <label>Nama Lengkap (Sesuai KTP)</label>
+                <input type="text" id="prof-nama-lengkap" class="form-control" placeholder="Nama lengkap">
+              </div>
+              <div class="form-group">
+                <label>Nama Panggilan / Julukan Aspal</label>
+                <input type="text" id="prof-nama-panggilan" class="form-control" placeholder="Contoh: Bang Agus">
+              </div>
+              <div class="form-group">
+                <label>Tanggal Lahir (Untuk Karakter Zodiak &amp; Shio)</label>
+                <input type="date" id="prof-tanggal-lahir" class="form-control" onchange="App.handleTanggalLahirChange(event)">
+                <div style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">Otomatis menghitung bintang zodiak &amp; shio kamu di komunitas.</div>
+              </div>
+              <div class="form-group">
+                <label>Nomor WhatsApp Aktif</label>
+                <input type="tel" id="prof-whatsapp" class="form-control" placeholder="08123456789">
+              </div>
+              <div class="form-group">
+                <label>Domisili / Wilayah Mangkal</label>
+                <input type="text" id="prof-domisili" class="form-control" placeholder="Contoh: Senayan, Jaksel">
+              </div>
+              <div class="form-group">
+                <label>Kontak Darurat (Nama &amp; Hubungan)</label>
+                <input type="text" id="prof-kontak-darurat-nama" class="form-control" placeholder="Contoh: Siti (Istri)">
+              </div>
+              <div class="form-group">
+                <label>Nomor Telepon Darurat</label>
+                <input type="tel" id="prof-kontak-darurat-telp" class="form-control" placeholder="Contoh: 081987654321">
+              </div>
+              <div class="form-group">
+                <label>Bio Singkat</label>
+                <textarea id="prof-bio" class="form-control" rows="2" placeholder="Driver santuy, pantang pulang sebelum gacor!"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary" style="padding:10px;">💾 Simpan Kelengkapan Data</button>
+            </form>
           </div>
 
-          <!-- Bar Kelengkapan Profil -->
-          <div style="margin-top:16px; border-top:1px solid rgba(255,255,255,0.1); padding-top:12px;">
-            <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:6px;">
-              <span>Kelengkapan Profil</span>
-              <span id="profil-pct-text">80%</span>
-            </div>
-            <div class="bensin-bar-wrap" style="height:10px;">
-              <div id="profil-bar-fill" class="bensin-bar-fill" style="width:80%;"></div>
-            </div>
+          <!-- Bidang kustom (definisi dari admin) -->
+          <div id="profil-bidang-kustom-wrap" class="kas-card" style="flex-direction:column; align-items:stretch; gap:10px; margin-bottom:14px; display:none;">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">Bidang Tambahan Komunitas</div>
+            <div id="profil-bidang-kustom-list"></div>
+          </div>
+
+          <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:10px; margin-bottom:14px;">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">UPLOAD DOKUMEN ANGGOTA (KTP / SIM / STNK)</div>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin:0;">Upload berkas dokumen untuk validasi pengurus basecamp (Format: JPG/PNG/PDF, maks 2MB).</p>
+            <form onsubmit="App.uploadDokumenAnggota(event)">
+              <div class="form-group">
+                <label>Jenis Dokumen</label>
+                <select id="doc-kategori" class="form-control">
+                  <option value="ktp">Kartu Tanda Penduduk (KTP)</option>
+                  <option value="sim">Surat Izin Mengemudi (SIM)</option>
+                  <option value="stnk">STNK Kendaraan</option>
+                  <option value="lainnya">Dokumen / Piagam Lainnya</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Judul / Keterangan Dokumen</label>
+                <input type="text" id="doc-judul" class="form-control" placeholder="Contoh: KTP Agus Santoso" required>
+              </div>
+              <div class="form-group">
+                <label>Pilih Berkas</label>
+                <input type="file" id="doc-file" class="form-control" accept=".jpg,.jpeg,.png,.webp,.pdf" required>
+              </div>
+              <button type="submit" class="btn btn-outline" style="padding:9px; border-color:var(--warna-utama);">📤 Unggah Dokumen</button>
+            </form>
+            <div id="doc-list-user" style="margin-top:10px; font-size:0.8rem;"></div>
           </div>
         </div>
 
-        <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:12px; margin-bottom:14px;">
-          <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">DATA PRIBADI & KELENGKAPAN</div>
-          <form onsubmit="App.saveProfilData(event)">
-            <div class="form-group">
-              <label>Nama Lengkap (Sesuai KTP)</label>
-              <input type="text" id="prof-nama-lengkap" class="form-control" placeholder="Nama lengkap">
+        <!-- Privasi -->
+        <div id="profil-sub-privasi" class="sub-tab-panel">
+          <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:12px; margin-bottom:14px;">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">ATURAN KELENGKAPANAN (Plan §6.11)</div>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin:0;">Pilih siapa yang boleh melihat tiap data profil kamu di kalangan anggota basecamp. Data sensitif selalu disembunyikan.</p>
+            <div id="privasi-rows"></div>
+            <div style="margin-top:10px;">
+              <button class="btn btn-primary" onclick="App.simpanPrivasi()">💾 Simpan Pengaturan Privasi</button>
             </div>
-            <div class="form-group">
-              <label>Nama Panggilan / Julukan Aspal</label>
-              <input type="text" id="prof-nama-panggilan" class="form-control" placeholder="Contoh: Bang Agus">
-            </div>
-            <div class="form-group">
-              <label>Tanggal Lahir (Untuk Karakter Zodiak & Shio)</label>
-              <input type="date" id="prof-tanggal-lahir" class="form-control" onchange="App.handleTanggalLahirChange(event)">
-              <div style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">Otomatis menghitung bintang zodiak & shio kamu di komunitas.</div>
-            </div>
-            <div class="form-group">
-              <label>Nomor WhatsApp Aktif</label>
-              <input type="tel" id="prof-whatsapp" class="form-control" placeholder="08123456789">
-            </div>
-            <div class="form-group">
-              <label>Domisili / Wilayah Mangkal</label>
-              <input type="text" id="prof-domisili" class="form-control" placeholder="Contoh: Senayan, Jaksel">
-            </div>
-            <div class="form-group">
-              <label>Kontak Darurat (Nama & Hubungan)</label>
-              <input type="text" id="prof-kontak-darurat-nama" class="form-control" placeholder="Contoh: Siti (Istri)">
-            </div>
-            <div class="form-group">
-              <label>Nomor Telepon Darurat</label>
-              <input type="tel" id="prof-kontak-darurat-telp" class="form-control" placeholder="Contoh: 081987654321">
-            </div>
-            <div class="form-group">
-              <label>Bio Singkat</label>
-              <textarea id="prof-bio" class="form-control" rows="2" placeholder="Driver santuy, pantang pulang sebelum gacor!"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary" style="padding:10px;">💾 Simpan Kelengkapan Data</button>
-          </form>
+          </div>
+          <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:10px; margin-bottom:14px;">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">Hak Privasi Data (GDPR)</div>
+            <button class="btn btn-outline" onclick="App.unduhDataPribadi()">📥 Unduh Data Pribadi Saya (JSON)</button>
+            <button class="btn btn-outline" style="color:var(--warna-merah); border-color:rgba(239,68,68,0.3);" onclick="App.ajukanHapusData()">🗑️ Ajukan Penghapusan Data Pribadi</button>
+            <p style="font-size:0.72rem; color:var(--text-sub); margin-top:6px;">Pengurus akan menghubungi kamu dalam jangka waktu yang ditetapkan basecamp.</p>
+          </div>
         </div>
 
-        <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:12px; margin-bottom:14px;">
-          <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">UPLOAD DOKUMEN ANGGOTA (KTP / SIM / STNK)</div>
-          <p style="font-size:0.75rem; color:var(--text-muted); margin:0;">Upload berkas dokumen untuk validasi pengurus basecamp (Format: JPG/PNG/PDF, maks 2MB).</p>
-          <form onsubmit="App.uploadDokumenAnggota(event)">
-            <div class="form-group">
-              <label>Jenis Dokumen</label>
-              <select id="doc-kategori" class="form-control">
-                <option value="ktp">Kartu Tanda Penduduk (KTP)</option>
-                <option value="sim">Surat Izin Mengemudi (SIM)</option>
-                <option value="stnk">STNK Kendaraan</option>
-                <option value="lainnya">Dokumen / Piagam Lainnya</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Judul / Keterangan Dokumen</label>
-              <input type="text" id="doc-judul" class="form-control" placeholder="Contoh: KTP Agus Santoso" required>
-            </div>
-            <div class="form-group">
-              <label>Pilih Berkas</label>
-              <input type="file" id="doc-file" class="form-control" accept=".jpg,.jpeg,.png,.webp,.pdf" required>
-            </div>
-            <button type="submit" class="btn btn-outline" style="padding:9px; border-color:var(--warna-utama);">📤 Unggah Dokumen</button>
-          </form>
-          <div id="doc-list-user" style="margin-top:10px; font-size:0.8rem;"></div>
+        <!-- Aktivitas -->
+        <div id="profil-sub-aktivitas" class="sub-tab-panel">
+          <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:10px; margin-bottom:14px;">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">RIWAYAT AKTIVITAS PROFIL</div>
+            <div id="aktivitas-list"><div class="empty-state">Memuat aktivitas...</div></div>
+          </div>
         </div>
 
-        <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:10px; margin-bottom:14px;">
-          <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">DATA SAYA & PRIVASI (Plan §6.11)</div>
-          <button class="btn btn-outline" onclick="App.showProfilPublikPreview()">👁️ Tinjau Profil Publik Saya</button>
-          <button class="btn btn-outline" onclick="App.unduhDataPribadi()">📥 Unduh Data Pribadi Saya (JSON)</button>
-        </div>
-
-        <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:10px; margin-bottom:14px;">
-          <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">KEAMANAN AKUN (6.15)</div>
-          <button class="btn btn-outline" onclick="App.logout()">🚪 Keluar dari Perangkat Ini</button>
-          <button class="btn btn-danger" onclick="App.logoutAllDevices()">🔒 Keluar dari Semua Perangkat (Reset Sesi)</button>
+        <!-- Keamanan & Data -->
+        <div id="profil-sub-keamanan" class="sub-tab-panel">
+          <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:10px; margin-bottom:14px;">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">KEAMANAN AKUN (6.15)</div>
+            <button class="btn btn-outline" onclick="App.logout()">🚪 Keluar dari Perangkat Ini</button>
+            <button class="btn btn-danger" onclick="App.logoutAllDevices()">🔒 Keluar dari Semua Perangkat (Reset Sesi)</button>
+          </div>
+          <div class="kas-card" style="flex-direction:column; align-items:stretch; gap:10px; margin-bottom:14px;">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">DATA SAYA</div>
+            <button class="btn btn-outline" onclick="App.unduhDataPribadi()">📥 Unduh Data Pribadi Saya (JSON)</button>
+            <button class="btn btn-outline" style="color:var(--warna-merah); border-color:rgba(239,68,68,0.3);" onclick="App.ajukanHapusData()">🗑️ Ajukan Penghapusan Data Pribadi</button>
+          </div>
         </div>
       </section>
 
@@ -851,6 +962,17 @@
     </button>
   </nav>
 
+  <!-- MODAL: PETA DANA EVENT -->
+  <div id="modal-peta-dana" class="modal-overlay">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700;" id="peta-dana-event-title">PETA DANA EVENT</h3>
+        <button onclick="App.closePetaDanaModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      <div id="peta-dana-content"><div class="empty-state">Memuat peta dana...</div></div>
+    </div>
+  </div>
+
   <!-- MODAL: WIZARD CATAT KAS -->
   <div id="wizard-modal" class="modal-overlay">
     <div class="modal-content">
@@ -975,6 +1097,108 @@
     </div>
   </div>
 
+  <!-- MODAL: DETAIL ANGGOTA -->
+  <div id="modal-member-detail" class="modal-overlay" onclick="App.closeMemberDetailModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Detail Anggota</h3>
+        <button onclick="App.closeMemberDetailModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      <input type="hidden" id="member-detail-id">
+      <div id="member-detail-body"><div class="empty-state">Memuat detail...</div></div>
+      <div id="member-detail-actions" style="display:flex; gap:8px; margin-top:16px;"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT ANGGOTA (MANAJEMEN) -->
+  <div id="modal-edit-member" class="modal-overlay" onclick="App.closeEditMemberModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Ubah Data Anggota</h3>
+        <button onclick="App.closeEditMemberModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      <input type="hidden" id="edit-member-id">
+      <div class="form-group">
+        <label>Nama Lengkap</label>
+        <input type="text" id="edit-member-nama" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label>Nomor WhatsApp</label>
+        <input type="text" id="edit-member-whatsapp" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Domisili</label>
+        <input type="text" id="edit-member-domisili" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Peran (Role)</label>
+        <select id="edit-member-role" class="form-control">
+          <option value="anggota">Anggota Biasa</option>
+          <option value="bendahara">Bendahara</option>
+          <option value="pengurus">Pengurus</option>
+          <option value="admin">Admin</option>
+          <option value="superadmin">Superadmin</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="edit-member-status" class="form-control">
+          <option value="aktif">Aktif</option>
+          <option value="nonaktif">Nonaktif</option>
+          <option value="menunggu">Menunggu</option>
+        </select>
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 18px;">
+        <button class="btn btn-outline" onclick="App.closeEditMemberModal()">Batal</button>
+        <button class="btn btn-primary" onclick="App.submitEditMember()">Simpan Perubahan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: KELOLA BIDANG PROFIL KUSTOM (MANAJEMEN) -->
+  <div id="modal-bidang-profil" class="modal-overlay" onclick="App.closeBidangProfilModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Kelola Bidang Profil Kustom</h3>
+        <button onclick="App.closeBidangProfilModal()" style="background:none; border:none; color:var(--text-muted); font-size:22px; cursor:pointer;">&times;</button>
+      </div>
+      <div style="font-size:0.75rem; color:var(--text-sub); margin-bottom:10px;">Tambah / ubah bidang profil tambahan yang bisa diisi anggota.</div>
+      <div class="form-group">
+        <label>Kunci Bidang (contoh: nomor_sim)</label>
+        <input type="text" id="bidang-kunci" class="form-control" placeholder="nomor_sim">
+      </div>
+      <div class="form-group">
+        <label>Label Tampilan</label>
+        <input type="text" id="bidang-label" class="form-control" placeholder="Nomor SIM">
+      </div>
+      <div class="form-group">
+        <label>Tipe Data</label>
+        <select id="bidang-tipe" class="form-control">
+          <option value="teks">Teks</option>
+          <option value="angka">Angka</option>
+          <option value="tanggal">Tanggal</option>
+          <option value="pilihan">Pilihan</option>
+          <option value="ya_tidak">Ya / Tidak</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Opsi Pilihan (pisahkan koma)</label>
+        <input type="text" id="bidang-opsi" class="form-control" placeholder="A, B, C">
+      </div>
+      <div class="form-group">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+          <input type="checkbox" id="bidang-bisa-anggota"> Bisa diubah anggota sendiri
+        </label>
+      </div>
+      <div style="font-size:0.72rem; color:var(--text-sub); margin-top:4px;">Batas paling terbuka: <select id="bidang-terlihat" class="form-control" style="width:auto;"><option value="pribadi">Pribadi</option><option value="pengurus">Pengurus</option><option value="anggota">Anggota</option></select></div>
+      <div style="display: flex; gap: 8px; margin-top: 18px;">
+        <button class="btn btn-outline" onclick="App.closeBidangProfilModal()">Batal</button>
+        <button class="btn btn-primary" onclick="App.submitBidangProfil()">Simpan Bidang</button>
+      </div>
+      <div id="bidang-profil-list" style="margin-top:14px; border-top:1px solid var(--border-color); padding-top:10px;"></div>
+    </div>
+  </div>
+
   <!-- MODAL: SUSUN PANITIA EVENT (F3g / Plan §6.8 B) -->
   <div id="modal-susun-panitia" class="modal-overlay">
     <div class="modal-content">
@@ -1005,6 +1229,10 @@
       <div class="form-group">
         <label>Tugas / Tanggung Jawab Singkat</label>
         <input type="text" id="panitia-tugas-input" class="form-control" placeholder="Contoh: Mengatur rute konvoi & parkir motor">
+      </div>
+      <div style="margin-top:14px;">
+        <div style="font-size:0.78rem; font-weight:700; color:var(--text-sub); margin-bottom:6px;">PANITIA SAAT INI:</div>
+        <div id="panitia-current-list"></div>
       </div>
       <div style="display: flex; gap: 8px; margin-top: 18px;">
         <button class="btn btn-outline" onclick="App.closeSusunPanitiaModal()">Batal</button>
@@ -1134,21 +1362,27 @@
   <script src="js/iuran.js"></script>
   <script src="js/astrologi.js"></script>
   <script src="js/profil.js"></script>
+  <script src="js/profil-form.js"></script>
+  <script src="js/profil-aktivitas.js"></script>
   <script src="js/profil-dokumen.js"></script>
   <script src="js/profil-publik.js"></script>
   <script src="js/pendaftaran.js"></script>
   <script src="js/anggota.js"></script>
+  <script src="js/anggota-aksi.js"></script>
+  <script src="js/anggota-bidang.js"></script>
   <script src="js/komunitas.js"></script>
   <script src="js/struktur-aturan.js"></script>
   <script src="js/event.js"></script>
   <script src="js/event-peta-dana.js"></script>
   <script src="js/event-lpj.js"></script>
+  <script src="js/event-detail.js"></script>
   <script src="js/forum-panduan.js"></script>
   <script src="js/pelengkap.js"></script>
   <script src="js/kuesioner-dokumen.js"></script>
   <script src="js/konfigurasi.js"></script>
   <script src="js/progres.js"></script>
   <script src="js/core-events.js"></script>
+  <script src="js/loading.js"></script>
   <!-- Core Controller -->
   <script src="app.js"></script>
   <script>

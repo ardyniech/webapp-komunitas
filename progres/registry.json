@@ -108,7 +108,20 @@
           "deskripsi": "Calon anggota daftar sendiri, status menunggu persetujuan",
           "uji": [
             { "kode": "U-F2b-1", "nama": "Koleksi pendaftaran & profil_publik tersedia", "jenis": "ada_koleksi" },
-            { "kode": "U-F2b-2", "nama": "Akun menunggu dilarang login", "jenis": "uji_api" }
+            { "kode": "U-F2b-2", "nama": "Akun menunggu dilarang login", "jenis": "uji_api" },
+            { "kode": "U-F2b-3", "nama": "Route pendaftaran & status merespons", "jenis": "ada_route" },
+            { "kode": "U-F2b-4", "nama": "Route logout-all & permintaan-hapus-data tersedia", "jenis": "ada_route" },
+            { "kode": "U-F2b-5", "nama": "users list hanya self + manajemen anggota", "jenis": "uji_api" },
+            { "kode": "U-F2b-6", "nama": "profil_publik hanya field terpilih anggota", "jenis": "uji_api" }
+          ]
+        },
+        {
+          "kode": "F2b-2",
+          "nama": "Manajemen Anggota & Bidang Profil",
+          "deskripsi": "Direktori anggota, ubah role/status, dan kelola bidang profil kustom",
+          "uji": [
+            { "kode": "U-F2b-7", "nama": "Direktori anggota via profil_publik", "jenis": "uji_api" },
+            { "kode": "U-F2b-8", "nama": "Bidang profil kustom terlindungi kelola_pengaturan", "jenis": "uji_api" }
           ]
         }
       ]

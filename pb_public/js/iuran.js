@@ -7,23 +7,23 @@ window.AppModules.Iuran = {
     const periodInput = document.getElementById("iuran-period-select");
     if (periodInput) periodInput.value = period;
 
-    const listEl = document.getElementById("iuran-list");
-    const barFill = document.getElementById("iuran-bensin-bar");
-    const pctVal = document.getElementById("iuran-pct-val");
-    const countVal = document.getElementById("iuran-count-val");
+    const listEl = document.getElementById("iuran-member-checklist") || document.getElementById("iuran-list");
+    if (listEl) listEl.innerHTML = ""; // di-render di bawah sesuai data
     const canManage = this.user && (this.user.role === "admin" || this.user.role === "bendahara");
 
-    const totalAnggota = (this.allUsers || []).filter(u => u.status === "aktif" && u.role !== "admin").length;
+    const totalAnggota = (this.sumberAnggota() || []).filter(u => u.status === "aktif" && u.role !== "admin").length;
     const lunasList = (this.allIuran || []).filter(i => i.periode === period && i.status === "lunas");
     const lunasCount = lunasList.length;
     const pct = totalAnggota > 0 ? Math.round((lunasCount / totalAnggota) * 100) : 0;
 
-    if (pctVal) pctVal.innerText = `${pct}%`;
-    if (barFill) barFill.style.width = `${pct}%`;
-    if (countVal) countVal.innerText = `${lunasCount} dari ${totalAnggota} anggota lunas`;
+    // Sinkron bensin bar di markas juga
+    const bensinFill = document.getElementById("bensin-fill-bar");
+    const bensinTxt = document.getElementById("bensin-status-text");
+    if (bensinFill) bensinFill.style.width = `${pct}%`;
+    if (bensinTxt) bensinTxt.innerText = `${pct}%`;
 
     if (!listEl) return;
-    const nonAdminUsers = (this.allUsers || []).filter(u => u.status === "aktif" && u.role !== "admin");
+    const nonAdminUsers = this.sumberAnggota().filter(u => u.status === "aktif" && u.role !== "admin");
 
     if (nonAdminUsers.length === 0) {
       listEl.innerHTML = `<div class="empty-state">Belum ada data anggota aktif.</div>`;
@@ -69,7 +69,7 @@ window.AppModules.Iuran = {
     }
 
     const defaultNominal = (this.komunitas && this.komunitas.iuran_default) ? this.komunitas.iuran_default : 20000;
-    const targetUser = (this.allUsers || []).find(u => u.id === userId);
+    const targetUser = this.sumberAnggota().find(u => u.id === userId);
     const namaUser = targetUser ? (targetUser.nama || targetUser.username) : "Anggota";
 
     if (!confirm(`Konfirmasi pelunasan iuran ${namaUser} periode ${periode} sebesar Rp ${defaultNominal.toLocaleString('id-ID')}?`)) {

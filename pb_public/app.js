@@ -7,6 +7,7 @@ const App = {
   activeTab: "markas",
   allKas: [],
   allUsers: [],
+  allProfilPublik: [],
   allIuran: [],
   currentPeriod: "",
 
@@ -106,7 +107,7 @@ const App = {
   async refreshData() {
     Hero.setExpression("berpikir", Teks.hero.loading);
     try {
-      await Promise.all([this.fetchKas(), this.fetchUsers(), this.fetchIuran()]);
+      await Promise.all([this.fetchKas(), this.fetchAnggotaData(), this.fetchIuran()]);
       this.renderMarkas();
       this.renderKasList();
       this.renderIuran();
@@ -126,6 +127,40 @@ const App = {
     this.allKas = data.items || [];
   },
 
+  async fetchAnggotaData() {
+    if (this.bolehKelolaAnggota()) {
+      await this.fetchUsers();
+    } else {
+      await this.fetchProfilPublik();
+    }
+  },
+
+  bolehKelolaAnggota() {
+    const r = (this.user && this.user.role) || '';
+    const izin = (this.user && this.user.izin) || [];
+    return r === 'superadmin' || r === 'admin' || r === 'pengurus' || r === 'bendahara' || izin.indexOf('kelola_anggota') !== -1;
+  },
+
+  // Sumber daftar anggota yang aman per peran:
+  // - Manajemen: collection users (role/status lengkap).
+  // - Anggota biasa: profil_publik (hanya data yang boleh dilihat publik).
+  sumberAnggota() {
+    if (this.bolehKelolaAnggota()) return this.allUsers || [];
+    return (this.allProfilPublik || []).map(p => ({
+      id: p.user,
+      nama: p.nama_tampil,
+      nama_lengkap: p.nama_tampil,
+      username: p.nama_tampil,
+      role: (p.role_ringkas || 'anggota').toLowerCase(),
+      status: p.aktif === false ? 'nonaktif' : 'aktif',
+      kontak: (p.bidang_terlihat && p.bidang_terlihat.whatsapp) || '',
+      domisili: (p.bidang_terlihat && p.bidang_terlihat.domisili) || '',
+      whatsapp: (p.bidang_terlihat && p.bidang_terlihat.whatsapp) || ''
+    }));
+  },
+
+  // Manajer boleh baca collection users langsung (rule users memperbolehkan self + manajemen).
+  // Anggota biasa membaca profil_publik agar data sensitif tidak bocor lewat API (Plan §5.9).
   async fetchUsers() {
     const res = await fetch(`${this.apiBase}/collections/users/records?sort=nama&perPage=100`, {
       headers: this.getAuthHeaders()
@@ -133,6 +168,15 @@ const App = {
     if (!res.ok) throw new Error("Gagal mengambil data pengguna");
     const data = await res.json();
     this.allUsers = data.items || [];
+  },
+
+  async fetchProfilPublik() {
+    const res = await fetch(`${this.apiBase}/collections/profil_publik/records?perPage=200&sort=-created`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Gagal mengambil daftar anggota");
+    const data = await res.json();
+    this.allProfilPublik = data.items || [];
   },
 
   async fetchIuran() {

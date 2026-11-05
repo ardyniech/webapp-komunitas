@@ -26,29 +26,27 @@ window.AppModules.Markas = {
     if (masukEl) masukEl.innerText = `+Rp ${masukBulan.toLocaleString("id-ID")}`;
     if (keluarEl) keluarEl.innerText = `-Rp ${keluarBulan.toLocaleString("id-ID")}`;
 
-    const totalAnggota = (this.allUsers || []).filter(u => u.status === "aktif" && u.role !== "admin").length;
+    const totalAnggota = this.sumberAnggota().filter(u => u.status === "aktif" && u.role !== "admin").length;
     const lunasList = (this.allIuran || []).filter(i => i.periode === this.currentPeriod && i.status === "lunas");
     const lunasCount = lunasList.length;
     const pct = totalAnggota > 0 ? Math.round((lunasCount / totalAnggota) * 100) : 0;
 
-    const bensinBar = document.getElementById("dash-bensin-bar");
-    const pctLabel = document.getElementById("dash-iuran-pct");
-    const countLabel = document.getElementById("dash-iuran-count");
-
+    // HTML pakai: bensin-fill-bar / bensin-status-text / dash-members-chips / dash-latest-kas
+    const bensinBar = document.getElementById("bensin-fill-bar") || document.getElementById("dash-bensin-bar");
+    const pctLabel = document.getElementById("bensin-status-text");
     if (bensinBar) bensinBar.style.width = `${pct}%`;
-    if (pctLabel) pctLabel.innerText = `${pct}% Terisi`;
-    if (countLabel) countLabel.innerText = `${lunasCount} dari ${totalAnggota} anggota lunas`;
+    if (pctLabel) pctLabel.innerText = `${pct}%`;
 
-    const grid = document.getElementById("dash-driver-grid");
+    const grid = document.getElementById("dash-members-chips") || document.getElementById("dash-driver-grid");
     if (grid) {
-      const nonAdminUsers = (this.allUsers || []).filter(u => u.status === "aktif" && u.role !== "admin");
+      const nonAdminUsers = this.sumberAnggota().filter(u => u.status === "aktif" && u.role !== "admin");
       if (nonAdminUsers.length === 0) {
         grid.innerHTML = `<div class="empty-state">Belum ada anggota terdaftar.</div>`;
       } else {
         grid.innerHTML = nonAdminUsers.map(u => {
           const isLunas = lunasList.some(i => i.anggota === u.id);
           return `
-            <div class="driver-item ${isLunas ? 'lunas' : 'belum'}" title="${u.nama || u.username}: ${isLunas ? 'Iuran Lunas' : 'Belum Lunas'}">
+            <div class="driver-item ${isLunas ? 'lunas' : 'belum'}" title="${this.escapeHtml(u.nama || u.username)}: ${isLunas ? 'Iuran Lunas' : 'Belum Lunas'}">
               <div class="driver-icon">${isLunas ? '⛽' : '🛵'}</div>
               <div class="driver-name">${this.escapeHtml(u.nama_panggilan || u.nama || u.username)}</div>
             </div>
@@ -57,7 +55,7 @@ window.AppModules.Markas = {
       }
     }
 
-    const txList = document.getElementById("dash-recent-tx");
+    const txList = document.getElementById("dash-latest-kas") || document.getElementById("dash-recent-tx");
     if (txList) {
       const recent = (this.allKas || []).slice(0, 5);
       if (recent.length === 0) {

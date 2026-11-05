@@ -7,31 +7,42 @@ window.AppModules.EventPetaDana = {
 
   async bukaPetaDanaEvent(eventId) {
     const modal = document.getElementById("modal-peta-dana");
-    if (!modal) return;
+    if (!modal) return this.bukaDetailEventPetaFallback(eventId);
     this._selectedEventId = eventId;
-    const ev = (this._allEvents || []).find(x => x.id === eventId);
-
+    let ev = (this._allEvents || []).find(x => x.id === eventId);
+    if (!ev) {
+      try {
+        const r = await fetch(`${this.apiBase}/collections/event/records/${eventId}`, { headers: this.getAuthHeaders() });
+        if (r.ok) ev = await r.json();
+      } catch (_) {}
+    }
     const titleEl = document.getElementById("peta-dana-event-title");
-    if (titleEl && ev) titleEl.innerText = `PETA DANA: ${ev.judul}`;
-
+    if (titleEl) titleEl.textContent = `PETA DANA: ${ev?.judul || 'Event'}`;
     const contentEl = document.getElementById("peta-dana-content");
     if (contentEl) contentEl.innerHTML = `<div class="empty-state">⏳ Menghitung aliran dana event...</div>`;
     modal.classList.add("show");
+    await this._renderPetaDana(eventId, contentEl);
+  },
 
+  async bukaDetailEventPetaFallback(eventId) {
+    // Fallback lama: render inline ke events-list jika modal HTML tidak ada (backward compat)
+    return window.AppModules?.EventDetail?.bukaDetailEvent ? window.AppModules.EventDetail.bukaDetailEvent(eventId, "dana") : null;
+  },
+
+  async _renderPetaDana(eventId, contentEl) {
+    const el = contentEl || document.getElementById("peta-dana-content");
+    if (!el) return;
     try {
       const [resAnggaran, resDana, resTx] = await Promise.all([
         fetch(`${this.apiBase}/collections/event_anggaran/records?filter=(event='${eventId}')`, { headers: this.getAuthHeaders() }),
         fetch(`${this.apiBase}/collections/event_dana/records?filter=(event='${eventId}')`, { headers: this.getAuthHeaders() }),
         fetch(`${this.apiBase}/collections/event_transaksi/records?filter=(event='${eventId}')&sort=-tanggal`, { headers: this.getAuthHeaders() })
       ]);
-
       const anggaran = (await resAnggaran.json()).items || [];
       const dana = (await resDana.json()).items || [];
       const txs = (await resTx.json()).items || [];
-
       let totalRencanaAnggaran = 0;
-      anggaran.forEach(a => totalRencanaAnggaran += Number(a.total_rencana || (a.volume * a.harga_satuan) || 0));
-
+      anggaran.forEach(a => totalRencanaAnggaran += Number(a.total_rencana || (Number(a.volume||0) * Number(a.harga_satuan||0)) || 0));
       let totalDanaDiterima = 0;
       let totalKeluar = 0;
       txs.forEach(t => {
@@ -39,9 +50,7 @@ window.AppModules.EventPetaDana = {
         else totalKeluar += Number(t.nominal || 0);
       });
       const sisaSaldo = totalDanaDiterima - totalKeluar;
-
-      if (contentEl) {
-        contentEl.innerHTML = `
+      el.innerHTML = `
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
             <div class="kas-card" style="margin:0; flex-direction:column; align-items:flex-start;">
               <span class="stat-label">Total Dana Diterima</span>
@@ -55,9 +64,7 @@ window.AppModules.EventPetaDana = {
           <div class="kas-card" style="margin-bottom:12px; background:rgba(0,0,0,0.2);">
             <div>
               <div style="font-size:0.75rem; color:var(--text-sub);">Sisa Saldo Kas Event:</div>
-              <div style="font-size:1.1rem; font-weight:800; color:${sisaSaldo >= 0 ? 'var(--warna-utama)' : 'var(--warna-merah)'};">
-                Rp ${sisaSaldo.toLocaleString('id-ID')}
-              </div>
+              <div style="font-size:1.1rem; font-weight:800; color:${sisaSaldo >= 0 ? 'var(--warna-utama)' : 'var(--warna-merah)'};">Rp ${sisaSaldo.toLocaleString('id-ID')}</div>
             </div>
             <div style="text-align:right;">
               <div style="font-size:0.7rem; color:var(--text-sub);">Rencana Anggaran (RAB):</div>
@@ -65,24 +72,20 @@ window.AppModules.EventPetaDana = {
             </div>
           </div>
           <div style="font-size:0.8rem; font-weight:700; color:var(--text-sub); margin-bottom:6px;">RIWAYAT TRANSAKSI EVENT:</div>
-          <div style="max-height:200px; overflow-y:auto;">
+          <div style="max-height:300px; overflow-y:auto;">
             ${txs.length === 0 ? `<div class="empty-state">Belum ada transaksi di event ini.</div>` : txs.map(t => `
               <div style="display:flex; justify-content:space-between; padding:6px 0; border-top:1px solid rgba(255,255,255,0.06); font-size:0.78rem;">
                 <div>
                   <div style="font-weight:600;">${t.jenis === 'masuk' ? '🪙' : '🧾'} ${this.escapeHtml(t.keterangan)}</div>
                   <div style="font-size:0.7rem; color:var(--text-sub);">${(t.tanggal || '').split(' ')[0]}</div>
                 </div>
-                <div style="font-weight:700; color:${t.jenis === 'masuk' ? 'var(--warna-utama)' : 'var(--warna-merah)'};">
-                  ${t.jenis === 'masuk' ? '+' : '-'}Rp ${Number(t.nominal).toLocaleString('id-ID')}
-                </div>
+                <div style="font-weight:700; color:${t.jenis === 'masuk' ? 'var(--warna-utama)' : 'var(--warna-merah)'};">${t.jenis === 'masuk' ? '+' : '-'}Rp ${Number(t.nominal).toLocaleString('id-ID')}</div>
               </div>
             `).join("")}
           </div>
-        `;
-      }
+          <div style="display:flex;gap:8px;margin-top:10px;"><button class="btn btn-outline" onclick="App.closePetaDanaModal()">Tutup</button><button class="btn btn-outline" onclick="App.closePetaDanaModal(); App.bukaDetailEvent('${eventId}','dana')">Detail Tab Dana →</button></div>`;
     } catch (err) {
-      console.warn("Could not load peta dana", err);
-      if (contentEl) contentEl.innerHTML = `<div class="empty-state">Gagal menghitung peta dana event.</div>`;
+      el.innerHTML = `<div class="empty-state">Gagal menghitung peta dana event.</div>`;
     }
   },
 
@@ -95,16 +98,17 @@ window.AppModules.EventPetaDana = {
     const modal = document.getElementById("modal-susun-panitia");
     if (!modal) return;
     this._selectedEventId = eventId;
-    document.getElementById("panitia-event-id").value = eventId;
+    const evInput = document.getElementById("panitia-event-id");
+    if (evInput) evInput.value = eventId;
 
     const selectUser = document.getElementById("panitia-anggota-select");
     if (selectUser) {
-      selectUser.innerHTML = (this.allUsers || []).map(u => `
+      selectUser.innerHTML = this.sumberAnggota().map(u => `
         <option value="${u.id}">${this.escapeHtml(u.nama || u.username)} (${u.role})</option>
       `).join("");
     }
 
-    this.loadPanitiaList(eventId);
+    if (document.getElementById("panitia-current-list")) this.loadPanitiaList(eventId);
     modal.classList.add("show");
   },
 
@@ -145,7 +149,8 @@ window.AppModules.EventPetaDana = {
     const eventId = document.getElementById("panitia-event-id")?.value;
     const anggotaId = document.getElementById("panitia-anggota-select")?.value;
     const seksi = document.getElementById("panitia-seksi-select")?.value;
-    const tugas = document.getElementById("panitia-tugas")?.value.trim();
+    const tugasEl = document.getElementById("panitia-tugas-input") || document.getElementById("panitia-tugas");
+    const tugas = tugasEl?.value?.trim() || "";
 
     if (!eventId || !anggotaId || !seksi) return;
 

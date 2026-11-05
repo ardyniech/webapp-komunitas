@@ -1,20 +1,30 @@
-// js/profil.js - Modul Tampilan & Simpan Data Profil Anggota
+// js/profil.js - Modul Tampilan Profil dengan Sub-tab (Plan §6.11, <200 baris)
 window.AppModules = window.AppModules || {};
 
 window.AppModules.Profil = {
+  profilSubAktif: "ringkasan",
+
+  profilSwitchSub(sub) {
+    this.profilSubAktif = sub;
+    document.querySelectorAll(".sub-tab").forEach(b => b.classList.toggle("active", b.textContent.trim().includes(this.subLabel(sub))));
+    document.querySelectorAll(".sub-tab-panel").forEach(p => p.classList.remove("active"));
+    const el = document.getElementById("profil-sub-" + sub);
+    if (el) el.classList.add("active");
+    if (sub === "aktivitas" && this.renderAktivitas) this.renderAktivitas();
+    if (sub === "privasi") this.renderPrivasi();
+  },
+
+  subLabel(sub) {
+    const map = { ringkasan: "Ringkasan", datapribadi: "Data Pribadi", privasi: "Privasi", aktivitas: "Aktivitas", keamanan: "Keamanan" };
+    return map[sub] || sub;
+  },
+
   renderProfil() {
     if (!this.user) return;
-    const namaEl = document.getElementById("profil-nama-display");
-    const roleEl = document.getElementById("profil-role-display");
-    const waEl = document.getElementById("profil-wa-display");
-    const pctText = document.getElementById("profil-pct-text");
-    const barFill = document.getElementById("profil-bar-fill");
-
-    const nama = this.user.nama || this.user.nama_panggilan || this.user.username;
-    if (namaEl) namaEl.innerText = nama;
-    if (roleEl) roleEl.innerText = `${(this.user.role || 'anggota').toUpperCase()} • ${this.user.status || 'aktif'}`;
-    if (waEl) waEl.innerText = `📱 ${this.user.whatsapp || this.user.kontak || 'Belum ada kontak'}`;
-
+    this.renderRingkasan();
+    if (this.renderDataPribadi) this.renderDataPribadi();
+    this.renderPrivasi();
+    if (this.profilSubAktif === "aktivitas" && this.renderAktivitas) this.renderAktivitas();
     const fotoEl = document.getElementById("profil-foto-img");
     if (fotoEl) {
       if (this.user.foto) {
@@ -24,110 +34,103 @@ window.AppModules.Profil = {
         fotoEl.innerHTML = `🛵`;
       }
     }
+  },
 
-    const fNamaLengkap = document.getElementById("prof-nama-lengkap");
-    const fNama = document.getElementById("prof-nama-panggilan");
-    const fTglLahir = document.getElementById("prof-tanggal-lahir");
-    const fWa = document.getElementById("prof-whatsapp");
-    const fDomisili = document.getElementById("prof-domisili");
-    const fBio = document.getElementById("prof-bio");
-    const fDaruratNama = document.getElementById("prof-kontak-darurat-nama");
-    const fDaruratTelp = document.getElementById("prof-kontak-darurat-telp");
-
-    if (fNamaLengkap) fNamaLengkap.value = this.user.nama || "";
-    if (fNama) fNama.value = this.user.nama_panggilan || "";
-    if (fTglLahir) fTglLahir.value = this.user.tanggal_lahir ? this.user.tanggal_lahir.split(" ")[0] : "";
-    if (fWa) fWa.value = this.user.whatsapp || this.user.kontak || "";
-    if (fDomisili) fDomisili.value = this.user.domisili || "";
-    if (fBio) fBio.value = this.user.bio || "";
-    if (fDaruratNama) fDaruratNama.value = this.user.kontak_darurat_nama || "";
-    if (fDaruratTelp) fDaruratTelp.value = this.user.kontak_darurat_telepon || "";
-
-    if (this.renderKarakterAstrologi) this.renderKarakterAstrologi(this.user.tanggal_lahir);
-    if (this.loadUserDokumenList) this.loadUserDokumenList();
-
-    const checks = [
-      !!(this.user.nama),
-      !!(this.user.nama_panggilan),
-      !!(this.user.tanggal_lahir),
-      !!(this.user.foto),
-      !!(this.user.whatsapp || this.user.kontak),
-      !!this.user.domisili,
-      !!this.user.bio,
-      !!this.user.kontak_darurat_nama,
-      !!this.user.kontak_darurat_telepon
-    ];
-    const filledCount = checks.filter(Boolean).length;
-    const pct = Math.round((filledCount / checks.length) * 100);
-
-    if (pctText) pctText.innerText = `${pct}%`;
-    if (barFill) barFill.style.width = `${pct}%`;
+  renderRingkasan() {
+    const nama = this.user.nama || this.user.nama_panggilan || this.user.username;
+    const namaEl = document.getElementById("profil-nama-display");
+    const roleEl = document.getElementById("profil-role-display");
+    const waEl = document.getElementById("profil-wa-display");
+    if (namaEl) namaEl.textContent = nama;
+    if (roleEl) roleEl.textContent = `${(this.user.role || 'anggota').toUpperCase()} • ${this.user.status || 'aktif'}`;
+    if (waEl) waEl.textContent = `📱 ${this.user.whatsapp || this.user.kontak || 'Belum ada kontak'}`;
 
     const badgeContainer = document.getElementById("profil-badges-container");
     if (badgeContainer) {
       const badges = [];
       const isLunas = (this.allIuran || []).some(i => i.anggota === this.user.id && i.periode === this.currentPeriod && i.status === "lunas");
-      if (isLunas) {
-        badges.push('<span class="badge" style="background:#10b981; color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:10px;">⛽ Pejuang Tertib</span>');
-      }
+      if (isLunas) badges.push('<span class="badge" style="background:#10b981; color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:10px;">⛽ Pejuang Tertib</span>');
       if (this.user.role === "admin" || this.user.role === "pengurus" || this.user.role === "bendahara") {
         badges.push('<span class="badge" style="background:var(--warna-aksen); color:#000; font-size:0.7rem; padding:2px 8px; border-radius:10px;">🛡️ Pengawal Aspal</span>');
       }
       badges.push('<span class="badge" style="background:var(--bg-input); color:var(--text-primary); font-size:0.7rem; padding:2px 8px; border-radius:10px; border:1px solid var(--border-color);">🛵 Rider Satu Aspal</span>');
       badgeContainer.innerHTML = badges.join("");
     }
+
+    const checks = [
+      !!(this.user.nama), !!(this.user.nama_panggilan), !!(this.user.tanggal_lahir),
+      !!(this.user.foto), !!(this.user.whatsapp || this.user.kontak), !!this.user.domisili,
+      !!this.user.bio, !!this.user.kontak_darurat_nama, !!this.user.kontak_darurat_telepon
+    ];
+    const pct = Math.round((checks.filter(Boolean).length / checks.length) * 100);
+    const pctText = document.getElementById("profil-pct-text");
+    const barFill = document.getElementById("profil-bar-fill");
+    if (pctText) pctText.textContent = `${pct}%`;
+    if (barFill) barFill.style.width = `${pct}%`;
+
+    if (this.renderKarakterAstrologi) this.renderKarakterAstrologi(this.user.tanggal_lahir);
   },
 
-  async saveProfilData(e) {
-    if (e) e.preventDefault();
+  renderPrivasi() {
+    const rowsEl = document.getElementById("privasi-rows");
+    if (!rowsEl) return;
+    const vis = this.user.visibilitas || {};
+    const defs = (this.bidangDefs || []);
+    const standar = ["whatsapp", "domisili", "bio", "foto"];
+    let html = "";
+    for (const k of standar) {
+      const nilai = vis[k] || "anggota";
+      html += `<div class="form-group"><label>${this.labelPrivasi(k)}</label>
+        <select class="form-control" data-vis="${this.escapeHtml(k)}">
+          <option value="anggota" ${nilai === "anggota" || nilai === "semua" ? "selected" : ""}>Anggota Basecamp</option>
+          <option value="pengurus" ${nilai === "pengurus" ? "selected" : ""}>Hanya Pengurus</option>
+          <option value="pribadi" ${nilai === "pribadi" ? "selected" : ""}>Hanya Saya (Pribadi)</option>
+        </select></div>`;
+    }
+    for (const d of defs) {
+      const kunci = d.kunci;
+      if (!kunci) continue;
+      const batas = d.terlihat_oleh || "pribadi";
+      const nilai = vis[kunci] || "pribadi";
+      html += `<div class="form-group"><label>${this.escapeHtml(d.label || kunci)} <span style="font-size:0.7rem;color:var(--text-sub);">(maks: ${batas})</span></label>
+        <select class="form-control" data-vis="${this.escapeHtml(kunci)}">${this.opsiPrivasi(batas).map(o => `<option value="${o.v}" ${nilai === o.v ? "selected" : ""}>${o.t}</option>`).join("")}</select></div>`;
+    }
+    rowsEl.innerHTML = html;
+  },
+
+  labelPrivasi(k) {
+    const m = { whatsapp: "WhatsApp", domisili: "Domisili", bio: "Bio", foto: "Foto Profil" };
+    return m[k] || k;
+  },
+
+  opsiPrivasi(batas) {
+    const all = [
+      { v: "pribadi", t: "Hanya Saya (Pribadi)" },
+      { v: "pengurus", t: "Hanya Pengurus" },
+      { v: "anggota", t: "Anggota Basecamp" }
+    ];
+    const rank = { pribadi: 0, pengurus: 1, anggota: 2 };
+    return all.filter(o => rank[o.v] <= rank[batas]);
+  },
+
+  async simpanPrivasi() {
     if (!this.user) return;
-
-    const nama = document.getElementById("prof-nama-lengkap")?.value.trim() || "";
-    const nama_panggilan = document.getElementById("prof-nama-panggilan")?.value.trim() || "";
-    const tanggal_lahir = document.getElementById("prof-tanggal-lahir")?.value || "";
-    const whatsapp = document.getElementById("prof-whatsapp")?.value.trim() || "";
-    const domisili = document.getElementById("prof-domisili")?.value.trim() || "";
-    const kontak_darurat_nama = document.getElementById("prof-kontak-darurat-nama")?.value.trim() || "";
-    const kontak_darurat_telepon = document.getElementById("prof-kontak-darurat-telp")?.value.trim() || "";
-    const bio = document.getElementById("prof-bio")?.value.trim() || "";
-
+    const vis = {};
+    document.querySelectorAll("#privasi-rows select[data-vis]").forEach(sel => {
+      vis[sel.getAttribute("data-vis")] = sel.value;
+    });
     try {
-      Hero.setExpression("berpikir", Teks.hero.loading);
       const res = await fetch(`${this.apiBase}/collections/users/records/${this.user.id}`, {
-        method: "PATCH",
-        headers: this.getAuthHeaders(),
-        body: JSON.stringify({
-          nama: nama || this.user.nama,
-          nama_panggilan,
-          tanggal_lahir: tanggal_lahir ? (tanggal_lahir + " 00:00:00.000Z") : null,
-          whatsapp,
-          kontak: whatsapp || this.user.kontak,
-          domisili,
-          kontak_darurat_nama,
-          kontak_darurat_telepon,
-          bio,
-          profil_dilengkapi_pada: new Date().toISOString()
-        })
+        method: "PATCH", headers: this.getAuthHeaders(),
+        body: JSON.stringify({ visibilitas: vis })
       });
-
-      if (!res.ok) {
-        const err = await res.json();
-        Hero.setExpression("waspada", "Gagal menyimpan profil.");
-        alert("Gagal menyimpan profil: " + JSON.stringify(err.data || err.message));
-        return;
-      }
-
-      const updated = await res.json();
-      this.user = { ...this.user, ...updated };
+      if (!res.ok) throw new Error("Gagal menyimpan privasi");
+      this.user.visibilitas = vis;
       localStorage.setItem("pb_user", JSON.stringify(this.user));
-
-      Hero.setExpression("senang", "Mantap bro, data profil kamu berhasil diperbarui!");
-      this.renderProfil();
-      alert("Profil berhasil diperbarui!");
+      Hero.setExpression("senang", "Pengaturan privasi tersimpan bro!");
+      alert("Pengaturan privasi berhasil disimpan!");
     } catch (err) {
-      console.error(err);
-      Hero.setExpression("waspada", "Terjadi kendala jaringan saat simpan profil.");
-      alert("Terjadi kendala jaringan saat menyimpan profil!");
+      alert("Gagal simpan privasi: " + err.message);
     }
   },
 
@@ -135,38 +138,47 @@ window.AppModules.Profil = {
     const file = e.target.files[0];
     if (!file || !this.user) return;
     if (file.size > 2 * 1024 * 1024) {
-      alert("Ukuran foto maksimal 2MB!");
-      e.target.value = "";
-      return;
+      alert("Ukuran foto maksimal 2MB!"); e.target.value = ""; return;
     }
-
+    const kompres = await this.compressImage(file, 0.75);
     const fd = new FormData();
-    fd.append("foto", file);
-
+    fd.append("foto", kompres, "foto.jpg");
     try {
       Hero.setExpression("berpikir", "Mengunggah foto profil...");
       const res = await fetch(`${this.apiBase}/collections/users/records/${this.user.id}`, {
-        method: "PATCH",
-        headers: this.getAuthHeaders(true),
-        body: fd
+        method: "PATCH", headers: this.getAuthHeaders(true), body: fd
       });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || "Gagal upload foto profil");
-      }
+      if (!res.ok) { const err = await res.json(); throw new Error(err.message || "Gagal upload"); }
       const updated = await res.json();
       this.user = { ...this.user, ...updated };
       localStorage.setItem("pb_user", JSON.stringify(this.user));
       Hero.setExpression("senang", "Foto profil berhasil diperbarui!");
       this.renderProfil();
     } catch (err) {
-      console.error(err);
       alert("Gagal mengunggah foto profil: " + err.message);
     }
+    e.target.value = "";
+  },
+
+  compressImage(file, kualitas) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let w = img.width, h = img.height;
+        const max = 800;
+        if (w > max || h > max) { const s = Math.min(max / w, max / h); w *= s; h *= s; }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(blob => resolve(new File([blob], "foto.jpg", { type: "image/jpeg" })), "image/jpeg", kualitas);
+        URL.revokeObjectURL(img.src);
+      };
+    });
   },
 
   handleTanggalLahirChange(e) {
-    const val = e.target.value;
-    if (this.renderKarakterAstrologi) this.renderKarakterAstrologi(val);
+    if (this.renderKarakterAstrologi) this.renderKarakterAstrologi(e.target.value);
   }
 };

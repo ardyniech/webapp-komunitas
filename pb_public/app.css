@@ -1024,3 +1024,92 @@ body.mode-hemat-animasi * {
     font-weight: 700;
   }
 }
+
+/* ── Profil sub-tabs (Plan §6.11) ── */
+.sub-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+.sub-tab {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-sub);
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.sub-tab.active {
+  background: var(--warna-utama);
+  color: #fff;
+  border-color: var(--warna-utama);
+}
+.sub-tab-panel {
+  display: none;
+}
+.sub-tab-panel.active {
+  display: block;
+}
+
+/* ── Statistik anggota ── */
+.anggota-stats-row {
+  display: flex;
+  gap: 8px;
+}
+.stat-tile {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 8px 10px;
+  text-align: center;
+}
+.stat-nilai {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--warna-utama);
+}
+.stat-label {
+  font-size: 0.68rem;
+  color: var(--text-sub);
+}
+
+/* ── Member cards & activity ── */
+.anggota-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+.aktivitas-item {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.82rem;
+}
+.empty-state {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-sub);
+  font-size: 0.8rem;
+}
+
+/* Modal show state */
+.modal-overlay.show {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure member nav & buttons responsive */
+@media (max-width: 480px) {
+  .sub-tabs { gap: 4px; }
+  .sub-tab { padding: 5px 8px; font-size: 0.72rem; }
+  .anggota-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .anggota-item > div:last-child { align-self: flex-end; }
+}

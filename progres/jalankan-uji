@@ -282,6 +282,51 @@ async function main() {
                 }
                 break;
 
+              case "U-F2b-3": // Route pendaftaran & status merespons
+                {
+                  const hookCode = fs.readFileSync(path.join(HOOKS_DIR, 'auth_pendaftaran.pb.js'), 'utf-8');
+                  lulus = hookCode.includes('/api/komunitas/daftar') && hookCode.includes('/api/komunitas/status/:kode');
+                  pesan = "Route daftar & status pendaftaran terdaftar";
+                }
+                break;
+
+              case "U-F2b-4": // Route logout-all & permintaan-hapus-data tersedia
+                {
+                  const hookCode = fs.readFileSync(path.join(HOOKS_DIR, 'profil_validasi.pb.js'), 'utf-8');
+                  lulus = hookCode.includes('/api/komunitas/logout-all') && hookCode.includes('/api/komunitas/permintaan-hapus-data');
+                  pesan = "Route logout-all & permintaan hapus data terdaftar";
+                }
+                break;
+
+              case "U-F2b-5": // users list hanya self + manajemen anggota
+                {
+                  const rule = execSync(`sqlite3 "${dbPath}" "SELECT listRule FROM _collections WHERE name='users';"`, { encoding: 'utf-8' }).trim();
+                  lulus = rule.includes('kelola_anggota') && rule.includes('pengurus') && rule.includes('bendahara');
+                  pesan = `Rule users list: ${rule.slice(0, 90)}...`;
+                }
+                break;
+
+              case "U-F2b-6": // profil_publik hanya field terpilih anggota (butuh login + aktif)
+                {
+                  const rule = execSync(`sqlite3 "${dbPath}" "SELECT viewRule FROM _collections WHERE name='profil_publik';"`, { encoding: 'utf-8' }).trim();
+                  lulus = rule.includes('status = "aktif"') && rule.includes('@request.auth.id');
+                  pesan = `Rule profil_publik view: ${rule.slice(0, 90)}...`;
+                }
+                break;
+
+              case "U-F2b-7": // Direktori anggota via profil_publik
+                lulus = tableExists("profil_publik");
+                pesan = "Koleksi profil_publik tersedia untuk direktori anggota";
+                break;
+
+              case "U-F2b-8": // Bidang profil kustom terlindungi kelola_pengaturan
+                {
+                  const rule = execSync(`sqlite3 "${dbPath}" "SELECT createRule FROM _collections WHERE name='bidang_profil';"`, { encoding: 'utf-8' }).trim();
+                  lulus = rule.includes('kelola_pengaturan');
+                  pesan = `Rule bidang_profil create: ${rule.slice(0, 90)}...`;
+                }
+                break;
+
               case "U-F3-1": // Pencatatan iuran otomatis masuk kas
                 {
                   const js = fs.readFileSync(path.join(PUBLIC_DIR, 'app.js'), 'utf-8');
