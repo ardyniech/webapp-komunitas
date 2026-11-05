@@ -1,6 +1,6 @@
 // Service Worker for Basecamp Komunitas PWA — True Offline-First (Stale-While-Revalidate)
-const CACHE_NAME = 'basecamp-cache-v7';
-const API_CACHE_NAME = 'basecamp-api-v7';
+const CACHE_NAME = 'basecamp-cache-v8';
+const API_CACHE_NAME = 'basecamp-api-v8';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -72,6 +72,8 @@ self.addEventListener('fetch', (e) => {
   if (req.url.includes('/api/collections/users/auth-with-password') || req.url.includes('/api/admins/auth-with-password')) return;
   // Jangan cache file HTML secara dinamis — selalu ambil terbaru dari network
   if (req.url.endsWith('.html') || req.url.endsWith('/')) return;
+  // Jangan cache laporan scan — selalu ambil terbaru dari network
+  if (req.url.includes('/scan-report.json')) return;
 
   const cacheName = req.url.includes('/api/') ? API_CACHE_NAME : CACHE_NAME;
 
