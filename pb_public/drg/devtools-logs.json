@@ -1,16 +1,8 @@
 {
-  "generated_at": "2026-11-05T21:25:59.006Z",
+  "generated_at": "2026-11-05T21:51:12.049Z",
   "service": "webapp-komunitas-pocketbase.service",
   "lines_count": 60,
   "lines": [
-    "2026-11-05T20:09:18+00:00 vaio systemd[1]: Failed to start webapp-komunitas-pocketbase.service - PocketBase for Webapp Komunitas.",
-    "2026-11-05T20:10:36+00:00 vaio systemd[1]: Started webapp-komunitas-pocketbase.service - PocketBase for Webapp Komunitas.",
-    "2026-11-05T20:10:36+00:00 vaio pocketbase[329491]: 2026/11/05 20:10:36 Server started at http://100.117.176.41:8095",
-    "2026-11-05T20:10:36+00:00 vaio pocketbase[329491]: ├─ REST API: http://100.117.176.41:8095/api/",
-    "2026-11-05T20:10:36+00:00 vaio pocketbase[329491]: └─ Admin UI: http://100.117.176.41:8095/_/",
-    "2026-11-05T20:16:52+00:00 vaio pocketbase[329491]: File /home/ardy/projects/webapp-komunitas/pb_hooks/progres.pb.js changed, restarting...",
-    "2026-11-05T20:16:52+00:00 vaio pocketbase[329491]: 2026/11/05 20:16:52 Server started at http://100.117.176.41:8095",
-    "2026-11-05T20:16:52+00:00 vaio pocketbase[329491]: ├─ REST API: http://100.117.176.41:8095/api/",
     "2026-11-05T20:16:52+00:00 vaio pocketbase[329491]: └─ Admin UI: http://100.117.176.41:8095/_/",
     "2026-11-05T20:17:28+00:00 vaio systemd[1]: Stopping webapp-komunitas-pocketbase.service - PocketBase for Webapp Komunitas...",
     "2026-11-05T20:17:28+00:00 vaio systemd[1]: webapp-komunitas-pocketbase.service: Deactivated successfully.",
@@ -62,7 +54,15 @@
     "2026-11-05T21:22:47+00:00 vaio systemd[1]: Started webapp-komunitas-pocketbase.service - PocketBase for Webapp Komunitas.",
     "2026-11-05T21:22:47+00:00 vaio pocketbase[336753]: 2026/11/05 21:22:47 Server started at http://100.117.176.41:8095",
     "2026-11-05T21:22:47+00:00 vaio pocketbase[336753]: ├─ REST API: http://100.117.176.41:8095/api/",
-    "2026-11-05T21:22:47+00:00 vaio pocketbase[336753]: └─ Admin UI: http://100.117.176.41:8095/_/"
+    "2026-11-05T21:22:47+00:00 vaio pocketbase[336753]: └─ Admin UI: http://100.117.176.41:8095/_/",
+    "2026-11-05T21:36:13+00:00 vaio systemd[1]: Stopping webapp-komunitas-pocketbase.service - PocketBase for Webapp Komunitas...",
+    "2026-11-05T21:36:13+00:00 vaio systemd[1]: webapp-komunitas-pocketbase.service: Deactivated successfully.",
+    "2026-11-05T21:36:13+00:00 vaio systemd[1]: Stopped webapp-komunitas-pocketbase.service - PocketBase for Webapp Komunitas.",
+    "2026-11-05T21:36:13+00:00 vaio systemd[1]: webapp-komunitas-pocketbase.service: Consumed 3.547s CPU time, 35.4M memory peak.",
+    "2026-11-05T21:36:13+00:00 vaio systemd[1]: Started webapp-komunitas-pocketbase.service - PocketBase for Webapp Komunitas.",
+    "2026-11-05T21:36:13+00:00 vaio pocketbase[338460]: 2026/11/05 21:36:13 Server started at http://100.117.176.41:8095",
+    "2026-11-05T21:36:13+00:00 vaio pocketbase[338460]: ├─ REST API: http://100.117.176.41:8095/api/",
+    "2026-11-05T21:36:13+00:00 vaio pocketbase[338460]: └─ Admin UI: http://100.117.176.41:8095/_/"
   ],
   "catatan": "Tail 60 baris terakhir. Token disamarkan otomatis."
 }

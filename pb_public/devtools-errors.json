@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-11-05T21:51:13.802Z",
+  "total_error_events": 6,
+  "pola_unik": 1,
+  "errors": [
+    {
+      "signature": "Failed to start webapp-komunitas-pocketbase.service - PocketBase for Webapp Komunitas.",
+      "jumlah": 6,
+      "terakhir": "Nov 05 20:09:18 vaio systemd[1]: Failed to start webapp-komunitas-pocketbase.service - PocketBase for Webapp Komunitas."
+    }
+  ],
+  "catatan": "Error journal PocketBase (priority err..alert) dikelompokkan per signature. Kosong = tidak ada error tercatat."
+}

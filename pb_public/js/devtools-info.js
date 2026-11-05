@@ -9,6 +9,7 @@ window.AppModules.DevToolsInfo = {
     this.renderInventory();
     this.renderReleases();
     this.renderLinks();
+    this.renderSecurity();
     this.renderFlags();
   },
 
@@ -102,6 +103,32 @@ window.AppModules.DevToolsInfo = {
               `<span style="color:var(--text-muted);">${this.esc(x.date)} · ${x.files_changed} file</span></div>`
           )
           .join("");
+    } catch (e) {
+      el.innerHTML = `<div class="empty-state" style="color:var(--warna-merah);">${this.esc(e.message)}</div>`;
+    }
+  },
+
+  // Audit keamanan: secret bocor + versi + paparan file publik
+  async renderSecurity() {
+    const el = document.getElementById("devtools-security-list");
+    if (!el) return;
+    el.innerHTML = `<div class="empty-state">Memuat audit keamanan...</div>`;
+    try {
+      const d = await this.devtoolsFetch("devtools-security.json");
+      const clean = d.secret_count === 0;
+      el.innerHTML =
+        `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;">` +
+        `<div class="stat-tile"><div class="stat-nilai" style="color:${clean ? "var(--warna-utama)" : "var(--warna-merah)"};">${d.secret_count}</div><div class="stat-label">Secret bocor (repo)</div></div>` +
+        `<div class="stat-tile"><div class="stat-nilai" style="font-size:0.85rem;">${this.esc(d.pocketbase_version.replace("pocketbase version ", ""))}</div><div class="stat-label">PocketBase</div></div>` +
+        `<div class="stat-tile"><div class="stat-nilai">${(d.public_json_files || []).length}</div><div class="stat-label">File JSON publik</div></div>` +
+        `</div>` +
+        `<div style="font-size:0.72rem;color:var(--text-muted);margin-top:6px;">${this.esc(d.catatan_paparan || "")}</div>` +
+        ((d.secret_findings || [])
+          .map(
+            (f) =>
+              `<div style="padding:5px 8px;border-bottom:1px solid var(--border-color);font-size:0.78rem;color:var(--warna-merah);"><code>${this.esc(f.file)}</code> — ${this.esc(f.message)}</div>`
+          )
+          .join("") || `<div style="font-size:0.78rem;color:var(--warna-utama);margin-top:6px;">Tidak ada secret terdeteksi di ${d.tracked_files_checked} file ter-commit.</div>`);
     } catch (e) {
       el.innerHTML = `<div class="empty-state" style="color:var(--warna-merah);">${this.esc(e.message)}</div>`;
     }

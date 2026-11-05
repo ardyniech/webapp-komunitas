@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T21:25:59.068Z",
+  "generated_at": "2026-11-05T21:51:14.637Z",
   "total_findings": 10,
   "by_severity": {
     "critical": 0,
@@ -18,7 +18,8 @@
       "akar_masalah": "JS memanggil document.getElementById('<id>') tetapi elemen dengan id itu tidak ada di index.html. Kemungkinan: (a) id typo/berubah nama, (b) elemen dibuat dinamis dan tidak terdaftar di allowlist scanner, atau (c) elemen benar-benar belum dibuat di HTML.",
       "verifikasi": "grep -rn '\"lpj-isi\"' pb_public/index.html pb_public/js/",
       "fix": "Jika elemen harus ada: tambahkan elemen ber-id itu di index.html. Jika elemen dibuat dinamis di JS: pastikan dibuat sebelum dipanggil (setAttribute('id', ...) ada sebelum getElementById).",
-      "konteks": ""
+      "konteks": "",
+      "last_commit_file": "tidak ada riwayat git (file untracked/baru)"
     },
     {
       "type": "missing_html_id",
@@ -30,7 +31,8 @@
       "akar_masalah": "JS memanggil document.getElementById('<id>') tetapi elemen dengan id itu tidak ada di index.html. Kemungkinan: (a) id typo/berubah nama, (b) elemen dibuat dinamis dan tidak terdaftar di allowlist scanner, atau (c) elemen benar-benar belum dibuat di HTML.",
       "verifikasi": "grep -rn '\"lpj-jenis\"' pb_public/index.html pb_public/js/",
       "fix": "Jika elemen harus ada: tambahkan elemen ber-id itu di index.html. Jika elemen dibuat dinamis di JS: pastikan dibuat sebelum dipanggil (setAttribute('id', ...) ada sebelum getElementById).",
-      "konteks": ""
+      "konteks": "",
+      "last_commit_file": "tidak ada riwayat git (file untracked/baru)"
     },
     {
       "type": "missing_html_id",
@@ -42,7 +44,8 @@
       "akar_masalah": "JS memanggil document.getElementById('<id>') tetapi elemen dengan id itu tidak ada di index.html. Kemungkinan: (a) id typo/berubah nama, (b) elemen dibuat dinamis dan tidak terdaftar di allowlist scanner, atau (c) elemen benar-benar belum dibuat di HTML.",
       "verifikasi": "grep -rn '\"forum-input-judul\"' pb_public/index.html pb_public/js/",
       "fix": "Jika elemen harus ada: tambahkan elemen ber-id itu di index.html. Jika elemen dibuat dinamis di JS: pastikan dibuat sebelum dipanggil (setAttribute('id', ...) ada sebelum getElementById).",
-      "konteks": ""
+      "konteks": "",
+      "last_commit_file": "tidak ada riwayat git (file untracked/baru)"
     },
     {
       "type": "missing_html_id",
@@ -54,7 +57,8 @@
       "akar_masalah": "JS memanggil document.getElementById('<id>') tetapi elemen dengan id itu tidak ada di index.html. Kemungkinan: (a) id typo/berubah nama, (b) elemen dibuat dinamis dan tidak terdaftar di allowlist scanner, atau (c) elemen benar-benar belum dibuat di HTML.",
       "verifikasi": "grep -rn '\"forum-input-kategori\"' pb_public/index.html pb_public/js/",
       "fix": "Jika elemen harus ada: tambahkan elemen ber-id itu di index.html. Jika elemen dibuat dinamis di JS: pastikan dibuat sebelum dipanggil (setAttribute('id', ...) ada sebelum getElementById).",
-      "konteks": ""
+      "konteks": "",
+      "last_commit_file": "tidak ada riwayat git (file untracked/baru)"
     },
     {
       "type": "missing_html_id",
@@ -66,7 +70,8 @@
       "akar_masalah": "JS memanggil document.getElementById('<id>') tetapi elemen dengan id itu tidak ada di index.html. Kemungkinan: (a) id typo/berubah nama, (b) elemen dibuat dinamis dan tidak terdaftar di allowlist scanner, atau (c) elemen benar-benar belum dibuat di HTML.",
       "verifikasi": "grep -rn '\"forum-input-isi\"' pb_public/index.html pb_public/js/",
       "fix": "Jika elemen harus ada: tambahkan elemen ber-id itu di index.html. Jika elemen dibuat dinamis di JS: pastikan dibuat sebelum dipanggil (setAttribute('id', ...) ada sebelum getElementById).",
-      "konteks": ""
+      "konteks": "",
+      "last_commit_file": "tidak ada riwayat git (file untracked/baru)"
     },
     {
       "type": "missing_html_id",
@@ -78,7 +83,8 @@
       "akar_masalah": "JS memanggil document.getElementById('<id>') tetapi elemen dengan id itu tidak ada di index.html. Kemungkinan: (a) id typo/berubah nama, (b) elemen dibuat dinamis dan tidak terdaftar di allowlist scanner, atau (c) elemen benar-benar belum dibuat di HTML.",
       "verifikasi": "grep -rn '\"form-topik-forum\"' pb_public/index.html pb_public/js/",
       "fix": "Jika elemen harus ada: tambahkan elemen ber-id itu di index.html. Jika elemen dibuat dinamis di JS: pastikan dibuat sebelum dipanggil (setAttribute('id', ...) ada sebelum getElementById).",
-      "konteks": ""
+      "konteks": "",
+      "last_commit_file": "tidak ada riwayat git (file untracked/baru)"
     },
     {
       "type": "missing_html_id",
@@ -90,7 +96,8 @@
       "akar_masalah": "JS memanggil document.getElementById('<id>') tetapi elemen dengan id itu tidak ada di index.html. Kemungkinan: (a) id typo/berubah nama, (b) elemen dibuat dinamis dan tidak terdaftar di allowlist scanner, atau (c) elemen benar-benar belum dibuat di HTML.",
       "verifikasi": "grep -rn '\"aduan-kategori\"' pb_public/index.html pb_public/js/",
       "fix": "Jika elemen harus ada: tambahkan elemen ber-id itu di index.html. Jika elemen dibuat dinamis di JS: pastikan dibuat sebelum dipanggil (setAttribute('id', ...) ada sebelum getElementById).",
-      "konteks": ""
+      "konteks": "",
+      "last_commit_file": "tidak ada riwayat git (file untracked/baru)"
     },
     {
       "type": "missing_html_id",
@@ -102,7 +109,8 @@
       "akar_masalah": "JS memanggil document.getElementById('<id>') tetapi elemen dengan id itu tidak ada di index.html. Kemungkinan: (a) id typo/berubah nama, (b) elemen dibuat dinamis dan tidak terdaftar di allowlist scanner, atau (c) elemen benar-benar belum dibuat di HTML.",
       "verifikasi": "grep -rn '\"aduan-isi\"' pb_public/index.html pb_public/js/",
       "fix": "Jika elemen harus ada: tambahkan elemen ber-id itu di index.html. Jika elemen dibuat dinamis di JS: pastikan dibuat sebelum dipanggil (setAttribute('id', ...) ada sebelum getElementById).",
-      "konteks": ""
+      "konteks": "",
+      "last_commit_file": "tidak ada riwayat git (file untracked/baru)"
     },
     {
       "type": "missing_html_id",
@@ -114,7 +122,8 @@
       "akar_masalah": "JS memanggil document.getElementById('<id>') tetapi elemen dengan id itu tidak ada di index.html. Kemungkinan: (a) id typo/berubah nama, (b) elemen dibuat dinamis dan tidak terdaftar di allowlist scanner, atau (c) elemen benar-benar belum dibuat di HTML.",
       "verifikasi": "grep -rn '\"aduan-anonim\"' pb_public/index.html pb_public/js/",
       "fix": "Jika elemen harus ada: tambahkan elemen ber-id itu di index.html. Jika elemen dibuat dinamis di JS: pastikan dibuat sebelum dipanggil (setAttribute('id', ...) ada sebelum getElementById).",
-      "konteks": ""
+      "konteks": "",
+      "last_commit_file": "tidak ada riwayat git (file untracked/baru)"
     },
     {
       "type": "missing_html_id",
@@ -126,7 +135,8 @@
       "akar_masalah": "JS memanggil document.getElementById('<id>') tetapi elemen dengan id itu tidak ada di index.html. Kemungkinan: (a) id typo/berubah nama, (b) elemen dibuat dinamis dan tidak terdaftar di allowlist scanner, atau (c) elemen benar-benar belum dibuat di HTML.",
       "verifikasi": "grep -rn '\"form-pengaduan-dewan\"' pb_public/index.html pb_public/js/",
       "fix": "Jika elemen harus ada: tambahkan elemen ber-id itu di index.html. Jika elemen dibuat dinamis di JS: pastikan dibuat sebelum dipanggil (setAttribute('id', ...) ada sebelum getElementById).",
-      "konteks": ""
+      "konteks": "",
+      "last_commit_file": "tidak ada riwayat git (file untracked/baru)"
     }
   ],
   "ringkasan_ai": "10 temuan (0 kritikal, 0 tinggi, 10 sedang). Mulai dari kritikal: - — lihat field akar_masalah, verifikasi, dan fix untuk perintah siap salin."

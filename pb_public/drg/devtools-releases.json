@@ -1,8 +1,40 @@
 {
-  "generated_at": "2026-11-05T21:25:58.927Z",
+  "generated_at": "2026-11-05T21:51:11.933Z",
   "branch": "master",
-  "total_commits": 42,
+  "total_commits": 44,
   "last_30": [
+    {
+      "hash": "fb373d5",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): audit tautan hidup + card klik drill-down",
+      "files_changed": 10,
+      "files": [
+        "pb_public/devtools-links.json",
+        "pb_public/drg/devtools-links.json",
+        "pb_public/drg/scan-report.json",
+        "pb_public/index.html",
+        "pb_public/js/devtools-info.js",
+        "pb_public/js/scan-bugs.js",
+        "pb_public/scan-report.json",
+        "scripts/dt-all.js"
+      ]
+    },
+    {
+      "hash": "5468f60",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): bug nyata diperbaiki + progres sumber uji nyata + SOP lanjutan",
+      "files_changed": 20,
+      "files": [
+        "README.md",
+        "pb_public/devtools-diagnose.json",
+        "pb_public/devtools-drift.json",
+        "pb_public/devtools-git.json",
+        "pb_public/devtools-heartbeat.json",
+        "pb_public/devtools-inventory.json",
+        "pb_public/devtools-logs.json",
+        "pb_public/devtools-releases.json"
+      ]
+    },
     {
       "hash": "be19aef",
       "date": "2026-11-05",
@@ -311,26 +343,6 @@
       "files": [
         "pb_public/app.js",
         "pb_public/index.html"
-      ]
-    },
-    {
-      "hash": "2b9e3ad",
-      "date": "2026-11-04",
-      "subject": "feat(event): susun panitia interaktif, registrasi peserta event, dan backup terjadwal",
-      "files_changed": 3,
-      "files": [
-        ".gitignore",
-        "pb_public/app.js",
-        "pb_public/index.html"
-      ]
-    },
-    {
-      "hash": "6ab6eeb",
-      "date": "2026-11-04",
-      "subject": "feat(komunitas): ubah status event dari UI (divalidasi hook)",
-      "files_changed": 1,
-      "files": [
-        "pb_public/app.js"
       ]
     }
   ]

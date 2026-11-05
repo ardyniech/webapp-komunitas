@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-11-05T21:51:14.543Z",
+  "titik": 3,
+  "recent": [
+    {
+      "waktu": "2026-11-05T21:40:59.593Z",
+      "bug_kritikal": 0,
+      "bug_tinggi": 0,
+      "bug_sedang": 10,
+      "bug_total": 10,
+      "db_rows": 139,
+      "ram_pct": 39,
+      "udp": 4
+    },
+    {
+      "waktu": "2026-11-05T21:40:59.698Z",
+      "bug_kritikal": 0,
+      "bug_tinggi": 0,
+      "bug_sedang": 10,
+      "bug_total": 10,
+      "db_rows": 139,
+      "ram_pct": 39,
+      "udp": 4
+    },
+    {
+      "waktu": "2026-11-05T21:51:14.542Z",
+      "bug_kritikal": 0,
+      "bug_tinggi": 0,
+      "bug_sedang": 10,
+      "bug_total": 10,
+      "db_rows": 139,
+      "ram_pct": 39,
+      "udp": 4
+    }
+  ],
+  "delta_vs_sebelumnya": 0,
+  "catatan": "Riwayat append-only di devtools-history.ndjson (maks 500 baris)."
+}

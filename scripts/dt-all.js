@@ -14,7 +14,11 @@ const steps = [
   "dt-inventory.js",
   "dt-releases.js",
   "dt-logs.js",
+  "dt-db.js",
+  "dt-errors.js",
+  "dt-security.js",
   "dt-links.js",
+  "dt-history.js", // append riwayat (setelah snapshot lain)
   "dt-diagnose.js", // harus terakhir: membaca scan-report.json dari scan-bugs
 ];
 

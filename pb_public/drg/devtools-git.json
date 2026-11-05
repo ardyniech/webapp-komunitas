@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-11-05T21:25:58.506Z",
+  "generated_at": "2026-11-05T21:51:11.330Z",
   "branch": "master",
-  "dirty_count": 32,
+  "dirty_count": 52,
   "dirty": [
     {
       "code": "M",
@@ -26,6 +26,10 @@
     {
       "code": "M",
       "file": "pb_public/devtools-inventory.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/devtools-links.json"
     },
     {
       "code": "M",
@@ -57,6 +61,10 @@
     },
     {
       "code": "M",
+      "file": "pb_public/drg/devtools-links.json"
+    },
+    {
+      "code": "M",
       "file": "pb_public/drg/devtools-logs.json"
     },
     {
@@ -66,6 +74,22 @@
     {
       "code": "M",
       "file": "pb_public/drg/scan-report.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/index.html"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/js/devtools-info.js"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/js/devtools-monitor.js"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/js/devtools.js"
     },
     {
       "code": "M",
@@ -89,10 +113,6 @@
     },
     {
       "code": "M",
-      "file": "pb_public/js/struktur-aturan.js"
-    },
-    {
-      "code": "M",
       "file": "pb_public/js/wizard-kas.js"
     },
     {
@@ -101,11 +121,19 @@
     },
     {
       "code": "M",
+      "file": "pb_public/sw.js"
+    },
+    {
+      "code": "M",
       "file": "progres/jalankan-uji"
     },
     {
       "code": "M",
-      "file": "scripts/scan-bugs.js"
+      "file": "scripts/dt-all.js"
+    },
+    {
+      "code": "M",
+      "file": "scripts/dt-diagnose.js"
     },
     {
       "code": "??",
@@ -113,11 +141,51 @@
     },
     {
       "code": "??",
+      "file": "pb_public/devtools-db.json"
+    },
+    {
+      "code": "??",
       "file": "pb_public/devtools-diagnose.md"
     },
     {
       "code": "??",
+      "file": "pb_public/devtools-errors.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/devtools-history.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/devtools-history.ndjson"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/devtools-security.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/drg/devtools-db.json"
+    },
+    {
+      "code": "??",
       "file": "pb_public/drg/devtools-diagnose.md"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/drg/devtools-errors.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/drg/devtools-history.json"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/drg/devtools-history.ndjson"
+    },
+    {
+      "code": "??",
+      "file": "pb_public/drg/devtools-security.json"
     },
     {
       "code": "??",
@@ -129,7 +197,19 @@
     },
     {
       "code": "??",
-      "file": "scripts/test-restore.sh"
+      "file": "scripts/dt-db.js"
+    },
+    {
+      "code": "??",
+      "file": "scripts/dt-errors.js"
+    },
+    {
+      "code": "??",
+      "file": "scripts/dt-history.js"
+    },
+    {
+      "code": "??",
+      "file": "scripts/dt-security.js"
     }
   ],
   "last_commit_per_dir": [
@@ -141,14 +221,14 @@
     },
     {
       "dir": "pb_public/js",
-      "hash": "be19aef",
-      "subject": "feat(webapp-komunitas): overlay sinkronisasi jujur di layer teratas",
+      "hash": "fb373d5",
+      "subject": "feat(webapp-komunitas): audit tautan hidup + card klik drill-down",
       "date": "2026-11-05"
     },
     {
       "dir": "pb_public",
-      "hash": "be19aef",
-      "subject": "feat(webapp-komunitas): overlay sinkronisasi jujur di layer teratas",
+      "hash": "fb373d5",
+      "subject": "feat(webapp-komunitas): audit tautan hidup + card klik drill-down",
       "date": "2026-11-05"
     },
     {
@@ -159,8 +239,8 @@
     },
     {
       "dir": "scripts",
-      "hash": "c7bb08e",
-      "subject": "feat(webapp-komunitas): Dev Tools lengkap (9 ide) + quality gate + diagnosa akar masalah",
+      "hash": "fb373d5",
+      "subject": "feat(webapp-komunitas): audit tautan hidup + card klik drill-down",
       "date": "2026-11-05"
     },
     {
@@ -171,6 +251,16 @@
     }
   ],
   "recent": [
+    {
+      "hash": "fb373d5",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): audit tautan hidup + card klik drill-down"
+    },
+    {
+      "hash": "5468f60",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): bug nyata diperbaiki + progres sumber uji nyata + SOP lanjutan"
+    },
     {
       "hash": "be19aef",
       "date": "2026-11-05",
@@ -185,16 +275,6 @@
       "hash": "c7bb08e",
       "date": "2026-11-05",
       "subject": "feat(webapp-komunitas): Dev Tools lengkap (9 ide) + quality gate + diagnosa akar masalah"
-    },
-    {
-      "hash": "d4245bd",
-      "date": "2026-11-05",
-      "subject": "docs(webapp-komunitas): tambah README.md implementasi + SOP dev"
-    },
-    {
-      "hash": "728d354",
-      "date": "2026-11-05",
-      "subject": "fix(webapp-komunitas): penalti bug proporsional dengan lantai 5% (tidak lagi 0%)"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T21:25:58.741Z",
+  "generated_at": "2026-11-05T21:51:11.653Z",
   "routes": [
     {
       "method": "GET",
@@ -170,6 +170,10 @@
   ],
   "js_files": [
     {
+      "file": "pb_public/js/devtools-info.js",
+      "kb": 11
+    },
+    {
       "file": "pb_public/js/event-detail.js",
       "kb": 11
     },
@@ -202,7 +206,7 @@
       "kb": 7
     },
     {
-      "file": "pb_public/js/devtools-info.js",
+      "file": "pb_public/js/devtools-monitor.js",
       "kb": 7
     },
     {
@@ -278,7 +282,7 @@
       "kb": 3
     },
     {
-      "file": "pb_public/js/devtools-monitor.js",
+      "file": "pb_public/js/devtools.js",
       "kb": 3
     },
     {
@@ -314,14 +318,10 @@
       "kb": 2
     },
     {
-      "file": "pb_public/js/devtools.js",
-      "kb": 2
-    },
-    {
       "file": "pb_public/js/profil-aktivitas.js",
       "kb": 2
     }
   ],
   "js_count": 38,
-  "js_total_kb": 196
+  "js_total_kb": 205
 }

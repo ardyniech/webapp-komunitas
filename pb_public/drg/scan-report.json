@@ -1,6 +1,6 @@
 {
-  "scanned_at": "2026-11-05T21:36:03.393Z",
-  "total_checked": 512,
+  "scanned_at": "2026-11-05T21:51:11.101Z",
+  "total_checked": 516,
   "total_findings": 10,
   "by_severity": {
     "critical": 0,
