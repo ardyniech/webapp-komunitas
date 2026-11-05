@@ -101,7 +101,28 @@ Banner di tab Progres menampilkan rinciannya. Scan terbaru:
 - Timer user systemd `scan-bugs.timer` (tiap 15 mnt) agar laporan selalu segar
 - `scan-report.json` ditulis juga ke `pb_public/drg/` agar bisa diakses via domain `/drg/`
 
-### 4.5 Hal lain
+### 4.5 Bug Hunter + Dev Tools (fitur dev-tool, atomik)
+
+- Scanner `scripts/scan-bugs.js` → `scan-report.json`; timer user systemd
+  `scan-bugs.service` kini menjalankan `scripts/dt-all.js` (semua snapshot
+  devtools) tiap 15 menit.
+- Halaman **Dev Tools** (bottom nav 🛠️): sub-tab Git / Diagnosa Bug /
+  Monitor / Info & Flag. Data dari `pb_public/devtools-*.json`
+  (juga disalin ke `pb_public/drg/` untuk domain `/drg/`).
+  - `dt-git`: status kotor + commit per direktori (deteksi konflik antar-agen)
+  - `dt-diagnose`: akar masalah + perintah verifikasi + langkah fix per bug
+    (JSON untuk UI + MD `devtools-diagnose.md` untuk AI dev)
+  - `dt-heartbeat`: uptime, RAM, socket UDP, disk, status PocketBase
+  - `dt-drift`: perbandingan PLAN.md vs registry vs kode nyata
+  - `dt-inventory`: route hook + koleksi DB + file JS
+  - `dt-releases`: release notes otomatis dari git log
+  - `dt-logs`: tail 60 baris journal PocketBase (token disamarkan)
+  - Feature flag: toggle `konfigurasi.modul_aktif` langsung dari UI (admin)
+- **Quality gate** `.githooks/pre-commit` (pasang: `git config core.hooksPath .githooks`):
+  tolak commit bila syntax error di file staged atau bug kritikal > 0.
+  Semua file baru atomik terpisah; `progres.pb.js` tidak disentuh.
+
+### 4.6 Hal lain
 
 - `svc logout-all`: client tidak lagi PATCH `tokenKey` langsung (dilarang
   validasi); diganti route hook.
