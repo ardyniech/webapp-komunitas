@@ -1,16 +1,17 @@
-// js/scan-bugs.js - Tampilkan laporan scan bug otomatis (Plan: bug hunter page)
+// js/scan-bugs.js - Tampilkan laporan scan bug otomatis (Page: Bug Hunter)
 window.AppModules = window.AppModules || {};
 
 window.AppModules.ScanBugs = {
   async loadScanBugs() {
-    const wrap = document.getElementById("scan-bugs-wrap");
-    const listEl = document.getElementById("scan-bugs-list");
-    const summaryEl = document.getElementById("scan-bugs-summary");
-    const scannedAtEl = document.getElementById("scan-bugs-scanned-at");
-    const refreshBtn = document.getElementById("btn-refresh-scan");
-    if (!wrap || !listEl) return;
+    const listEl = document.getElementById("bug-hunter-list");
+    const totalEl = document.getElementById("bh-total-checked");
+    const findingsEl = document.getElementById("bh-total-findings");
+    const critEl = document.getElementById("bh-critical");
+    const highEl = document.getElementById("bh-high");
+    const medEl = document.getElementById("bh-medium");
+    const scannedAtEl = document.getElementById("bh-scanned-at");
+    if (!listEl) return;
 
-    wrap.style.display = "block";
     listEl.innerHTML = `<div class="empty-state">Memuat laporan scan bug...</div>`;
 
     try {
@@ -19,21 +20,20 @@ window.AppModules.ScanBugs = {
       if (!res.ok) throw new Error("Laporan scan tidak tersedia (HTTP " + res.status + ")");
       const data = await res.json();
 
+      if (totalEl) totalEl.innerText = data.total_checked || "-";
+      if (findingsEl) findingsEl.innerText = data.total_findings || "-";
+      if (critEl) critEl.innerText = data.by_severity && data.by_severity.critical || 0;
+      if (highEl) highEl.innerText = data.by_severity && data.by_severity.high || 0;
+      if (medEl) medEl.innerText = data.by_severity && data.by_severity.medium || 0;
       if (scannedAtEl) scannedAtEl.innerText = data.scanned_at ? new Date(data.scanned_at).toLocaleString("id-ID") : "-";
-      if (summaryEl) {
-        summaryEl.innerHTML =
-          "<strong>Total temuan:</strong> " + data.total_findings +
-          " &nbsp;|&nbsp; <strong style='color:var(--warna-merah);'>Tinggi:</strong> " + (data.by_severity && data.by_severity.high || 0) +
-          " &nbsp;|&nbsp; <strong style='color:var(--warna-aksen);'>Sedang:</strong> " + (data.by_severity && data.by_severity.medium || 0);
-      }
 
       if (!data.findings || data.findings.length === 0) {
         listEl.innerHTML = `<div class="empty-state" style="color:var(--warna-utama);">🎉 Tidak ditemukan bug. Semua baik-baik saja bro!</div>`;
         return;
       }
 
-      const sevColor = { high: "var(--warna-merah)", medium: "var(--warna-aksen)", low: "var(--text-sub)" };
-      const sevLabel = { high: "TINGGI", medium: "SEDANG", low: "RENDAH" };
+      const sevColor = { critical: "var(--warna-merah)", high: "var(--warna-merah)", medium: "var(--warna-aksen)", low: "var(--text-sub)" };
+      const sevLabel = { critical: "KRITIKAL", high: "TINGGI", medium: "SEDANG", low: "RENDAH" };
 
       listEl.innerHTML = data.findings.map(f => `
         <div class="bug-item" style="padding:10px 12px; border:1px solid var(--border-color); border-radius:10px; margin-bottom:8px; background:var(--bg-card);">
@@ -53,6 +53,7 @@ window.AppModules.ScanBugs = {
           <div style="font-size:0.82rem; color:var(--text-primary);">
             ${this.escapeHtml(f.message)}
           </div>
+          ${f.suggestion ? `<div style="font-size:0.75rem; color:var(--warna-aksen); margin-top:4px; font-style:italic;">💡 ${this.escapeHtml(f.suggestion)}</div>` : ''}
         </div>
       `).join("");
     } catch (err) {
