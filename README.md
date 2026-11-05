@@ -117,6 +117,13 @@ Banner di tab Progres menampilkan rinciannya. Scan terbaru:
   - `dt-inventory`: route hook + koleksi DB + file JS
   - `dt-releases`: release notes otomatis dari git log
   - `dt-logs`: tail 60 baris journal PocketBase (token disamarkan)
+  - `dt-links`: audit tautan live (curl semua route + file statis; kini 0 mati)
+  - `dt-db`: kesegaran data per koleksi (row count + umur data)
+  - `dt-history`: riwayat trunc append-only + sparkline + delta bug
+  - `dt-errors`: error journal dikelompokkan per pola signature
+  - `dt-security`: audit secret di repo (0 temuan) + versi PocketBase + paparan JSON publik
+  - Diagnosa dilengkapi blame git per file bug
+  - Badge merah di nav Bug Hunter bila kritikal+tinggi > 0 (alerting tanpa buka Dev Tools)
   - Feature flag: toggle `konfigurasi.modul_aktif` langsung dari UI (admin)
 - **Quality gate** `.githooks/pre-commit` (pasang: `git config core.hooksPath .githooks`):
   tolak commit bila syntax error di file staged atau bug kritikal > 0.
