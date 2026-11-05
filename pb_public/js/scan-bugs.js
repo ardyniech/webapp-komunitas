@@ -14,28 +14,38 @@ window.AppModules.ScanBugs = {
 
     listEl.innerHTML = `<div class="empty-state">Memuat laporan scan bug...</div>`;
 
-    try {
-      // Cache-busting agar SW tidak melayani laporan lama
-      const res = await fetch("/scan-report.json?t=" + Date.now(), { cache: "no-store" });
-      const text = await res.text();
-      if (!res.ok) throw new Error("Laporan scan tidak tersedia (HTTP " + res.status + ")");
+    // File statis scan-report.json disajikan di root oleh PocketBase.
+    // Selalu gunakan root path (bukan relatif ke /drg/) karena
+    // /drg/scan-report.json mengembalikan SPA fallback (HTML), bukan JSON.
+    const scanUrl = '/scan-report.json?t=' + Date.now();
 
-      // Deteksi jika respons bukan JSON (misal SW melayani HTML cache)
+    try {
+      const res = await fetch(scanUrl, { cache: "no-store" });
+      const text = await res.text();
+      if (!res.ok) throw new Error("Laporan scan tidak tersedia (HTTP " + res.status + " di " + scanUrl + ")");
+
+      // Deteksi jika respons bukan JSON (misal PocketBase melayani HTML SPA fallback)
       let data;
       try {
         data = JSON.parse(text);
       } catch (err) {
         listEl.innerHTML = `
           <div style="padding:16px; border:1px solid var(--warna-merah); border-radius:10px; background:rgba(239,68,68,0.1); margin-bottom:12px;">
-            <div style="font-weight:700; color:var(--warna-merah); margin-bottom:8px;">⚠️ Service Worker lama masih aktif</div>
+            <div style="font-weight:700; color:var(--warna-merah); margin-bottom:8px;">⚠️ Respons bukan JSON (HTML diterima)</div>
             <div style="font-size:0.82rem; color:var(--text-primary); margin-bottom:12px;">
-              Browser Anda masih menggunakan Service Worker versi lama yang menyimpan cache HTML. Laporan scan tidak dapat dimuat.
+              URL: <code style="font-size:0.72rem;">${scanUrl}</code><br>
+              Content-Type: <code style="font-size:0.72rem;">${res.headers.get('content-type') || '-'}</code><br>
+              Server mengembalikan HTML alih-alih JSON. Ini biasanya terjadi saat diakses via <strong>/drg/</strong>
+              karena PocketBase melayani SPA fallback untuk route yang tidak dikenal.
             </div>
-            <button class="btn btn-primary" onclick="App.clearSwAndRefresh()" style="padding:8px 14px; font-size:0.82rem;">
-              🧹 Bersihkan Cache &amp; Muat Ulang Halaman
+            <button class="btn btn-primary" onclick="App.refreshScan()" style="padding:8px 14px; font-size:0.82rem; margin-right:8px;">
+              🔄 Coba Lagi
+            </button>
+            <button class="btn btn-outline" onclick="window.location.href='http://100.117.176.41:8095/'" style="padding:8px 14px; font-size:0.82rem;">
+              📱 Buka via IP Langsung (100.117.176.41:8095)
             </button>
             <div style="font-size:0.72rem; color:var(--text-muted); margin-top:8px;">
-              Atau tekan <strong>F12 → Application → Service Workers → Unregister</strong>, lalu refresh halaman.
+              Atau akses via <strong>http://100.117.176.41:8095</strong> (tanpa prefix /drg/) untuk scan bug.
             </div>
           </div>
         `;
@@ -96,7 +106,6 @@ window.AppModules.ScanBugs = {
         }
       }
     } catch (_) {}
-    // Hapus cache storage
     try {
       if ('caches' in window) {
         const keys = await caches.keys();
