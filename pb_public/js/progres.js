@@ -1,10 +1,25 @@
-// js/progres.js - Pelacakan Progres Pengembangan Berbasis Hasil Uji (jujur & auto-update + auto-deteksi)
+// js/progres.js - Pelacakan Progres Pengembangan Berbasis Hasil Uji (jujur & auto-update + auto-deteksi tahap maturitas)
 window.AppModules = window.AppModules || {};
 
 window.AppModules.Progres = {
   escapeHtml(s) {
     if (!s) return "";
     return String(s).replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t));
+  },
+
+  // Tahap maturitas fitur:
+  // benih   = belum ada uji (status belum_mulai)
+  // anak    = ada uji tapi belum semua lulus (status dalam_pengerjaan)
+  // matur   = semua uji lulus (status berfungsi)
+  tahapBadge(status, auto_detected) {
+    if (status === "berfungsi") {
+      return `<span class="badge" style="background:#10b981; color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:10px;">MATUR (Lulus Uji)</span>`;
+    }
+    if (status === "dalam_pengerjaan") {
+      return `<span class="badge" style="background:var(--warna-aksen); color:#000; font-size:0.7rem; padding:2px 8px; border-radius:10px;">ANAK (Dalam Pengerjaan)</span>`;
+    }
+    // belum_mulai
+    return `<span class="badge" style="background:var(--bg-input); color:var(--text-muted); font-size:0.7rem; padding:2px 8px; border-radius:10px; border:1px solid var(--border-color);">BENIH (Belum Dimulai)</span>`;
   },
 
   async loadProgres() {
@@ -24,7 +39,7 @@ window.AppModules.Progres = {
 
       const selesaiFase = (data.fase || []).filter(f => f.status === "selesai").length;
       const autoInfo = data.auto_detected_count
-        ? ` • ${data.auto_detected_count} fitur baru terdeteksi otomatis`
+        ? ` • ${data.auto_detected_count} fitur baru terdeteksi otomatis (benih/anak/matur)`
         : "";
       const ujiInfo = data.uji_belum_diuji ? ` • ${data.uji_belum_diuji} uji belum diuji` : "";
       if (summarySub) {
@@ -64,12 +79,14 @@ window.AppModules.Progres = {
           const fiturRows = (f.fitur || []).map(fit => {
             const isFiturDone = fit.status === "berfungsi";
             const fiturIcon = isFiturDone ? "✅" : "⏳";
+            const ujiText = fit.jumlah_uji !== undefined
+              ? ` (${fit.uji_lulus}/${fit.jumlah_uji} uji lulus)`
+              : "";
             const autoBadge = fit.auto_detected
               ? ` <span class="badge" style="background:var(--warna-aksen); color:#fff; font-size:0.65rem; padding:1px 6px; border-radius:10px; margin-left:6px;">OTOMATIS</span>`
               : "";
-            const ujiText = fit.uji_lulus !== undefined
-              ? ` (${fit.uji_lulus}/${fit.jumlah_uji} uji lulus)`
-              : "";
+            const tahapBadge = this.tahapBadge(fit.status, fit.auto_detected);
+
             return `
               <div style="padding:10px; border-top:1px solid rgba(255,255,255,0.06); font-size:0.8rem;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -78,6 +95,7 @@ window.AppModules.Progres = {
                 </div>
                 <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${this.escapeHtml(fit.deskripsi || '')}</div>
                 <div style="font-size:0.72rem; color:var(--warna-utama); margin-top:4px; font-style:italic;">💬 ${this.escapeHtml(fit.catatan_publik || '')}</div>
+                <div style="margin-top:4px;">${tahapBadge}</div>
               </div>
             `;
           }).join("");

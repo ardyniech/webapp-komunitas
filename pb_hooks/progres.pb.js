@@ -1,4 +1,4 @@
-// pb_hooks/progres.pb.js - Route API Pelacakan Progres Pengembangan Otomatis (jujur & auto-update)
+// pb_hooks/progres.pb.js - Route API Pelacakan Progres Pengembangan Otomatis (jujur & auto-update + auto-deteksi fitur baru)
 
 routerAdd("GET", "/api/komunitas/progres", (c) => {
   try {
@@ -17,7 +17,26 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
       }
     } catch (_) {}
 
-    // ── 2. Daftar route hook yang terdaftar ──
+    // ── 2. Kumpulkan koleksi DB yang tersedia ──
+    const existingCollections = new Set();
+    const allCollectionNames = [];
+    const knownCollections = [
+      "kas", "iuran", "konfigurasi", "referensi", "pemetaan_izin",
+      "progres_fase", "progres_fitur", "progres_uji", "progres_rilis", "progres_konfirmasi",
+      "pendaftaran", "profil_publik", "bidang_profil", "unit", "jabatan",
+      "aturan_versi", "aturan_pasal", "forum_topik", "event", "event_panitia", "event_transaksi",
+      "users", "log_aktivitas", "dokumen", "pengaduan", "keputusan_etik",
+      "scan_reports", "audit_logs", "notifications"
+    ];
+    for (let i = 0; i < knownCollections.length; i++) {
+      try {
+        dao.findCollectionByNameOrId(knownCollections[i]);
+        existingCollections.add(knownCollections[i]);
+        allCollectionNames.push(knownCollections[i]);
+      } catch (_) {}
+    }
+
+    // ── 3. Daftar route hook yang terdaftar ──
     const registeredRoutes = [
       "/api/komunitas/daftar",
       "/api/komunitas/status/:kode",
@@ -31,20 +50,7 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
       "/api/komunitas/scan-report"
     ];
 
-    // ── 3. Koleksi yang diketahui ──
-    const knownCollections = [
-      "kas", "iuran", "konfigurasi", "referensi", "pemetaan_izin",
-      "progres_fase", "progres_fitur", "progres_uji", "progres_rilis", "progres_konfirmasi",
-      "pendaftaran", "profil_publik", "bidang_profil", "unit", "jabatan",
-      "aturan_versi", "aturan_pasal", "forum_topik", "event", "event_panitia", "event_transaksi",
-      "users", "log_aktivitas", "dokumen", "pengaduan", "keputusan_etik"
-    ];
-    const existingCollections = new Set();
-    for (let i = 0; i < knownCollections.length; i++) {
-      try { dao.findCollectionByNameOrId(knownCollections[i]); existingCollections.add(knownCollections[i]); } catch (_) {}
-    }
-
-    // ── 4. Kode & route yang sudah ada di registry ──
+    // ── 4. Kode fitur & route yang sudah ada di registry ──
     const existingKode = new Set();
     const registryRouteNames = new Set();
     (registry.fase || []).forEach((f) => {
@@ -165,13 +171,9 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
     });
 
     // ── 7. AUTO-DETEKSI: Koleksi DB baru ──
+    // Koleksi baru dianggap "benih" (belum_mulai) — deteksi saja, belum diverifikasi melalui uji.
     let autoFase = null;
     let autoDetectedCount = 0;
-
-    const allCollectionNames = [];
-    for (let i = 0; i < knownCollections.length; i++) {
-      try { dao.findCollectionByNameOrId(knownCollections[i]); allCollectionNames.push(knownCollections[i]); } catch (_) {}
-    }
 
     for (let i = 0; i < allCollectionNames.length; i++) {
       const colName = allCollectionNames[i];
@@ -192,7 +194,7 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
         autoFase = {
           kode: "F9",
           nama: "Deteksi Otomatis (Baru)",
-          deskripsi: "Koleksi database baru yang terdeteksi otomatis dari sistem, belum ada di registry manual.",
+          deskripsi: "Koleksi database baru yang terdeteksi otomatis dari sistem, belum ada di registry manual. Status awal: benih (belum diverifikasi).",
           urutan: 99,
           fitur: []
         };
@@ -202,17 +204,19 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
       autoFase.fitur.push({
         kode: "AUTO-" + colName.toUpperCase().replace(/[^A-Z0-9]/g, ""),
         nama: "Koleksi: " + colName,
-        deskripsi: "Koleksi database '" + colName + "' terdeteksi otomatis dari sistem.",
-        status: existingCollections.has(colName) ? "berfungsi" : "belum_mulai",
-        jumlah_uji: 1,
-        uji_lulus: existingCollections.has(colName) ? 1 : 0,
-        catatan_publik: "Terdeteksi otomatis dari database.",
-        auto_detected: true
+        deskripsi: "Koleksi database '" + colName + "' terdeteksi otomatis dari sistem. Masih dalam bentuk benih — perlu diverifikasi melalui uji manual sebelum dapat dianggap matang.",
+        status: "belum_mulai",
+        jumlah_uji: 0,
+        uji_lulus: 0,
+        catatan_publik: "Terdeteksi otomatis dari database. Status: benih (belum ada uji verifikasi).",
+        auto_detected: true,
+        tahap: "benih"
       });
       autoDetectedCount++;
     }
 
     // ── 8. AUTO-DETEKSI: Route hook baru ──
+    // Route baru juga dianggap "benih" — ada route tapi belum ada uji fungsional.
     for (let i = 0; i < registeredRoutes.length; i++) {
       const route = registeredRoutes[i];
       if (registryRouteNames.has(route)) continue;
@@ -231,12 +235,13 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
       autoFase.fitur.push({
         kode: "AUTO-RT-" + route.replace(/[^A-Z0-9]/gi, ""),
         nama: "Route " + route,
-        deskripsi: "Route hook '" + route + "' terdeteksi otomatis dari sistem.",
-        status: "berfungsi",
-        jumlah_uji: 1,
-        uji_lulus: 1,
-        catatan_publik: "Terdeteksi otomatis dari route hook PocketBase.",
-        auto_detected: true
+        deskripsi: "Route hook '" + route + "' terdeteksi otomatis dari sistem. Masih dalam bentuk benih — perlu diuji fungsional sebelum dapat dianggap matang.",
+        status: "belum_mulai",
+        jumlah_uji: 0,
+        uji_lulus: 0,
+        catatan_publik: "Terdeteksi otomatis dari route hook. Status: benih (belum ada uji fungsional).",
+        auto_detected: true,
+        tahap: "benih"
       });
       autoDetectedCount++;
     }
