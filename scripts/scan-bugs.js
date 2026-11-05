@@ -265,6 +265,10 @@ const report = {
 };
 
 fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-console.log("[scan-bugs] Selesai. Dicek: " + totalChecked + ", Temuan: " + findings.length +
-  " (kritikal: " + bySeverity.critical + ", tinggi: " + bySeverity.high + ", sedang: " + bySeverity.medium + ")");
-console.log("[scan-bugs] Laporan: " + reportPath);
+
+// Tulis juga ke pb_public/drg/ agar /drg/scan-report.json tersedia sebagai
+// file statis saat diakses via domain /drg/ (Tailscale). PocketBase serve
+// file statis dari pb_public/, sehingga path ini akan terlayani dengan benar.
+const drgReportPath = path.join(publicDir, "drg", "scan-report.json");
+fs.writeFileSync(drgReportPath, JSON.stringify(report, null, 2));
+console.log("[scan-bugs] Laporan: " + reportPath + " dan " + drgReportPath);
