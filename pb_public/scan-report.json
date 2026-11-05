@@ -1,22 +1,14 @@
 {
-  "scanned_at": "2026-11-05T21:04:58.429Z",
-  "total_checked": 503,
-  "total_findings": 26,
+  "scanned_at": "2026-11-05T21:25:58.352Z",
+  "total_checked": 509,
+  "total_findings": 10,
   "by_severity": {
     "critical": 0,
-    "high": 2,
-    "medium": 24,
+    "high": 0,
+    "medium": 10,
     "low": 0
   },
   "findings": [
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'event-detail-body' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='event-detail-body' di index.html atau hapus pemanggilan."
-    },
     {
       "type": "missing_html_id",
       "severity": "medium",
@@ -32,22 +24,6 @@
       "line": -1,
       "message": "ID elemen 'lpj-jenis' dipanggil via document.getElementById tetapi tidak ada di index.html.",
       "suggestion": "Tambahkan elemen dengan id='lpj-jenis' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'panitia-tugas' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='panitia-tugas' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'event-list' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='event-list' di index.html atau hapus pemanggilan."
     },
     {
       "type": "missing_html_id",
@@ -86,62 +62,6 @@
       "severity": "medium",
       "file": "pb_public/js/*.js",
       "line": -1,
-      "message": "ID elemen 'iuran-list' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='iuran-list' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'kas-list' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='kas-list' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'modal-bukti' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='modal-bukti' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'bukti-img-preview' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='bukti-img-preview' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'dash-bensin-bar' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='dash-bensin-bar' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'dash-driver-grid' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='dash-driver-grid' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'dash-recent-tx' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='dash-recent-tx' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
       "message": "ID elemen 'aduan-kategori' dipanggil via document.getElementById tetapi tidak ada di index.html.",
       "suggestion": "Tambahkan elemen dengan id='aduan-kategori' di index.html atau hapus pemanggilan."
     },
@@ -168,54 +88,6 @@
       "line": -1,
       "message": "ID elemen 'form-pengaduan-dewan' dipanggil via document.getElementById tetapi tidak ada di index.html.",
       "suggestion": "Tambahkan elemen dengan id='form-pengaduan-dewan' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'struktur-list' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='struktur-list' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'aturan-list' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='aturan-list' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'aturan-ack-banner' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='aturan-ack-banner' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_html_id",
-      "severity": "medium",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "ID elemen 'modal-wizard-kas' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen dengan id='modal-wizard-kas' di index.html atau hapus pemanggilan."
-    },
-    {
-      "type": "missing_modal",
-      "severity": "high",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "Modal 'modal-bukti' diakses di JS tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen modal dengan id='modal-bukti' di index.html."
-    },
-    {
-      "type": "missing_modal",
-      "severity": "high",
-      "file": "pb_public/js/*.js",
-      "line": -1,
-      "message": "Modal 'modal-wizard-kas' diakses di JS tetapi tidak ada di index.html.",
-      "suggestion": "Tambahkan elemen modal dengan id='modal-wizard-kas' di index.html."
     }
   ]
 }

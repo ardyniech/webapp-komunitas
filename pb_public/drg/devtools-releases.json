@@ -1,8 +1,44 @@
 {
-  "generated_at": "2026-11-05T21:01:39.595Z",
+  "generated_at": "2026-11-05T21:25:58.927Z",
   "branch": "master",
-  "total_commits": 39,
+  "total_commits": 42,
   "last_30": [
+    {
+      "hash": "be19aef",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): overlay sinkronisasi jujur di layer teratas",
+      "files_changed": 3,
+      "files": [
+        "pb_public/index.html",
+        "pb_public/js/sync-status.js",
+        "pb_public/sw.js"
+      ]
+    },
+    {
+      "hash": "03f2084",
+      "date": "2026-11-05",
+      "subject": "docs(webapp-komunitas): README §4.5 dokumentasi Dev Tools lengkap",
+      "files_changed": 1,
+      "files": [
+        "README.md"
+      ]
+    },
+    {
+      "hash": "c7bb08e",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): Dev Tools lengkap (9 ide) + quality gate + diagnosa akar masalah",
+      "files_changed": 37,
+      "files": [
+        ".githooks/pre-commit",
+        "pb_public/app.css",
+        "pb_public/devtools-diagnose.json",
+        "pb_public/devtools-drift.json",
+        "pb_public/devtools-git.json",
+        "pb_public/devtools-heartbeat.json",
+        "pb_public/devtools-inventory.json",
+        "pb_public/devtools-logs.json"
+      ]
+    },
     {
       "hash": "d4245bd",
       "date": "2026-11-05",
@@ -295,33 +331,6 @@
       "files_changed": 1,
       "files": [
         "pb_public/app.js"
-      ]
-    },
-    {
-      "hash": "0a2b796",
-      "date": "2026-11-04",
-      "subject": "feat(komunitas): kelola panitia event dasar di UI",
-      "files_changed": 1,
-      "files": [
-        "pb_public/app.js"
-      ]
-    },
-    {
-      "hash": "b256b66",
-      "date": "2026-11-04",
-      "subject": "feat(komunitas): route backfill izin & tim untuk semua user",
-      "files_changed": 1,
-      "files": [
-        "pb_hooks/sync_izin.pb.js"
-      ]
-    },
-    {
-      "hash": "0cc91b4",
-      "date": "2026-11-04",
-      "subject": "feat(komunitas): audit log perubahan status event, ketua, pendaftaran",
-      "files_changed": 1,
-      "files": [
-        "pb_hooks/audit.pb.js"
       ]
     }
   ]

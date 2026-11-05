@@ -115,9 +115,22 @@ const dynamicIds = new Set();
 {
   const re1 = /\.setAttribute\(['"]id['"]\s*,\s*['"]([^'"]+)['"]\)/g;
   const re2 = /\.id\s*=\s*['"]([^'"]+)['"]/g;
+  const re3 = /id="([^"]+)"/g; // dibuat lewat template innerHTML di JS
   let m;
   while ((m = re1.exec(jsAll)) !== null) dynamicIds.add(m[1]);
   while ((m = re2.exec(jsAll)) !== null) dynamicIds.add(m[1]);
+  while ((m = re3.exec(jsAll)) !== null) dynamicIds.add(m[1]);
+}
+// Fallback dua id (A || B): cukup satu yang ada di HTML — id pasangan diabaikan.
+// Contoh: getElementById("bukti-modal-img") || getElementById("bukti-img-preview")
+const pairedFallbackIds = new Set();
+{
+  const fbRe = /getElementById\(['"]([^'"]+)['"]\)\s*\|\|\s*document\.getElementById\(['"]([^'"]+)['"]\)/g;
+  let m;
+  while ((m = fbRe.exec(jsAll)) !== null) {
+    if (htmlIds.has(m[1])) pairedFallbackIds.add(m[2]);
+    if (htmlIds.has(m[2])) pairedFallbackIds.add(m[1]);
+  }
 }
 // Pola id dinamis bertemplate (mis. `id="xxx-${y}"`): dideteksi sebagai pola, bukan id pasti.
 const getElementByIdMatches = jsAll.match(/document\.getElementById\(['"]([^'"]+)['"]\)/g) || [];
@@ -125,7 +138,7 @@ for (const ref of getElementByIdMatches) {
   const id = ref.match(/['"]([^'"]+)['"]/)[1];
   if (id.includes("${") || id.includes("+")) continue; // template dinamis — lewati
   totalChecked++;
-  if (!htmlIds.has(id) && !dynamicIds.has(id)) {
+  if (!htmlIds.has(id) && !dynamicIds.has(id) && !pairedFallbackIds.has(id)) {
     addFinding("missing_html_id", "medium", "pb_public/js/*.js", -1,
       "ID elemen '" + id + "' dipanggil via document.getElementById tetapi tidak ada di index.html.",
       "Tambahkan elemen dengan id='" + id + "' di index.html atau hapus pemanggilan.");
@@ -222,11 +235,20 @@ if (indexHtml && jsAll) {
     modalIdsInHtml.add(ref.replace(/id="/, "").replace(/"/, ""));
   }
   // cari getElementById("modal-...")
+  // Fallback dua id (A || B): cukup satu yang ada di HTML, id lainnya abaikan.
+  // Contoh: getElementById("bukti-modal") || getElementById("modal-bukti")
+  const fallbackPaired = new Set();
+  const fallbackRe = /getElementById\(['"]([^'"]+)['"]\)\s*\|\|\s*document\.getElementById\(['"]([^'"]+)['"]\)/g;
+  let fm;
+  while ((fm = fallbackRe.exec(jsAll)) !== null) {
+    if (htmlIds.has(fm[1])) fallbackPaired.add(fm[2]);
+    if (htmlIds.has(fm[2])) fallbackPaired.add(fm[1]);
+  }
   const modalJsMatches = jsAll.match(/getElementById\(['"](modal-[^'"]+)['"]\)/g) || [];
   for (const ref of modalJsMatches) {
     const id = ref.match(/['"](modal-[^'"]+)['"]/)[1];
     totalChecked++;
-    if (!modalIdsInHtml.has(id)) {
+    if (!modalIdsInHtml.has(id) && !fallbackPaired.has(id)) {
       addFinding("missing_modal", "high", "pb_public/js/*.js", -1,
         "Modal '" + id + "' diakses di JS tetapi tidak ada di index.html.",
         "Tambahkan elemen modal dengan id='" + id + "' di index.html.");

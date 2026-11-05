@@ -1,28 +1,28 @@
 {
-  "generated_at": "2026-11-05T21:01:39.045Z",
-  "uptime_sec": 400121,
-  "uptime_str": "111j 8m 41d",
+  "generated_at": "2026-11-05T21:25:58.599Z",
+  "uptime_sec": 401580,
+  "uptime_str": "111j 33m 0d",
   "ram_total_mb": 7924,
-  "ram_used_mb": 3027,
-  "ram_free_mb": 4896,
-  "ram_pct": 38,
+  "ram_used_mb": 3191,
+  "ram_free_mb": 4733,
+  "ram_pct": 40,
   "udp_inuse": 4,
   "udp_waspada": false,
   "top_fds": [
     {
-      "pid": "330359",
+      "pid": "332372",
       "cmd": "postgres",
-      "fds": 190
+      "fds": 187
     },
     {
-      "pid": "330678",
-      "cmd": "postgres",
-      "fds": 188
-    },
-    {
-      "pid": "329283",
+      "pid": "334764",
       "cmd": "postgres",
       "fds": 186
+    },
+    {
+      "pid": "332374",
+      "cmd": "postgres",
+      "fds": 185
     }
   ],
   "disk_used_pct": "42%",

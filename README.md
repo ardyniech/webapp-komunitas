@@ -122,13 +122,28 @@ Banner di tab Progres menampilkan rinciannya. Scan terbaru:
   tolak commit bila syntax error di file staged atau bug kritikal > 0.
   Semua file baru atomik terpisah; `progres.pb.js` tidak disentuh.
 
-### 4.6 Hal lain
+### 4.6 Lainnya
 
 - `svc logout-all`: client tidak lagi PATCH `tokenKey` langsung (dilarang
   validasi); diganti route hook.
 - Foto profil dikompres di browser (maks 800px) sebelum upload — hemat kuota.
 - `fetchUsers()` untuk anggota biasa dialihkan ke `profil_publik` agar data
   sensitif tidak bocor lewat API (PLAN §5.9).
+
+### 4.7 Keterbatasan & SOP lanjutan
+
+- **Scanner di dalam PocketBase (belum dikerjakan, by design):** runtime JSVM
+  hook PocketBase tidak menyediakan `fs`/`child_process`, jadi scanner
+  filesystem tetap berjalan sebagai skrip Node di host (timer systemd).
+  Jalur memandu: `scan-report.json` bisa di-require hook (pola JSON), tapi
+  menulis laporan tetap dari luar.
+- **Uji restore backup bulanan:** `bash scripts/test-restore.sh` menyalin
+  `pb_data` ke sandbox, menyalakan PocketBase, dan memeriksa health 200.
+  Jalankan tiap bulan dan catat di changelog.
+- **SOP upgrade PocketBase:** ganti binary → `systemctl restart` →
+  verifikasi health + runner 32/32 + regresi pola isolasi hook
+  (`grep -rn require pb_hooks/*.pb.js`). Terjadi crash-loop bila ada
+  konstanta file-scope yang bocor ke handler (§4.1).
 
 ## 5. Cara menjalankan
 

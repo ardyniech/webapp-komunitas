@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T21:01:39.137Z",
+  "generated_at": "2026-11-05T21:25:58.657Z",
   "registry_fase": [
     "F0",
     "F1",
@@ -169,6 +169,11 @@
     "pb_public/js/astrologi.js",
     "pb_public/js/auth.js",
     "pb_public/js/core-events.js",
+    "pb_public/js/devtools-diagnose.js",
+    "pb_public/js/devtools-git.js",
+    "pb_public/js/devtools-info.js",
+    "pb_public/js/devtools-monitor.js",
+    "pb_public/js/devtools.js",
     "pb_public/js/event-detail.js",
     "pb_public/js/event-lpj.js",
     "pb_public/js/event-peta-dana.js",
@@ -182,6 +187,7 @@
     "pb_public/js/kuesioner-dokumen.js",
     "pb_public/js/loading.js",
     "pb_public/js/markas.js",
+    "pb_public/js/modul-flag.js",
     "pb_public/js/pelengkap.js",
     "pb_public/js/pendaftaran.js",
     "pb_public/js/profil-aktivitas.js",
@@ -193,8 +199,9 @@
     "pb_public/js/progres.js",
     "pb_public/js/scan-bugs.js",
     "pb_public/js/struktur-aturan.js",
+    "pb_public/js/sync-status.js",
     "pb_public/js/wizard-kas.js"
   ],
-  "js_count": 31,
+  "js_count": 38,
   "catatan": "Perbandingan kasar: bagian PLAN yang tidak punya jejak di registry/hook/js kandidat untuk ditinjau manual. Bukan vonis otomatis."
 }

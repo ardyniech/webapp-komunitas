@@ -1,11 +1,67 @@
 {
-  "generated_at": "2026-11-05T21:01:38.911Z",
+  "generated_at": "2026-11-05T21:25:58.506Z",
   "branch": "master",
-  "dirty_count": 37,
+  "dirty_count": 32,
   "dirty": [
     {
       "code": "M",
       "file": "b_migrations/1730000001_init_users.js"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/devtools-diagnose.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/devtools-drift.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/devtools-git.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/devtools-heartbeat.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/devtools-inventory.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/devtools-logs.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/devtools-releases.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/drg/devtools-diagnose.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/drg/devtools-drift.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/drg/devtools-git.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/drg/devtools-heartbeat.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/drg/devtools-inventory.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/drg/devtools-logs.json"
+    },
+    {
+      "code": "M",
+      "file": "pb_public/drg/devtools-releases.json"
     },
     {
       "code": "M",
@@ -33,11 +89,19 @@
     },
     {
       "code": "M",
+      "file": "pb_public/js/struktur-aturan.js"
+    },
+    {
+      "code": "M",
       "file": "pb_public/js/wizard-kas.js"
     },
     {
       "code": "M",
       "file": "pb_public/scan-report.json"
+    },
+    {
+      "code": "M",
+      "file": "progres/jalankan-uji"
     },
     {
       "code": "M",
@@ -49,39 +113,7 @@
     },
     {
       "code": "??",
-      "file": "pb_public/devtools-diagnose.json"
-    },
-    {
-      "code": "??",
       "file": "pb_public/devtools-diagnose.md"
-    },
-    {
-      "code": "??",
-      "file": "pb_public/devtools-drift.json"
-    },
-    {
-      "code": "??",
-      "file": "pb_public/devtools-git.json"
-    },
-    {
-      "code": "??",
-      "file": "pb_public/devtools-heartbeat.json"
-    },
-    {
-      "code": "??",
-      "file": "pb_public/devtools-inventory.json"
-    },
-    {
-      "code": "??",
-      "file": "pb_public/devtools-logs.json"
-    },
-    {
-      "code": "??",
-      "file": "pb_public/devtools-releases.json"
-    },
-    {
-      "code": "??",
-      "file": "pb_public/drg/devtools-diagnose.json"
     },
     {
       "code": "??",
@@ -89,67 +121,15 @@
     },
     {
       "code": "??",
-      "file": "pb_public/drg/devtools-drift.json"
-    },
-    {
-      "code": "??",
-      "file": "pb_public/drg/devtools-git.json"
-    },
-    {
-      "code": "??",
-      "file": "pb_public/drg/devtools-heartbeat.json"
-    },
-    {
-      "code": "??",
-      "file": "pb_public/drg/devtools-inventory.json"
-    },
-    {
-      "code": "??",
-      "file": "pb_public/drg/devtools-logs.json"
-    },
-    {
-      "code": "??",
-      "file": "pb_public/drg/devtools-releases.json"
-    },
-    {
-      "code": "??",
-      "file": "pb_public/js/event-detail.js"
-    },
-    {
-      "code": "??",
       "file": "pb_public/js/loading.js"
     },
     {
       "code": "??",
-      "file": "scripts/dt-all.js"
+      "file": "pb_public/js/modul-flag.js"
     },
     {
       "code": "??",
-      "file": "scripts/dt-diagnose.js"
-    },
-    {
-      "code": "??",
-      "file": "scripts/dt-drift.js"
-    },
-    {
-      "code": "??",
-      "file": "scripts/dt-git.js"
-    },
-    {
-      "code": "??",
-      "file": "scripts/dt-heartbeat.js"
-    },
-    {
-      "code": "??",
-      "file": "scripts/dt-inventory.js"
-    },
-    {
-      "code": "??",
-      "file": "scripts/dt-logs.js"
-    },
-    {
-      "code": "??",
-      "file": "scripts/dt-releases.js"
+      "file": "scripts/test-restore.sh"
     }
   ],
   "last_commit_per_dir": [
@@ -161,14 +141,14 @@
     },
     {
       "dir": "pb_public/js",
-      "hash": "728d354",
-      "subject": "fix(webapp-komunitas): penalti bug proporsional dengan lantai 5% (tidak lagi 0%)",
+      "hash": "be19aef",
+      "subject": "feat(webapp-komunitas): overlay sinkronisasi jujur di layer teratas",
       "date": "2026-11-05"
     },
     {
       "dir": "pb_public",
-      "hash": "728d354",
-      "subject": "fix(webapp-komunitas): penalti bug proporsional dengan lantai 5% (tidak lagi 0%)",
+      "hash": "be19aef",
+      "subject": "feat(webapp-komunitas): overlay sinkronisasi jujur di layer teratas",
       "date": "2026-11-05"
     },
     {
@@ -179,8 +159,8 @@
     },
     {
       "dir": "scripts",
-      "hash": "bed1119",
-      "subject": "fix(webapp-komunitas): scan bug juga tersedia via /drg/ path",
+      "hash": "c7bb08e",
+      "subject": "feat(webapp-komunitas): Dev Tools lengkap (9 ide) + quality gate + diagnosa akar masalah",
       "date": "2026-11-05"
     },
     {
@@ -192,6 +172,21 @@
   ],
   "recent": [
     {
+      "hash": "be19aef",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): overlay sinkronisasi jujur di layer teratas"
+    },
+    {
+      "hash": "03f2084",
+      "date": "2026-11-05",
+      "subject": "docs(webapp-komunitas): README §4.5 dokumentasi Dev Tools lengkap"
+    },
+    {
+      "hash": "c7bb08e",
+      "date": "2026-11-05",
+      "subject": "feat(webapp-komunitas): Dev Tools lengkap (9 ide) + quality gate + diagnosa akar masalah"
+    },
+    {
       "hash": "d4245bd",
       "date": "2026-11-05",
       "subject": "docs(webapp-komunitas): tambah README.md implementasi + SOP dev"
@@ -200,21 +195,6 @@
       "hash": "728d354",
       "date": "2026-11-05",
       "subject": "fix(webapp-komunitas): penalti bug proporsional dengan lantai 5% (tidak lagi 0%)"
-    },
-    {
-      "hash": "62b39fc",
-      "date": "2026-11-05",
-      "subject": "feat(webapp-komunitas): bug scan menurunkan nilai progres (dev tool atomik)"
-    },
-    {
-      "hash": "e9bec74",
-      "date": "2026-11-05",
-      "subject": "feat(webapp-komunitas): progres tab tampilkan fitur benih/anak/matur"
-    },
-    {
-      "hash": "3efa2a8",
-      "date": "2026-11-05",
-      "subject": "feat(webapp-komunitas): progres tab auto-deteksi fitur baru"
     }
   ]
 }

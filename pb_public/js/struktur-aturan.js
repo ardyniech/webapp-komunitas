@@ -3,7 +3,7 @@ window.AppModules = window.AppModules || {};
 
 window.AppModules.StrukturAturan = {
   async loadStruktur() {
-    const el = document.getElementById("struktur-list");
+    const el = document.getElementById("struktur-units-list");
     if (el) el.innerHTML = `<div class="empty-state">⏳ Memuat bagan struktur...</div>`;
     try {
       const [resUnit, resJabatan] = await Promise.all([
@@ -57,8 +57,8 @@ window.AppModules.StrukturAturan = {
   },
 
   async loadAturan() {
-    const el = document.getElementById("aturan-list");
-    const bannerAck = document.getElementById("aturan-ack-banner");
+    const el = document.getElementById("aturan-pasal-list");
+    const bannerAck = document.getElementById("aturan-persetujuan-banner");
     if (el) el.innerHTML = `<div class="empty-state">⏳ Memuat pasal aturan pangkalan...</div>`;
 
     try {
