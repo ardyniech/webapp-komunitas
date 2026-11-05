@@ -39,6 +39,7 @@ const ASSETS_TO_CACHE = [
   './js/konfigurasi.js',
   './js/progres.js',
   './js/progres-bug.js',
+  './js/sync-status.js',
   './js/devtools.js',
   './js/devtools-git.js',
   './js/devtools-diagnose.js',
