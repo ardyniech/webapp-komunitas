@@ -8,6 +8,16 @@ window.AppModules.Anggota = {
     const btnBidang = document.getElementById("btn-kelola-bidang");
     if (btnTambah) btnTambah.style.display = canManage ? "inline-flex" : "none";
     if (btnBidang) btnBidang.style.display = canManage ? "inline-flex" : "none";
+    // Self-healing: bila data belum termuat saat tab dibuka (fetch masih jalan),
+    // tarik data lalu gambar ulang — jangan biarkan list kosong selamanya.
+    const dataKosong = !this.daftarAnggota || this.daftarAnggota().length === 0;
+    if (dataKosong) {
+      const listEl = document.getElementById("anggota-list");
+      if (listEl) listEl.innerHTML = `<div class="empty-state">⏳ Memuat daftar anggota...</div>`;
+      try {
+        await this.fetchAnggotaData();
+      } catch (_) {}
+    }
     this.hitungStat();
     this.renderList();
   },
@@ -38,8 +48,11 @@ window.AppModules.Anggota = {
     const emptyEl = document.getElementById("anggota-empty");
     if (!listEl) return;
     const cari = (document.getElementById("anggota-search")?.value || "").toLowerCase();
-    const fRole = document.getElementById("anggota-filter-role")?.value || "all";
-    const fStatus = document.getElementById("anggota-filter-status")?.value || "all";
+    // Nilai kosong/tidak dikenal dianggap "all" — filter tidak boleh mengosongkan list sendirian
+    let fRole = document.getElementById("anggota-filter-role")?.value || "all";
+    if (!["all", "superadmin", "admin", "pengurus", "bendahara", "anggota"].includes(fRole)) fRole = "all";
+    let fStatus = document.getElementById("anggota-filter-status")?.value || "all";
+    if (!["all", "aktif", "menunggu", "nonaktif", "ditolak"].includes(fStatus)) fStatus = "all";
 
     const list = this.daftarAnggota().filter(a => {
       const nama = (a.nama || a.nama_lengkap || a.nama_tampil || a.username || "").toLowerCase();
