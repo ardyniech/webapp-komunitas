@@ -1,5 +1,5 @@
 // scripts/dt-drift.js - Doc drift checker: PLAN vs registry vs kode nyata
-// Menulis laporan ke pb_public/devtools-drift.json (+salinan drg/).
+// Menulis laporan ke data/devtools/devtools-drift.json (+salinan drg/).
 // Tujuan: tandai bagian PLAN yang belum ada implementasinya, dan fitur
 // yang ada di kode tapi tidak direncanakan (menyimpang tapi mungkin wajar).
 
@@ -7,11 +7,6 @@ const fs = require("fs");
 const path = require("path");
 
 const projectRoot = "/home/ardy/projects/webapp-komunitas";
-const reportPaths = [
-  path.join(projectRoot, "pb_public/devtools-drift.json"),
-  path.join(projectRoot, "pb_public/drg/devtools-drift.json"),
-];
-
 function readSafe(p) {
   try { return fs.readFileSync(p, "utf-8"); } catch (_) { return ""; }
 }
@@ -58,8 +53,5 @@ const drift = {
   catatan: "Perbandingan kasar: bagian PLAN yang tidak punya jejak di registry/hook/js kandidat untuk ditinjau manual. Bukan vonis otomatis.",
 };
 
-for (const p of reportPaths) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, JSON.stringify(drift, null, 2));
-}
+require("./dt-write").writeOutputs("devtools-drift", drift);
 console.log(`[dt-drift] plan_section=${planSections.length} registry_fase=${registryFase.size} hook=${hookFiles.length} js=${jsFiles.length}`);

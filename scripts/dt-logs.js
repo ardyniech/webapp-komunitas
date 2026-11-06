@@ -1,5 +1,5 @@
 // scripts/dt-logs.js - Log viewer: tail journal PocketBase (terbatas, tanpa secret)
-// Menulis laporan ke pb_public/devtools-logs.json (+salinan drg/).
+// Menulis laporan ke data/devtools/devtools-logs.json (+salinan drg/).
 // Hanya log service webapp-komunitas-pocketbase, maks 60 baris terakhir.
 
 const fs = require("fs");
@@ -7,11 +7,6 @@ const path = require("path");
 const { execFileSync } = require("child_process");
 
 const projectRoot = "/home/ardy/projects/webapp-komunitas";
-const reportPaths = [
-  path.join(projectRoot, "pb_public/devtools-logs.json"),
-  path.join(projectRoot, "pb_public/drg/devtools-logs.json"),
-];
-
 function runSafe(bin, args) {
   try {
     return execFileSync(bin, args, { encoding: "utf-8", maxBuffer: 256 * 1024 }).trim();
@@ -41,8 +36,5 @@ const report = {
   catatan: "Tail 60 baris terakhir. Token disamarkan otomatis.",
 };
 
-for (const p of reportPaths) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, JSON.stringify(report, null, 2));
-}
-console.log(`[dt-logs] lines=${lines.length} -> ${reportPaths[0]}`);
+require("./dt-write").writeOutputs("devtools-logs", report);
+console.log(`[dt-logs] lines=${lines.length}`);

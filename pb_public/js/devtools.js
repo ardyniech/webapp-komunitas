@@ -44,26 +44,23 @@ window.AppModules.DevTools = {
     if (el) el.style.display = "block";
   },
 
-  // Ambil JSON devtools dengan fallback path (root & /drg/)
+  // Cache tunggal: satu panggilan ke hook mengambil semua snapshot devtools
+  // (non-publik, superadmin). Disembunyi dari anggota/pengurus biasa.
+  _dtCache: null,
+
+  // Ambil JSON devtools dari hook superadmin-only, bukan file statis publik
   async devtoolsFetch(name) {
-    const ts = Date.now();
-    const candidates = [
-      `${name}?t=${ts}`,
-      `/${name}?t=${ts}`,
-      `/drg/${name}?t=${ts}`,
-    ];
-    let lastErr = null;
-    for (const u of candidates) {
-      try {
-        const res = await fetch(u, { cache: "no-store" });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const text = await res.text();
-        return JSON.parse(text);
-      } catch (e) {
-        lastErr = e;
-      }
+    if (this._dtCache) {
+      const v = this._dtCache[name];
+      if (v === undefined) throw new Error("Snapshot " + name + " belum ada");
+      return v;
     }
-    throw lastErr || new Error("Gagal memuat " + name);
+    const res = await fetch(`${this.apiBase}/komunitas/devtools`, { cache: "no-store", headers: this.getAuthHeaders() });
+    if (!res.ok) throw new Error("Akses ditolak / HTTP " + res.status);
+    this._dtCache = await res.json();
+    const v = this._dtCache[name];
+    if (v === undefined) throw new Error("Snapshot " + name + " belum ada");
+    return v;
   },
 
   esc(s) {

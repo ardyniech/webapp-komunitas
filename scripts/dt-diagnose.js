@@ -6,23 +6,14 @@
 //   - langkah fix yang bisa langsung dieksekusi AI dev / human dev
 //
 // Dua keluaran:
-//   1. pb_public/devtools-diagnose.json (+salinan drg/) — untuk UI Dev Tools
-//   2. pb_public/devtools-diagnose.md (+salinan drg/) — ringkasan untuk AI dev
+//   1. data/devtools/devtools-diagnose.json (+salinan drg/) — untuk UI Dev Tools
+//   2. data/devtools/devtools-diagnose.md (+salinan drg/) — ringkasan untuk AI dev
 
 const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
 
 const projectRoot = "/home/ardy/projects/webapp-komunitas";
-const reportPaths = [
-  path.join(projectRoot, "pb_public/devtools-diagnose.json"),
-  path.join(projectRoot, "pb_public/drg/devtools-diagnose.json"),
-];
-const mdPaths = [
-  path.join(projectRoot, "pb_public/devtools-diagnose.md"),
-  path.join(projectRoot, "pb_public/drg/devtools-diagnose.md"),
-];
-
 function readSafe(p) {
   try {
     return fs.readFileSync(p, "utf-8");
@@ -33,7 +24,7 @@ function readSafe(p) {
 
 let scanReport = {};
 try {
-  scanReport = JSON.parse(readSafe(path.join(projectRoot, "pb_public/scan-report.json")));
+  scanReport = JSON.parse(readSafe(path.join(projectRoot, "data/devtools/scan-report.json")));
 } catch (_) {}
 
 const findings = scanReport.findings || [];
@@ -137,10 +128,7 @@ const report = {
 };
 
 // ── Keluaran JSON (UI) ──
-for (const p of reportPaths) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, JSON.stringify(report, null, 2));
-}
+require("./dt-write").writeOutputs("devtools-diagnose", report);
 
 // ── Keluaran Markdown (AI dev & human) ──
 const mdLines = [];
@@ -164,9 +152,8 @@ diagnosed.forEach((f, i) => {
   mdLines.push("");
 });
 const mdContent = mdLines.join("\n");
-for (const p of mdPaths) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, mdContent);
-}
+const mdPath = path.join(projectRoot, "data/devtools/devtools-diagnose.md");
+fs.mkdirSync(path.dirname(mdPath), { recursive: true });
+fs.writeFileSync(mdPath, mdContent);
 
-console.log(`[dt-diagnose] ${diagnosed.length} temuan didiagnosa -> ${reportPaths[0]} + ${mdPaths[0]}`);
+console.log(`[dt-diagnose] ${diagnosed.length} temuan didiagnosa`);

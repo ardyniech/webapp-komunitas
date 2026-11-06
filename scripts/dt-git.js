@@ -1,5 +1,5 @@
 // scripts/dt-git.js - Git watcher: status kotor + commit terakhir per direktori
-// Menulis laporan ke pb_public/devtools-git.json (dipakai halaman Dev Tools).
+// Menulis laporan ke data/devtools/devtools-git.json (dipakai halaman Dev Tools).
 //
 // Cara pakai: node scripts/dt-git.js
 // Otomatis: dijalankan oleh devtools-snapshot.service bersama scanner lain.
@@ -9,11 +9,6 @@ const path = require("path");
 const { execFileSync } = require("child_process");
 
 const projectRoot = "/home/ardy/projects/webapp-komunitas";
-const reportPaths = [
-  path.join(projectRoot, "pb_public/devtools-git.json"),
-  path.join(projectRoot, "pb_public/drg/devtools-git.json"),
-];
-
 function run(args) {
   try {
     return execFileSync("git", args, { encoding: "utf-8", cwd: projectRoot }).trim();
@@ -60,8 +55,5 @@ const report = {
   recent,
 };
 
-for (const p of reportPaths) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, JSON.stringify(report, null, 2));
-}
-console.log(`[dt-git] branch=${branch} dirty=${dirty.length} -> ${reportPaths[0]}`);
+require("./dt-write").writeOutputs("devtools-git", report);
+console.log(`[dt-git] branch=${branch} dirty=${dirty.length}`);

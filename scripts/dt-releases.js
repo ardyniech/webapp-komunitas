@@ -1,16 +1,11 @@
 // scripts/dt-releases.js - Release notes otomatis dari git log
-// Menulis laporan ke pb_public/devtools-releases.json (+salinan drg/).
+// Menulis laporan ke data/devtools/devtools-releases.json (+salinan drg/).
 
 const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
 
 const projectRoot = "/home/ardy/projects/webapp-komunitas";
-const reportPaths = [
-  path.join(projectRoot, "pb_public/devtools-releases.json"),
-  path.join(projectRoot, "pb_public/drg/devtools-releases.json"),
-];
-
 function git(args) {
   try {
     return execFileSync("git", args, { encoding: "utf-8", cwd: projectRoot }).trim();
@@ -45,8 +40,5 @@ const report = {
   last_30: releases,
 };
 
-for (const p of reportPaths) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, JSON.stringify(report, null, 2));
-}
+require("./dt-write").writeOutputs("devtools-releases", report);
 console.log(`[dt-releases] commits=${report.total_commits} latest=${releases[0] ? releases[0].hash : "-"}`);

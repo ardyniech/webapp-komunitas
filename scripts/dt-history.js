@@ -1,16 +1,16 @@
 // scripts/dt-history.js - Riwayat tren: append snapshot ringkas ke history.ndjson
 // Berbeda dengan snapshot lain yang DITIMPA tiap run, file ini APPEND.
 // Menghasilkan dua keluaran:
-//   1. pb_public/devtools-history.json (+salinan drg/) — ringkasan untuk UI (sparkline terakhir)
-//   2. pb_public/devtools-history.ndjson (+salinan drg/) — riwayat append-only (maks 500 baris, dipangkas)
+//   1. data/devtools/devtools-history.json (+salinan drg/) — ringkasan untuk UI (sparkline terakhir)
+//   2. data/devtools/devtools-history.ndjson (+salinan drg/) — riwayat append-only (maks 500 baris, dipangkas)
 
 const fs = require("fs");
 const path = require("path");
 
 const projectRoot = "/home/ardy/projects/webapp-komunitas";
-const pubDir = path.join(projectRoot, "pb_public");
-const ndPaths = [path.join(pubDir, "devtools-history.ndjson"), path.join(pubDir, "drg/devtools-history.ndjson")];
-const jsonPaths = [path.join(pubDir, "devtools-history.json"), path.join(pubDir, "drg/devtools-history.json")];
+const dataDir = path.join(projectRoot, "data/devtools");
+const ndPaths = [path.join(dataDir, "devtools-history.ndjson"), path.join(dataDir, "drg/devtools-history.ndjson")];
+const jsonPaths = [path.join(dataDir, "devtools-history.json"), path.join(dataDir, "drg/devtools-history.json")];
 
 function readSafe(p) {
   try {
@@ -29,9 +29,9 @@ function readJson(p) {
 }
 
 // Ambil snapshot ringkas dari laporan yang sudah ada (scan + db + heartbeat)
-const scan = readJson(path.join(pubDir, "scan-report.json"));
-const db = readJson(path.join(pubDir, "devtools-db.json"));
-const hb = readJson(path.join(pubDir, "devtools-heartbeat.json"));
+const scan = readJson(path.join(dataDir, "scan-report.json"));
+const db = readJson(path.join(dataDir, "devtools-db.json"));
+const hb = readJson(path.join(dataDir, "devtools-heartbeat.json"));
 
 const entry = {
   waktu: new Date().toISOString(),

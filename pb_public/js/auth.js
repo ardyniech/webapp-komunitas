@@ -60,6 +60,24 @@ window.AppModules.Auth = {
     const navAnggota = document.getElementById("nav-btn-anggota");
     if (navAnggota) navAnggota.style.display = this.isAuthenticated() ? "flex" : "none";
 
+    // Dev Tools & Bug Hunter: khusus superadmin (data sensitif internal)
+    const isSuper = this.user && this.user.role === "superadmin";
+    document.querySelectorAll('.nav-item[data-tab="devtools"], .nav-item[data-tab="bug-hunter"]').forEach((btn) => {
+      btn.style.display = isSuper ? "flex" : "none";
+    });
+    // Role & Manajemen: khusus admin/superadmin
+    const isAdmin = this.user && (this.user.role === "admin" || this.user.role === "superadmin");
+    const navRole = document.getElementById("nav-btn-role");
+    if (navRole) navRole.style.display = isAdmin ? "flex" : "none";
+    document.querySelectorAll(".dropdown-item").forEach((btn) => {
+      const oc = btn.getAttribute("onclick") || "";
+      if (/switchTab\('(devtools|bug-hunter)'\)/.test(oc)) btn.style.display = isSuper ? "" : "none";
+    });
+    const panelDev = document.getElementById("panel-devtools");
+    const panelBug = document.getElementById("panel-bug-hunter");
+    if (panelDev) panelDev.style.display = isSuper ? "" : "none";
+    if (panelBug) panelBug.style.display = isSuper ? "" : "none";
+
     const setupSection = document.getElementById("admin-setup-komunitas-section");
     if (setupSection) setupSection.style.display = (this.user.role === "admin") ? "block" : "none";
 

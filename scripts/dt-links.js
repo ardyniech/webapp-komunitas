@@ -1,5 +1,5 @@
 // scripts/dt-links.js - Audit tautan hidup: curl semua route + file statis
-// Menulis laporan ke pb_public/devtools-links.json (+salinan drg/).
+// Menulis laporan ke data/devtools/devtools-links.json (+salinan drg/).
 // Status: hidup = merespons (200/401/403 = route ada), mati = 404/timeout.
 
 const fs = require("fs");
@@ -8,11 +8,6 @@ const { execFileSync } = require("child_process");
 
 const projectRoot = "/home/ardy/projects/webapp-komunitas";
 const publicDir = path.join(projectRoot, "pb_public");
-const reportPaths = [
-  path.join(publicDir, "devtools-links.json"),
-  path.join(publicDir, "drg/devtools-links.json"),
-];
-
 function readSafe(p) {
   try {
     return fs.readFileSync(p, "utf-8");
@@ -96,8 +91,5 @@ const report = {
   total_dead: deadFiles.length + deadRoutes.length,
 };
 
-for (const p of reportPaths) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, JSON.stringify(report, null, 2));
-}
+require("./dt-write").writeOutputs("devtools-links", report);
 console.log(`[dt-links] static ${staticChecks.length} (mati ${deadFiles.length}) routes ${routeChecks.length} (mati ${deadRoutes.length})`);

@@ -1,5 +1,5 @@
 // scripts/dt-db.js - Kesegaran data per koleksi: row count + max(updated)
-// Menulis laporan ke pb_public/devtools-db.json (+salinan drg/).
+// Menulis laporan ke data/devtools/devtools-db.json (+salinan drg/).
 // Dibaca dari SQLite via sqlite3 (L0 read-only). Koleksi tanpa kolom updated dilewati.
 
 const fs = require("fs");
@@ -8,11 +8,6 @@ const { execFileSync } = require("child_process");
 
 const projectRoot = "/home/ardy/projects/webapp-komunitas";
 const dbPath = path.join(projectRoot, "pb_data/data.db");
-const reportPaths = [
-  path.join(projectRoot, "pb_public/devtools-db.json"),
-  path.join(projectRoot, "pb_public/drg/devtools-db.json"),
-];
-
 function sqlite(sql) {
   try {
     return execFileSync("sqlite3", [dbPath, sql], { encoding: "utf-8" }).trim();
@@ -57,9 +52,6 @@ const report = {
   catatan: "Koleksi paling basi = kandidat tidak terpakai / sync macet. Kosong = belum pernah ada data.",
 };
 
-for (const p of reportPaths) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, JSON.stringify(report, null, 2));
-}
+require("./dt-write").writeOutputs("devtools-db", report);
 const basi = freshness.filter((f) => f.umur_jam !== null && f.umur_jam >  72);
 console.log(`[dt-db] ${collections.length} koleksi, ${report.total_rows} baris, >72 jam basi: ${basi.length}`);

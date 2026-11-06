@@ -28,6 +28,17 @@ window.AppModules.CoreEvents = {
   },
 
   switchTab(tabName) {
+    // Dev Tools & Bug Hunter khusus superadmin (data sensitif internal)
+    const role = (this.user && this.user.role) || "";
+    if ((tabName === "devtools" || tabName === "bug-hunter") && role !== "superadmin") {
+      alert("Halaman ini khusus superadmin.");
+      return;
+    }
+    // Role & Manajemen khusus admin/superadmin (seperti kas hanya bendahara)
+    if (tabName === "role" && role !== "admin" && role !== "superadmin") {
+      alert("Halaman ini khusus admin/superadmin.");
+      return;
+    }
     this.activeTab = tabName;
     document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
     const activePanel = document.getElementById(`panel-${tabName}`);
@@ -74,6 +85,7 @@ window.AppModules.CoreEvents = {
     else if (tabName === "kuesioner" && this.loadKuesioner) this.loadKuesioner();
     else if (tabName === "dokumen" && this.loadDokumen) this.loadDokumen();
     else if (tabName === "devtools" && this.devtoolsLoadAll) this.devtoolsLoadAll();
+  else if (tabName === "role" && this.renderRole) this.renderRole();
     else if (tabName === "bug-hunter" && this.loadScanBugs) {
       this.loadScanBugs();
     } else if (tabName === "bug-hunter") {

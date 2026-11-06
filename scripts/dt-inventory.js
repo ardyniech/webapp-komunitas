@@ -1,5 +1,5 @@
 // scripts/dt-inventory.js - Inventaris sistem: route hook + koleksi DB + file JS
-// Menulis laporan ke pb_public/devtools-inventory.json (+salinan drg/).
+// Menulis laporan ke data/devtools/devtools-inventory.json (+salinan drg/).
 
 const fs = require("fs");
 const path = require("path");
@@ -8,11 +8,6 @@ const { execFileSync } = require("child_process");
 const projectRoot = "/home/ardy/projects/webapp-komunitas";
 const hooksDir = path.join(projectRoot, "pb_hooks");
 const jsDir = path.join(projectRoot, "pb_public/js");
-const reportPaths = [
-  path.join(projectRoot, "pb_public/devtools-inventory.json"),
-  path.join(projectRoot, "pb_public/drg/devtools-inventory.json"),
-];
-
 function readSafe(p) {
   try { return fs.readFileSync(p, "utf-8"); } catch (_) { return ""; }
 }
@@ -77,8 +72,5 @@ const report = {
   js_total_kb: jsFiles.reduce((s, j) => s + j.kb, 0),
 };
 
-for (const p of reportPaths) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, JSON.stringify(report, null, 2));
-}
+require("./dt-write").writeOutputs("devtools-inventory", report);
 console.log(`[dt-inventory] routes=${routes.length} collections=${collections.length} js=${jsFiles.length} (${report.js_total_kb}KB)`);

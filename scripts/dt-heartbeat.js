@@ -1,5 +1,5 @@
 // scripts/dt-heartbeat.js - Host heartbeat: uptime, RAM, socket UDP, disk
-// Menulis laporan ke pb_public/devtools-heartbeat.json (+salinan drg/).
+// Menulis laporan ke data/devtools/devtools-heartbeat.json (+salinan drg/).
 // Semua dibaca dari /proc & perintah L0 (tidak mengubah sistem).
 
 const fs = require("fs");
@@ -8,11 +8,6 @@ const path = require("path");
 const { execFileSync } = require("child_process");
 
 const projectRoot = "/home/ardy/projects/webapp-komunitas";
-const reportPaths = [
-  path.join(projectRoot, "pb_public/devtools-heartbeat.json"),
-  path.join(projectRoot, "pb_public/drg/devtools-heartbeat.json"),
-];
-
 function readSafe(p) {
   try { return fs.readFileSync(p, "utf-8"); } catch (_) { return ""; }
 }
@@ -83,8 +78,5 @@ const report = {
   node: process.version,
 };
 
-for (const p of reportPaths) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, JSON.stringify(report, null, 2));
-}
-console.log(`[dt-heartbeat] uptime=${uptimeStr} ram=${memPct}% udp=${udpInuse} pb=${svcActive} -> ${reportPaths[0]}`);
+require("./dt-write").writeOutputs("devtools-heartbeat", report);
+console.log(`[dt-heartbeat] uptime=${uptimeStr} ram=${memPct}% udp=${udpInuse} pb=${svcActive}`);

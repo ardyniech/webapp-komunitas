@@ -1,6 +1,6 @@
 // Service Worker for Basecamp Komunitas PWA — True Offline-First (Stale-While-Revalidate)
-const CACHE_NAME = 'basecamp-cache-v9';
-const API_CACHE_NAME = 'basecamp-api-v9';
+const CACHE_NAME = 'basecamp-cache-v10';
+const API_CACHE_NAME = 'basecamp-api-v10';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -49,7 +49,6 @@ const ASSETS_TO_CACHE = [
   './js/core-events.js',
   './js/scan-bugs.js',
   './js/loading.js',
-  './scan-report.json'
 ];
 
 self.addEventListener('install', (e) => {

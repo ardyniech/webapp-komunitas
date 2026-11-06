@@ -1028,6 +1028,18 @@
         </div>
       </section>
 
+      <!-- TAB ROLE & MANAJEMEN ANGGOTA (admin/superadmin) -->
+      <section id="panel-role" class="view-panel">
+        <div style="margin-bottom:14px;">
+          <h2 style="font-size:1.15rem; font-weight:700;">🛡️ Role &amp; Manajemen Anggota</h2>
+          <div style="font-size:0.75rem; color:var(--text-sub);">Khusus admin &amp; superadmin: ubah peran, status, dan pantau tim. Perubahan role kritis (admin terakhir / superadmin) terproteksi server.</div>
+        </div>
+        <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub); margin-bottom:6px;">MATRIKS PERAN</div>
+        <div id="role-matrix" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:8px; margin-bottom:14px;"></div>
+        <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub); margin-bottom:6px;">ANGGOTA (UBAH ROLE/STATUS INLINE)</div>
+        <div id="role-users-list"><div class="empty-state">Memuat...</div></div>
+      </section>
+
     </div>
   </main>
 
@@ -1059,6 +1071,10 @@
     <button class="nav-item" data-tab="devtools">
       <span class="nav-icon">🛠️</span>
       <span>Dev Tools</span>
+    </button>
+    <button id="nav-btn-role" class="nav-item" data-tab="role" style="display: none;">
+      <span class="nav-icon">🛡️</span>
+      <span>Role</span>
     </button>
     <button id="nav-btn-anggota" class="nav-item" data-tab="anggota" style="display: none;">
       <span class="nav-icon">👥</span>
@@ -1531,6 +1547,8 @@
   <script src="js/devtools-diagnose.js?v=1"></script>
   <script src="js/devtools-monitor.js?v=2"></script>
   <script src="js/devtools-info.js?v=2"></script>
+  <script src="js/role-manajemen.js?v=1"></script>
+  <script src="js/role-manajemen.js?v=1"></script>
   <script src="js/core-events.js?v=7"></script>
   <script src="js/scan-bugs.js?v=7"></script>
   <script src="js/loading.js?v=7"></script>

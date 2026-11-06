@@ -43,10 +43,10 @@ console.log(`✓ Syntax OK (${staged.length} file di-stage dicek)`);
 // 2. Bug kritikal dari laporan scan (segarkan dulu)
 try {
   execFileSync("node", [path.join(root, "scripts/scan-bugs.js")], { cwd: root, stdio: "pipe" });
-  const report = JSON.parse(fs.readFileSync(path.join(root, "pb_public/scan-report.json"), "utf-8"));
+  const report = JSON.parse(fs.readFileSync(path.join(root, "data/devtools/scan-report.json"), "utf-8"));
   const critical = (report.by_severity && report.by_severity.critical) || 0;
   if (critical > 0) {
-    console.error(`✗ Quality gate ditolak — ${critical} bug KRITIKAL (lihat pb_public/scan-report.json atau tab Bug Hunter).`);
+    console.error(`✗ Quality gate ditolak — ${critical} bug KRITIKAL (lihat tab Bug Hunter).`);
     console.error("  Perbaiki bug kritikal dulu, atau gunakan --no-verify bila Anda yakin (tidak disarankan).");
     process.exit(1);
   }

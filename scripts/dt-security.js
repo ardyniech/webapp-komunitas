@@ -1,5 +1,5 @@
 // scripts/dt-security.js - Audit keamanan repo: secret bocor, versi, paparan file publik
-// Menulis laporan ke pb_public/devtools-security.json (+salinan drg/).
+// Menulis laporan ke data/devtools/devtools-security.json (+salinan drg/).
 // Pola secret: token API key, password hardcoded, private key block.
 // File publik statis (scan-report/devtools-*) dicatat sebagai paparan info.
 
@@ -9,11 +9,6 @@ const { execFileSync } = require("child_process");
 
 const projectRoot = "/home/ardy/projects/webapp-komunitas";
 const pubDir = path.join(projectRoot, "pb_public");
-const reportPaths = [
-  path.join(pubDir, "devtools-security.json"),
-  path.join(pubDir, "drg/devtools-security.json"),
-];
-
 function run(bin, args) {
   try {
     return execFileSync(bin, args, { encoding: "utf-8", cwd: projectRoot, maxBuffer: 256 * 1024 }).trim();
@@ -83,8 +78,5 @@ const report = {
     "Jika ingin diproteksi: pindahkan ke route hook yang butuh login.",
 };
 
-for (const p of reportPaths) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, JSON.stringify(report, null, 2));
-}
+require("./dt-write").writeOutputs("devtools-security", report);
 console.log(`[dt-security] tracked=${tracked.length} secret=${findings.length} pb=${pbVersion.split(" ")[0]} public_json=${publicJson.length}`);

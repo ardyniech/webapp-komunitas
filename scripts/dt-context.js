@@ -3,17 +3,14 @@
 // heartbeat, progres, penalti bug — menjadi SATU file markdown agar AI dev
 // tidak perlu menjalankan banyak perintah untuk memahami kondisi sistem.
 //
-// Keluaran: pb_public/devtools-context.md (+salinan drg/)
+// Keluaran: data/devtools/devtools-context.md (+salinan drg/)
 
 const fs = require("fs");
 const path = require("path");
 
 const projectRoot = "/home/ardy/projects/webapp-komunitas";
 const pubDir = path.join(projectRoot, "pb_public");
-const outPaths = [
-  path.join(pubDir, "devtools-context.md"),
-  path.join(pubDir, "drg/devtools-context.md"),
-];
+const outPaths = [path.join(projectRoot, "data/devtools/devtools-context.md")];
 
 function readJson(p) {
   try {

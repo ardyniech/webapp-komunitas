@@ -1,5 +1,5 @@
 // scripts/dt-errors.js - Error terstruktur: grup pola error dari journal PocketBase
-// Menulis laporan ke pb_public/devtools-errors.json (+salinan drg/).
+// Menulis laporan ke data/devtools/devtools-errors.json (+salinan drg/).
 // Mengelompokkan baris error by signature (teks error tanpa timestamp/pid)
 // sehingga pola error berulang terlihat: "Error X muncul 12×".
 
@@ -8,11 +8,6 @@ const path = require("path");
 const { execFileSync } = require("child_process");
 
 const projectRoot = "/home/ardy/projects/webapp-komunitas";
-const reportPaths = [
-  path.join(projectRoot, "pb_public/devtools-errors.json"),
-  path.join(projectRoot, "pb_public/drg/devtools-errors.json"),
-];
-
 function runSafe(bin, args) {
   try {
     return execFileSync(bin, args, { encoding: "utf-8", maxBuffer: 512 * 1024 }).trim();
@@ -60,8 +55,5 @@ const report = {
   catatan: "Error journal PocketBase (priority err..alert) dikelompokkan per signature. Kosong = tidak ada error tercatat.",
 };
 
-for (const p of reportPaths) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, JSON.stringify(report, null, 2));
-}
+require("./dt-write").writeOutputs("devtools-errors", report);
 console.log(`[dt-errors] ${report.total_error_events} event, ${errors.length} pola unik`);

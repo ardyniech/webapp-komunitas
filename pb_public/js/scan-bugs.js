@@ -20,19 +20,15 @@ window.AppModules.ScanBugs = {
 
     listEl.innerHTML = `<div class="empty-state">Memuat laporan scan bug...</div>`;
 
-    // Coba beberapa path kandidat agar bekerja baik di root maupun /drg/.
-    // Root page:    /scan-report.json → JSON ✓
-    // /drg/ page:   /drg/scan-report.json → Caddy strip prefix → PocketBase root → JSON ✓
+    // Sumber non-publik: hook superadmin-only
     const candidates = [
-      "scan-report.json?t=" + Date.now(),
-      "/scan-report.json?t=" + Date.now(),
-      "/drg/scan-report.json?t=" + Date.now()
+      `${this.apiBase}/komunitas/devtools?k=scan-report&t=${Date.now()}`,
     ];
 
     let lastErr = null;
     for (const scanUrl of candidates) {
       try {
-        const res = await fetch(scanUrl, { cache: "no-store" });
+        const res = await fetch(scanUrl, { cache: "no-store", headers: this.getAuthHeaders() });
         const text = await res.text();
         if (!res.ok) throw new Error("HTTP " + res.status);
 

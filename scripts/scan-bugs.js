@@ -1,5 +1,5 @@
 // scripts/scan-bugs.js - Bug Hunter Scanner untuk webapp-komunitas (versi cerewet)
-// Menulis laporan ke pb_public/scan-report.json (frontend fetch langsung).
+// Menulis laporan ke data/devtools/scan-report.json (frontend fetch langsung).
 //
 // Cara pakai manual: node scripts/scan-bugs.js
 // Otomatis: systemd user timer (scan-bugs.timer) menjalankan scan-bugs.service
@@ -315,11 +315,5 @@ const report = {
   findings: findings
 };
 
-fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-
-// Tulis juga ke pb_public/drg/ agar /drg/scan-report.json tersedia sebagai
-// file statis saat diakses via domain /drg/ (Tailscale). PocketBase serve
-// file statis dari pb_public/, sehingga path ini akan terlayani dengan benar.
-const drgReportPath = path.join(publicDir, "drg", "scan-report.json");
-fs.writeFileSync(drgReportPath, JSON.stringify(report, null, 2));
-console.log("[scan-bugs] Laporan: " + reportPath + " dan " + drgReportPath);
+require("./dt-write").writeOutputs("scan-report", report);
+console.log("[scan-bugs] Laporan: disimpan ke DB devtools_snapshot[scan-report] (non-publik)");
