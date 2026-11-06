@@ -49,17 +49,19 @@ window.AppModules.DevTools = {
   _dtCache: null,
 
   // Ambil JSON devtools dari hook superadmin-only, bukan file statis publik
+  // Kunci di DB tanpa akhiran .json (mis. "devtools-git"), pemanggil memakai nama file ".json"
   async devtoolsFetch(name) {
+    const key = String(name).replace(/\.json$/, "");
     if (this._dtCache) {
-      const v = this._dtCache[name];
-      if (v === undefined) throw new Error("Snapshot " + name + " belum ada");
+      const v = this._dtCache[key];
+      if (v === undefined) throw new Error("Snapshot " + key + " belum ada");
       return v;
     }
     const res = await fetch(`${this.apiBase}/komunitas/devtools`, { cache: "no-store", headers: this.getAuthHeaders() });
     if (!res.ok) throw new Error("Akses ditolak / HTTP " + res.status);
     this._dtCache = await res.json();
-    const v = this._dtCache[name];
-    if (v === undefined) throw new Error("Snapshot " + name + " belum ada");
+    const v = this._dtCache[key];
+    if (v === undefined) throw new Error("Snapshot " + key + " belum ada");
     return v;
   },
 
