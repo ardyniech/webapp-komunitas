@@ -20,7 +20,7 @@ window.AppModules.SyncStatus = {
   _wrappedRefresh: false,
   _wrappedFetch: false,
 
-  // ── Overlay (layer paling atas) ─────────────────────────────────────
+  // ── Overlay (bar tipis di bawah header, sementara, tidak mengganggu) ─────
   overlay() {
     if (this._overlay) return this._overlay;
     let el = document.getElementById("sync-overlay");
@@ -28,9 +28,9 @@ window.AppModules.SyncStatus = {
       el = document.createElement("div");
       el.id = "sync-overlay";
       el.style.cssText =
-        "position:fixed;top:0;left:0;right:0;z-index:12000;display:none;" +
-        "background:rgba(10,15,10,0.92);color:#fff;padding:8px 14px;font-size:0.8rem;" +
-        "border-bottom:2px solid var(--warna-utama,#1FA463);backdrop-filter:blur(4px);";
+        "position:fixed;top:52px;left:0;right:0;z-index:12000;display:none;" +
+        "background:rgba(10,15,10,0.92);color:#fff;padding:2px 12px 4px;font-size:0.72rem;" +
+        "border-bottom:1px solid var(--warna-utama,#1FA463);";
       document.body.appendChild(el);
     }
     this._overlay = el;
@@ -52,15 +52,15 @@ window.AppModules.SyncStatus = {
     if (s.aktif) {
       html =
         `<div style="display:flex;justify-content:space-between;align-items:center;">` +
-        `<span>🔄 <b>Sinkronisasi… ${s.selesai}/${s.total} (${pct}%)</b> ${langkahTerakhir ? "— " + this.esc(langkahTerakhir) : ""}</span>` +
-        `<span style="font-size:0.72rem;opacity:0.8;">mulai ${s.mulai || ""}</span></div>` +
-        `<div style="height:6px;background:rgba(255,255,255,0.2);border-radius:3px;margin-top:6px;">` +
-        `<div style="height:100%;width:${pct}%;background:var(--warna-utama,#1FA463);border-radius:3px;transition:width 0.3s;"></div></div>` +
-        (antrean ? `<div style="font-size:0.72rem;margin-top:4px;opacity:0.85;">${antrean} perubahan menunggu dikirim ke server</div>` : "");
+        `<span>🔄 Sinkronisasi ${s.selesai}/${s.total} (${pct}%)${langkahTerakhir ? " — " + this.esc(langkahTerakhir) : ""}</span>` +
+        `<span style="font-size:0.65rem;opacity:0.75;">${s.mulai || ""}</span></div>` +
+        `<div style="height:3px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:3px;">` +
+        `<div style="height:100%;width:${pct}%;background:var(--warna-utama,#1FA463);border-radius:2px;transition:width 0.3s;"></div></div>` +
+        (antrean ? `<div style="font-size:0.65rem;margin-top:2px;opacity:0.85;">${antrean} perubahan menunggu dikirim</div>` : "");
     } else if (antrean > 0) {
-      html = `⏳ <b>${antrean} perubahan</b> belum tersinkron ke server. <button style="margin-left:6px;background:var(--warna-utama,#1FA463);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:0.75rem;cursor:pointer;" onclick="App.syncSekarang()">Kirim sekarang</button>`;
+      html = `⏳ <b>${antrean} perubahan</b> belum tersinkron. <button style="margin-left:4px;background:var(--warna-utama,#1FA463);color:#fff;border:none;border-radius:5px;padding:1px 8px;font-size:0.7rem;cursor:pointer;" onclick="App.syncSekarang()">Kirim</button>`;
     } else {
-      html = `✅ <b>Tersinkron</b> · terakhir ${this.esc(s.terakhir)}`;
+      html = `✅ Tersinkron · ${this.esc(s.terakhir)}`;
     }
     this.tampilkan(html);
   },

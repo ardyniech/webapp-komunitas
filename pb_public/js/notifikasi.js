@@ -17,19 +17,18 @@ window.AppModules.Notifikasi = {
     setTimeout(() => this._pasangDropdown(), 1000);
   },
 
+  // Header hanya logo + nama + foto/role. Bell tinggal di dalam kartu user.
   _pasangDropdown() {
     if (document.getElementById("notif-bell")) return;
-    const header = document.querySelector(".app-header");
-    if (!header) return;
+    const card = document.getElementById("user-card");
+    if (!card) return;
     const wrap = document.createElement("div");
-    wrap.style.cssText = "position:relative;margin-left:8px;display:flex;align-items:center;";
+    wrap.style.cssText = "position:relative;display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--border-color);";
     wrap.innerHTML =
-      `<button id="notif-bell" class="btn btn-outline" style="width:auto;padding:6px 10px;font-size:1rem;position:relative;" onclick="App.bukaNotifikasi(event)" title="Notifikasi">🔔</button>` +
-      `<span id="notif-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:var(--warna-merah);color:#fff;font-size:0.62rem;font-weight:800;border-radius:999px;min-width:18px;height:18px;text-align:center;line-height:18px;padding:0 4px;"></span>` +
+      `<button id="notif-bell" class="btn btn-outline" style="width:auto;padding:6px 12px;font-size:0.85rem;position:relative;" onclick="App.bukaNotifikasi(event)" title="Notifikasi">🔔 Notifikasi</button>` +
+      `<span id="notif-badge" style="display:none;position:absolute;top:2px;right:2px;background:var(--warna-merah);color:#fff;font-size:0.62rem;font-weight:800;border-radius:999px;min-width:18px;height:18px;text-align:center;line-height:18px;padding:0 4px;"></span>` +
       `<div id="notif-dropdown" class="smart-user-card" style="display:none;position:absolute;right:0;top:44px;width:300px;max-height:60vh;overflow:auto;padding:10px;z-index:13000;"></div>`;
-    const badge = document.getElementById("user-header-badge");
-    if (badge && badge.parentElement === header) header.insertBefore(wrap, badge);
-    else header.appendChild(wrap);
+    card.appendChild(wrap);
   },
 
   async muatBadge() {
