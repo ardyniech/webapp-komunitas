@@ -104,6 +104,11 @@ routerAdd("POST", "/api/komunitas/daftar", (c) => {
     dao.saveRecord(user)
     lib.sinkronProfilMinimal(user, dao)
 
+  try {
+      const notif = require(`${__hooks}/lib/notif.js`);
+      notif.keAdmin(dao, "pendaftaran_baru", "Pendaftaran baru menunggu verifikasi",
+        "Ada pendaftaran anggota baru (" + nama + ") yang menunggu persetujuan kamu.", "anggota");
+    } catch (_) {}
     try {
       const pendaftaranCol = dao.findCollectionByNameOrId("pendaftaran")
       const pendaftaran = new Record(pendaftaranCol)
@@ -243,6 +248,11 @@ routerAdd("POST", "/api/komunitas/pendaftaran/:id/proses", (c) => {
       dao.saveRecord(pendaftaran)
 
       lib.sinkronProfilMinimal(user, dao)
+      try {
+        const notif = require(`${__hooks}/lib/notif.js`);
+        notif.kirim($app.dao(), userId, "pendaftaran_disetujui", "Pendaftaran kamu disetujui. Selamat gabung!",
+          "Akun kamu sudah aktif. Kamu bisa masuk memakai email + password yang dibuat saat mendaftar.", "profil");
+      } catch (_) {}
       lib.catatLog(adminUser.id, "setujui_pendaftaran", pendaftaran.id + " | user: " + userId)
       return c.json(200, { success: true, message: "Pendaftaran disetujui, akun anggota telah aktif!" })
     }
