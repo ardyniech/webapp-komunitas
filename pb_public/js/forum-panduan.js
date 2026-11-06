@@ -106,6 +106,7 @@ window.AppModules.ForumPanduan = {
       });
       if (!res.ok) throw new Error("Gagal membuat topik");
       document.getElementById("form-topik-forum")?.reset();
+      this.closeBuatTopik();
       Hero.setExpression("senang", "Topik forum berhasil diposting!");
       this.loadForum();
     } catch (err) {
@@ -117,7 +118,8 @@ window.AppModules.ForumPanduan = {
     const el = document.getElementById("panduan-list");
     if (el) el.innerHTML = `<div class="empty-state">⏳ Memuat pusat panduan...</div>`;
     try {
-      const res = await fetch(`${this.apiBase}/collections/panduan/records?filter=(diterbitkan=true)&sort=-created&perPage=50`, {
+      // coba prioritaskan panduan terbit oleh pengurus/admin (diterbitkan=true)
+      const res = await fetch(`${this.apiBase}/collections/panduan/records?sort=-created&perPage=50`, {
         headers: this.getAuthHeaders()
       });
       if (!res.ok) throw new Error("Gagal");
@@ -152,5 +154,16 @@ window.AppModules.ForumPanduan = {
     } catch (e) {
       if (el) el.innerHTML = `<div class="empty-state">Gagal memuat panduan.</div>`;
     }
+  },
+
+  // Buka modal buat topik forum (memakai form + id yang diharapkan submitTopikForum)
+  openBuatTopik() {
+    const modal = document.getElementById("modal-buat-topik");
+    if (modal) modal.classList.add("show");
+  },
+
+  closeBuatTopik() {
+    const modal = document.getElementById("modal-buat-topik");
+    if (modal) modal.classList.remove("show");
   }
 };

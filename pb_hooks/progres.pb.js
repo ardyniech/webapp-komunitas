@@ -9,7 +9,7 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
     // ── 1. Kumpulkan hasil uji aktual dari progres_uji ──
     const ujiResultMap = {};
     try {
-      const ujiRows = dao.findRecordsByFilter("progres_uji", "", "waktu", 500, 0, {}) || [];
+      const ujiRows = dao.findRecordsByFilter("progres_uji", "hasil != ''", "-waktu", 500, 0, {}) || [];
       for (let i = 0; i < ujiRows.length; i++) {
         const kode = ujiRows[i].get("kode");
         const hasil = ujiRows[i].get("hasil");

@@ -241,6 +241,23 @@ async function main() {
                 }
                 break;
 
+              case "U-F1c-3": // Route penalti-bug merespons JSON valid
+                {
+                  const resBug = await fetchJson(`${testBaseUrl}/api/komunitas/penalti-bug`);
+                  lulus = (resBug.status === 200 && typeof resBug.data.penalti === "number");
+                  pesan = `API penalti-bug aktif, penalti=${resBug.data && resBug.data.penalti} (status ${resBug.status})`;
+                }
+                break;
+
+              case "U-F1c-4": // Panel Dev Tools dan scanner tersedia
+                {
+                  const htmlDt = fs.readFileSync(path.join(PUBLIC_DIR, 'index.html'), 'utf-8');
+                  const scannerAda = fs.existsSync(path.join(PROJECT_ROOT, 'scripts/scan-bugs.js'));
+                  lulus = htmlDt.includes('panel-devtools') && htmlDt.includes('data-tab="devtools"') && scannerAda;
+                  pesan = "Panel Dev Tools + scanner tersedia";
+                }
+                break;
+
               case "U-F2-1": // Autentikasi akun uji berfungsi
                 // Verified via mock user existence and rule validation
                 lulus = true;
@@ -433,6 +450,46 @@ async function main() {
           console.log(`  ${symbol} [${uji.kode}] ${uji.nama} -> ${pesan}`);
         }
       }
+    }
+
+    // 6b. Ingest hasil uji ke DB PRODUKSI (progres_uji) agar tab Progres pakai sumber uji nyata.
+    // Sandboxed PB hanya untuk menjalankan uji; hasil disalin ke pb_data/data.db produksi.
+    // Aman-gagal: kegagalan ingest tidak menggagalkan runner.
+    try {
+      const prodDb = path.join(PROJECT_ROOT, "pb_data", "data.db");
+      const jenisMap = {};
+      (registry.fase || []).forEach((f) => (f.fitur || []).forEach((fit) => (fit.uji || []).forEach((u) => { jenisMap[u.kode] = u.jenis; })));
+      const esc = (s) => String(s == null ? "" : s).replace(/'/g, "''");
+      const now = new Date().toISOString().replace("T", " ").replace("Z", "");
+      const rows = testResults.map((t) =>
+        `INSERT INTO progres_uji (kode, nama, hasil, jenis, waktu, pesan_internal) VALUES ('${esc(t.kode)}','${esc(t.nama)}','${t.lulus ? "lulus" : "gagal"}','${esc(jenisMap[t.kode] || "uji_manual")}','${now}','${esc(t.pesan)}')`
+      );
+      const sql = `DELETE FROM progres_uji; ` + rows.join("; ");
+      execSync(`sqlite3 "${prodDb}" "${sql}"`, { encoding: "utf-8" });
+      log(`📝 Hasil ${testResults.length} uji ditulis ke progres_uji produksi (${prodDb})`);
+    } catch (e) {
+      log(`⚠️ Ingest progres_uji produksi dilewati: ${e.message}`);
+    }
+
+    // 6c. Catat rilis uji ke progres_rilis (versi = hash git, catatan = 5 commit terakhir).
+    try {
+      const prodDb = path.join(PROJECT_ROOT, "pb_data", "data.db");
+      const { execFileSync } = require("child_process");
+      const commitInfo = execFileSync("git", ["log", "-5", "--format=%h %s"], { encoding: "utf-8", cwd: PROJECT_ROOT }).trim();
+      const hash = commitInfo.split(" ")[0];
+      const esc = (s) => String(s == null ? "" : s).replace(/'/g, "''");
+      const nowRilis = new Date().toISOString().replace("T", " ").replace("Z", "");
+      const totalUjiRilis = testResults.length;
+      const lulusRilis = testResults.filter((t) => t.lulus).length;
+      const gagalRilis = totalUjiRilis - lulusRilis;
+      const durasiRilis = Math.round((Date.now() - startTime) / 1000);
+      execSync(
+        `sqlite3 "${prodDb}" "INSERT INTO progres_rilis (versi, pemicu, total_uji, lulus, gagal, dilewati, durasi_detik, waktu, catatan_perubahan) VALUES ('${esc(hash)}','deploy',${totalUjiRilis},${lulusRilis},${gagalRilis},0,${durasiRilis},'${nowRilis}','${esc(commitInfo)}')"`,
+        { encoding: "utf-8" }
+      );
+      log(`📝 Rilis uji dicatat ke progres_rilis (versi ${hash}, ${lulusRilis}/${totalUjiRilis} lulus)`);
+    } catch (e) {
+      log(`⚠️ Catat progres_rilis dilewati: ${e.message}`);
     }
 
     // 7. Output Final Summary

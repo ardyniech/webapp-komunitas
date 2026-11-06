@@ -67,6 +67,22 @@
             { "kode": "U-F1c-1", "nama": "Koleksi progres_* lengkap", "jenis": "ada_koleksi" },
             { "kode": "U-F1c-2", "nama": "Route API progres aktif", "jenis": "ada_route" }
           ]
+        },
+        {
+          "kode": "F1c-2",
+          "nama": "Penalti Bug masuk Nilai Progres",
+          "deskripsi": "Temuan Bug Hunter menurunkan nilai progres secara jujur (proporsional, lantai 5%)",
+          "uji": [
+            { "kode": "U-F1c-3", "nama": "Route penalti-bug merespons JSON valid", "jenis": "ada_route" }
+          ]
+        },
+        {
+          "kode": "F1c-3",
+          "nama": "Dev Tools Pemantauan & Diagnosa",
+          "deskripsi": "Halaman Dev Tools: git, diagnosa akar masalah, heartbeat, inventaris, rilis, feature flag",
+          "uji": [
+            { "kode": "U-F1c-4", "nama": "Panel Dev Tools dan scanner tersedia", "jenis": "uji_statis" }
+          ]
         }
       ]
     },

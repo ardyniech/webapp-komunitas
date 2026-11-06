@@ -47,12 +47,24 @@ window.AppModules.EventLPJ = {
     if (modal) modal.classList.remove("show");
   },
 
+  closeLPJModal() { this.closeSusunLPJModal(); },
+
+  toggleUserCard(e) {
+    // alias tombol header: toggle user dropdown
+    const menu = document.getElementById("user-dropdown-menu");
+    if (menu) menu.classList.toggle("show");
+  },
+
   async submitLPJEvent() {
     const eventId = document.getElementById("lpj-event-id")?.value;
-    const jenis = document.getElementById("lpj-jenis")?.value || "lpj_keuangan";
-    const isi = document.getElementById("lpj-isi")?.value.trim();
+    // isi gabungan dari 3 textarea LPJ di HTML modal
+    const acara = document.getElementById("lpj-jalannya-acara")?.value?.trim() || "";
+    const kendala = document.getElementById("lpj-kendala")?.value?.trim() || "";
+    const evalText = document.getElementById("lpj-evaluasi")?.value?.trim() || "";
+    const isiGabungan = [acara && `Jalannya Acara: ${acara}`, kendala && `Kendala & Solusi: ${kendala}`, evalText && `Evaluasi: ${evalText}`].filter(Boolean).join("\n") || "";
+    const jenis = "lpj_keuangan";
 
-    if (!eventId || !isi) {
+    if (!eventId || !isiGabungan) {
       alert("Isi laporan pertanggungjawaban (LPJ) wajib diisi!");
       return;
     }
@@ -65,7 +77,7 @@ window.AppModules.EventLPJ = {
         body: JSON.stringify({
           event: eventId,
           jenis: jenis,
-          isi: isi,
+          isi: isiGabungan,
           status: "diajukan",
           ditulis_oleh: this.user.id
         })
