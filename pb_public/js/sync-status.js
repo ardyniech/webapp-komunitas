@@ -28,7 +28,7 @@ window.AppModules.SyncStatus = {
       el = document.createElement("div");
       el.id = "sync-overlay";
       el.style.cssText =
-        "position:fixed;top:52px;left:0;right:0;z-index:12000;display:none;" +
+        "position:fixed;top:52px;left:0;right:0;z-index:12000;display:none;pointer-events:none;" +
         "background:rgba(10,15,10,0.92);color:#fff;padding:2px 12px 4px;font-size:0.72rem;" +
         "border-bottom:1px solid var(--warna-utama,#1FA463);";
       document.body.appendChild(el);
