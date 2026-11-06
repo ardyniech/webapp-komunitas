@@ -82,12 +82,14 @@ window.AppModules.Anggota = {
 
   anggotaItemHTML(a, canManage) {
     const nama = a.nama || a.nama_lengkap || a.nama_tampil || a.username || "Anggota";
+    const inisial = (a.nama_panggilan || a.nama || a.username || "A").charAt(0).toUpperCase();
     const role = a.role || a.role_ringkas || "anggota";
     const status = a.status !== undefined ? a.status : (a.aktif === false ? "nonaktif" : "aktif");
     const wa = a.whatsapp || a.kontak || "-";
     const domisili = a.domisili || "-";
-    const roleBadge = `<span class="role-pill role-${role}">${role}</span>`;
-    const statusBadge = status === "aktif" ? '<span class="badge" style="background:#10b981;color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:10px;">Aktif</span>' : `<span class="badge" style="background:var(--bg-input);color:var(--text-primary);font-size:0.7rem;padding:2px 8px;border-radius:10px;border:1px solid var(--border-color);">${status}</span>`;
+    const roleWarna = { admin: "#f87171", pengurus: "#60a5fa", bendahara: "#fbbf24", anggota: "#34d399" }[role] || "#94a3b8";
+    const roleBadge = `<span class="role-pill" style="background:rgba(${roleWarna === '#f87171' ? '239,68,68' : roleWarna === '#60a5fa' ? '59,130,246' : roleWarna === '#fbbf24' ? '245,158,11' : '52,211,153'},0.15); color:${roleWarna};">${role}</span>`;
+    const statusBadge = status === "aktif" ? '<span class="badge" style="background:#10b981;color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:10px;">✅ Aktif</span>' : `<span class="badge" style="background:var(--bg-input);color:var(--text-primary);font-size:0.7rem;padding:2px 8px;border-radius:10px;border:1px solid var(--border-color);">${status}</span>`;
 
     let aksi = "";
     if (canManage) {
@@ -97,16 +99,19 @@ window.AppModules.Anggota = {
       `;
     }
     return `
-      <div class="anggota-item" style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid var(--border-color);">
+      <div class="anggota-item dash-card-lift" style="display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-bottom:1px solid var(--border-color);">
         <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-          <div style="font-size:20px;">🛵</div>
+          <div class="anggota-avatar">${inisial}</div>
           <div style="min-width:0;">
             <div style="font-weight:700; font-size:0.88rem;">${this.escapeHtml(nama)}</div>
-            <div style="font-size:0.72rem; color:var(--text-sub);">📱 ${this.escapeHtml(wa)} • ${this.escapeHtml(domisili)}</div>
+            <div style="font-size:0.72rem; color:var(--text-sub);">📱 ${this.escapeHtml(wa)}</div>
             <div style="font-size:0.72rem; color:var(--text-sub); margin-top:2px;">${roleBadge} ${statusBadge}</div>
           </div>
         </div>
-        <div style="display:flex; gap:6px;">${aksi}</div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <span class="badge" style="background:var(--bg-input);color:var(--text-primary);font-size:0.68rem;padding:2px 8px;border-radius:10px;">📍 ${this.escapeHtml(domisili)}</span>
+          <div style="display:flex; gap:6px;">${aksi}</div>
+        </div>
       </div>
     `;
   },

@@ -1184,6 +1184,22 @@ body.mode-hemat-animasi * {
   margin-top: 10px;
 }
 
+/* ── Direktori Anggota ── */
+.anggota-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--warna-aksen);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  box-shadow: 0 3px 8px rgba(255, 176, 32, 0.35);
+}
+
 /* ── Dashboard Estetik ── */
 .dash-hero {
   background: linear-gradient(135deg, var(--warna-utama), var(--warna-aksen));
