@@ -9,3 +9,13 @@ pb_data/
 .DS_Store
 *.log
 caddy/caddy/
+
+# Snapshot dev tools (dihasilkan timer, jangan di-commit)
+pb_public/devtools-*.json
+pb_public/devtools-*.md
+pb_public/devtools-*.ndjson
+pb_public/drg/devtools-*.json
+pb_public/drg/devtools-*.md
+pb_public/drg/devtools-*.ndjson
+pb_public/scan-report.json
+pb_public/drg/scan-report.json

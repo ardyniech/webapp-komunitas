@@ -19,6 +19,7 @@ const steps = [
   "dt-security.js",
   "dt-links.js",
   "dt-history.js", // append riwayat (setelah snapshot lain)
+  "dt-context.js", // paket konteks AI dev (setelah semua snapshot)
   "dt-diagnose.js", // harus terakhir: membaca scan-report.json dari scan-bugs
 ];
 
