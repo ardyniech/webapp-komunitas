@@ -30,6 +30,8 @@ window.AppModules.PanelAdmin = {
     const form = document.getElementById("form-personalisasi");
     if (!form) return; // hanya di halaman panel-admin.html (standalone)
     this.apiBase = location.pathname.includes("/drg") ? "/drg/api" : "/api";
+    this.daftarKomunitas = [];
+    document.getElementById("komunitas-picker").addEventListener("change", () => this.pilihKomunitas());
 
     const u = this.user;
     const banner = document.getElementById("admin-banner");
@@ -52,13 +54,31 @@ window.AppModules.PanelAdmin = {
     await this.muatPengurus();
   },
 
+  // Ganti komunitas target (multi-komunitas): reload form untuk record yg dipilih.
+  async pilihKomunitas() {
+    const id = document.getElementById("komunitas-picker").value;
+    const rec = (this.daftarKomunitas || []).find((k) => k.id === id);
+    if (rec) this.recKomunitas = rec;
+    await this.muatKomunitas();
+  },
+
   async muatKomunitas() {
     try {
-      const res = await fetch(this.apiBase + "/collections/komunitas/records?perPage=1");
+      const res = await fetch(this.apiBase + "/collections/komunitas/records?perPage=30");
       const data = await res.json();
-      const rec = (data.items || [])[0] || null;
+      const items = data.items || [];
+      this.daftarKomunitas = items;
+      const picker = document.getElementById("komunitas-picker");
+      picker.innerHTML = items.map((k) =>
+        '<option value="' + k.id + '"' + (k.id === (this.recKomunitas && this.recKomunitas.id) ? " selected" : "") + ">" +
+        this.esc(k.nama) + (k.slug ? " (" + this.esc(k.slug) + ")" : "") + "</option>"
+      ).join("");
+      if (!picker.value && items[0]) picker.value = items[0].id;
+      const rec = items.find((k) => k.id === picker.value) || items[0] || null;
       this.recKomunitas = rec;
       if (!rec) { this.showMsg("Belum ada record komunitas. Hubungi admin teknis.", false); return; }
+      document.getElementById("komunitas-meta").textContent =
+        "Komunitas ID: " + (rec.komunitas_id || rec.id) + (rec.slug ? " · Slug: " + rec.slug : "");
       const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v ?? ""; };
       set("f-nama", rec.nama); set("f-sapaan", rec.sapaan); set("f-tagline", rec.tagline);
       set("f-nama-hero", rec.nama_hero); set("f-tentang", rec.tentang); set("f-visi-misi", rec.visi_misi);
