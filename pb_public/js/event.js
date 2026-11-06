@@ -5,7 +5,7 @@ window.AppModules.Event = {
   _allEvents: [],
 
   async loadEvents() {
-    const listEl = document.getElementById("event-list");
+    const listEl = document.getElementById("events-list");
     if (listEl) listEl.innerHTML = `<div class="empty-state">⏳ Memuat daftar event...</div>`;
     try {
       const res = await fetch(`${this.apiBase}/collections/event/records?sort=-tanggal_mulai&perPage=50`, {

@@ -46,7 +46,7 @@ window.AppModules.Kas = {
   renderKasList() {
     const filterJenis = document.getElementById("filter-kas-jenis")?.value || "all";
     const searchVal = (document.getElementById("filter-kas-search")?.value || "").toLowerCase();
-    const listEl = document.getElementById("kas-list");
+    const listEl = document.getElementById("full-kas-list");
     if (!listEl) return;
 
     let filtered = this.allKas || [];
@@ -70,8 +70,8 @@ window.AppModules.Kas = {
   },
 
   showBuktiModal(collectionId, recordId, filename) {
-    const modal = document.getElementById("modal-bukti");
-    const img = document.getElementById("bukti-img-preview");
+    const modal = document.getElementById("bukti-modal");
+    const img = document.getElementById("bukti-modal-img");
     if (!modal || !img) return;
 
     img.src = `${this.apiBase}/files/${collectionId}/${recordId}/${filename}`;
@@ -79,7 +79,7 @@ window.AppModules.Kas = {
   },
 
   closeBuktiModal() {
-    const modal = document.getElementById("modal-bukti");
+    const modal = document.getElementById("bukti-modal");
     if (modal) modal.classList.remove("show");
   },
 

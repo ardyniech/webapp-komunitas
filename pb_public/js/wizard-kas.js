@@ -11,14 +11,14 @@ window.AppModules.WizardKas = {
       keterangan: "",
       buktiFile: null
     };
-    const modal = document.getElementById("modal-wizard-kas");
+    const modal = document.getElementById("wizard-modal");
     if (modal) modal.classList.add("show");
     this.renderWizardStep();
     Hero.setExpression("senang", Teks.hero.catat_kas);
   },
 
   closeWizard() {
-    const modal = document.getElementById("modal-wizard-kas");
+    const modal = document.getElementById("wizard-modal");
     if (modal) modal.classList.remove("show");
   },
 
@@ -34,11 +34,17 @@ window.AppModules.WizardKas = {
     });
 
     if (this.wizardStep === 4) {
-      document.getElementById("sum-jenis").innerText = this.wizardData.jenis.toUpperCase();
-      document.getElementById("sum-nominal").innerText = `Rp ${Number(this.wizardData.nominal).toLocaleString('id-ID')}`;
-      document.getElementById("sum-kategori").innerText = this.wizardData.kategori;
-      document.getElementById("sum-keterangan").innerText = this.wizardData.keterangan;
-      document.getElementById("sum-bukti").innerText = this.wizardData.buktiFile ? this.wizardData.buktiFile.name : (this.wizardData.jenis === 'keluar' ? '⚠️ Wajib ada!' : 'Tidak ada');
+      // Ringkasan ditulis ke container yang benar-benar ada di HTML
+      const sumEl = document.getElementById("wizard-summary-content");
+      if (sumEl) {
+        const buktiLabel = this.wizardData.buktiFile ? this.wizardData.buktiFile.name : (this.wizardData.jenis === 'keluar' ? '⚠️ Wajib ada!' : 'Tidak ada');
+        sumEl.innerHTML =
+          `<div><b>Jenis:</b> ${this.escapeHtml(this.wizardData.jenis.toUpperCase())}</div>` +
+          `<div><b>Nominal:</b> Rp ${Number(this.wizardData.nominal).toLocaleString('id-ID')}</div>` +
+          `<div><b>Kategori:</b> ${this.escapeHtml(this.wizardData.kategori || '-')}</div>` +
+          `<div><b>Keterangan:</b> ${this.escapeHtml(this.wizardData.keterangan || '-')}</div>` +
+          `<div><b>Bukti:</b> ${this.escapeHtml(buktiLabel)}</div>`;
+      }
     }
   },
 
