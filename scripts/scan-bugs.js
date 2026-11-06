@@ -295,6 +295,26 @@ if (indexHtml) {
   }
 }
 
+// ── 8c. Cek tombol ikon tanpa label jelas (UI sanity, penyebab "tombol samar") ──
+if (indexHtml) {
+  const btnRe2 = /<button([^>]*?)>([^<]*)<\/button>/g;
+  let bm2;
+  while ((bm2 = btnRe2.exec(indexHtml)) !== null) {
+    const attrs = bm2[1];
+    const teks = (bm2[2] || "").trim();
+    const adaJudul = /title=|aria-label=/.test(attrs);
+    // tombol ikon: teks pendek/non-karakter atau emoji saja
+    // pengecualian: pola refresh 🔄 yang sudah dikenal pengguna
+    if ((!teks || teks.length <= 2) && !adaJudul && teks !== "🔄") {
+      totalChecked++;
+      const cls = (attrs.match(/class="([^"]+)"/) || [])[1] || "";
+      addFinding("tombol_tanpa_label", "low", "pb_public/index.html", -1,
+        "Tombol ikon (class='" + cls + "') tanpa teks jelas/title — terlihat samar bagi pengguna.",
+        "Tambah title/atribut aria-label yang menjelaskan fungsi tombol.");
+    }
+  }
+}
+
 // ── 9. Koleksi penting ada di DB ──
 const dbPath = path.join(projectRoot, "pb_data", "data.db");
 const requiredCollections = ["users", "profil_publik", "pendaftaran", "bidang_profil", "log_aktivitas", "kas", "iuran", "progres_fase", "progres_fitur", "progres_uji"];

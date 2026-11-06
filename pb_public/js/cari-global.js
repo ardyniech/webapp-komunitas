@@ -14,7 +14,8 @@ window.AppModules.CariGlobal = {
     const header = document.querySelector(".app-header");
     if (!header) return;
     const wrap = document.createElement("div");
-    wrap.style.cssText = "position:relative;margin-left:8px;flex:1;max-width:220px;display:flex;";
+    wrap.id = "cari-global-wrap";
+    wrap.style.cssText = "position:relative;margin-left:8px;width:170px;min-width:120px;display:flex;flex-shrink:0;";
     wrap.innerHTML =
       `<input id="cari-global-input" type="text" placeholder="🔍 Cari anggota, kas, forum..." ` +
       `style="width:100%;padding:6px 10px;border-radius:8px;border:1px solid var(--border-color);background:var(--bg-input);color:var(--text-primary);font-size:0.8rem;">` +
