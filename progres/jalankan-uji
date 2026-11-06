@@ -228,6 +228,14 @@ async function main() {
                 pesan = "Koleksi pemetaan_izin terpasang";
                 break;
 
+              case "U-F1b-3": // Route sync-izin terdaftar dan terproteksi
+                {
+                  const resIzin = await fetchJson(`${testBaseUrl}/api/komunitas/sync-izin`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: {} });
+                  lulus = (resIzin.status === 401 || resIzin.status === 403);
+                  pesan = `Route sync-izin terproteksi (status ${resIzin.status})`;
+                }
+                break;
+
               case "U-F1c-1": // Koleksi progres_* lengkap
                 lulus = tableExists("progres_fase") && tableExists("progres_fitur");
                 pesan = "Koleksi progres_fase & progres_fitur terpasang";

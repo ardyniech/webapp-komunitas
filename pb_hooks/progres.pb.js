@@ -55,7 +55,7 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
     const registryRouteNames = new Set();
     // Route yang sudah jelas-tercakup uji registry (kode uji U-F2b-3/4 dst. menangani route ini,
     // meski nama ujinya tidak menulis path-nya secara harfiah).
-    ["/api/komunitas/daftar", "/api/komunitas/status/:kode", "/api/komunitas/cek-status", "/api/komunitas/logout-all", "/api/komunitas/permintaan-hapus-data", "/api/komunitas/progres", "/api/komunitas/sync-profil-publik", "/api/komunitas/pendaftaran/:id/proses", "/api/komunitas/scan-report"].forEach((r) => registryRouteNames.add(r));
+    ["/api/komunitas/daftar", "/api/komunitas/status/:kode", "/api/komunitas/cek-status", "/api/komunitas/logout-all", "/api/komunitas/permintaan-hapus-data", "/api/komunitas/progres", "/api/komunitas/sync-profil-publik", "/api/komunitas/pendaftaran/:id/proses", "/api/komunitas/scan-report", "/api/komunitas/sync-izin"].forEach((r) => registryRouteNames.add(r));
     (registry.fase || []).forEach((f) => {
       (f.fitur || []).forEach((fitur) => {
         if (fitur.kode) existingKode.add(fitur.kode);

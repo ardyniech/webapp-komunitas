@@ -50,6 +50,14 @@
             { "kode": "U-F1b-1", "nama": "Koleksi konfigurasi & referensi tersedia", "jenis": "ada_koleksi" },
             { "kode": "U-F1b-2", "nama": "Koleksi pemetaan_izin tersedia", "jenis": "ada_koleksi" }
           ]
+        },
+        {
+          "kode": "F1b-2",
+          "nama": "Sinkron Izin Otomatis",
+          "deskripsi": "Hitung ulang izin & tim dari jabatan dan pemetaan izin",
+          "uji": [
+            { "kode": "U-F1b-3", "nama": "Route sync-izin terdaftar dan terproteksi", "jenis": "ada_route" }
+          ]
         }
       ]
     },
