@@ -94,6 +94,6 @@ window.AppModules.RoleManajemen = {
   },
 
   esc(s) {
-    return (window.UIHelpers && UIHelpers.esc) || String(s == null ? "" : s);
+    return (window.UIHelpers && UIHelpers.esc ? UIHelpers.esc(s) : String(s == null ? "" : s));
   },
 };
