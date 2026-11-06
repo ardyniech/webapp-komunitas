@@ -345,10 +345,14 @@
       <section id="panel-iuran" class="view-panel">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
           <h2 style="font-size: 1.15rem; font-weight: 700;">Iuran Bulanan</h2>
-          <div>
+          <div style="display:flex; gap:6px;">
             <input type="month" id="iuran-period-select" class="form-control" style="width: auto; padding: 6px 10px; font-size: 0.85rem;">
+            <button class="btn btn-outline" style="width:auto; padding:8px 10px; font-size:0.75rem;" onclick="App.exportIuranCSV()">
+              📥 Ekspor CSV
+            </button>
           </div>
         </div>
+        <div id="iuran-rekap-wrap" style="margin-bottom:10px;"></div>
         <div id="iuran-member-checklist"></div>
       </section>
 

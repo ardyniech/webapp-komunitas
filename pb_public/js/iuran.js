@@ -16,6 +16,8 @@ window.AppModules.Iuran = {
     const lunasCount = lunasList.length;
     const pct = totalAnggota > 0 ? Math.round((lunasCount / totalAnggota) * 100) : 0;
 
+    this.renderIuranRekap(period, totalAnggota, lunasCount);
+
     // Sinkron bensin bar di markas juga
     const bensinFill = document.getElementById("bensin-fill-bar");
     const bensinTxt = document.getElementById("bensin-status-text");
@@ -126,5 +128,76 @@ window.AppModules.Iuran = {
       Hero.setExpression("waspada", "Gagal memperbarui iuran.");
       alert("Terjadi kesalahan saat memproses pelunasan iuran.");
     }
+  },
+
+  // ── Rekap belum lunas (bantuan bendahara) ──────────────────────────────
+  renderIuranRekap(period, totalAnggota, lunasCount) {
+    const wrap = document.getElementById("iuran-rekap-wrap");
+    if (!wrap) return;
+    const belum = Math.max(totalAnggota - lunasCount, 0);
+    const anggotaMap = {};
+    (this.sumberAnggota() || []).forEach(u => { anggotaMap[u.id] = u; });
+    const belumList = (this.allIuran || []).filter(i => i.periode === period && i.status !== "lunas");
+    const belumNominal = belumList.reduce((s, i) => s + Number(i.nominal || 0), 0);
+
+    let html = `
+      <div class="stat-tile" style="flex:1; min-width:120px; border:1px solid var(--border-color); border-radius:10px; padding:8px; background:var(--bg-card);">
+        <div class="stat-nilai" style="font-size:1.25rem; font-weight:700;">${belum}</div>
+        <div class="stat-label" style="font-size:0.7rem;">Belum Lunas</div>
+      </div>
+      <div class="stat-tile" style="flex:1; min-width:140px; border:1px solid var(--border-color); border-radius:10px; padding:8px; background:var(--bg-card);">
+        <div class="stat-nilai" style="font-size:1.25rem; font-weight:700;">Rp ${belumNominal.toLocaleString("id-ID")}</div>
+        <div class="stat-label" style="font-size:0.7rem;">Nominal Belum Dibayar</div>
+      </div>
+      <div class="stat-tile" style="flex:1; min-width:120px; border:1px solid var(--border-color); border-radius:10px; padding:8px; background:var(--bg-card);">
+        <div class="stat-nilai" style="font-size:1.25rem; font-weight:700;">${lunasCount}/${totalAnggota}</div>
+        <div class="stat-label" style="font-size:0.7rem;">Lunas / Total</div>
+      </div>
+    `;
+
+    if (belumList.length > 0) {
+      html += `<div style="margin-top:8px; font-size:0.78rem; color:var(--text-sub);"><strong>Belum lunas:</strong> ${belumList.map(i => {
+        const u = anggotaMap[i.anggota] || {};
+        return `${this.escapeHtml(u.nama || u.username)} (Rp ${Number(i.nominal||0).toLocaleString("id-ID")})`;
+      }).join(" · ")}</div>`;
+    }
+
+    wrap.innerHTML = html;
+  },
+
+  // ── Ekspor CSV iuran periode aktif ────────────────────────────────────
+  async exportIuranCSV() {
+    const period = this.currentPeriod;
+    const anggotaMap = {};
+    (this.sumberAnggota() || []).forEach(u => { anggotaMap[u.id] = u; });
+
+    const list = (this.allIuran || [])
+      .filter(i => i.periode === period)
+      .map(i => {
+        const u = anggotaMap[i.anggota] || {};
+        return {
+          nama: u.nama || u.username || "-",
+          nominal: i.nominal || 0,
+          status: i.status,
+          tanggal: (i.tanggal || "").split(" ")[0],
+          keterangan: (i.keterangan || "")
+        };
+      });
+
+    if (list.length === 0) {
+      alert("Belum ada data iuran untuk diekspor periode ini!");
+      return;
+    }
+
+    const esc = s => `"${String(s || "").replace(/"/g, '""')}"`;
+    const rows = list.map(r => [esc(r.nama), esc(r.nominal), esc(r.status), esc(r.tanggal), esc(r.keterangan)].join(","));
+    const csv = ["Nama,Nominal,Status,Tanggal,Keterangan", ...rows].join("\n");
+    const link = document.createElement("a");
+    link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+    link.download = `iuran_komunitas_${period.replace("-", "_")}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    Hero.setExpression("senang", "CSV iuran berhasil diunduh!");
   }
 };
