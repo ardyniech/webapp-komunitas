@@ -101,7 +101,7 @@
       <button class="dropdown-item" onclick="App.switchTab('pengaturan'); App.closeUserMenu();">
         <span>⚙️</span> <span>Setelan Basecamp</span>
       </button>
-      <button class="dropdown-item" onclick="App.switchTab('bug-hunter'); App.closeUserMenu();">
+      <button class="dropdown-item" onclick="App.switchTab('admin-tools'); App.adminToolsSwitchSub('bug-hunter'); App.closeUserMenu();">
         <span>🐛</span> <span>Bug Hunter &amp; Scan</span>
       </button>
       <button class="dropdown-item" onclick="window.open('panel-admin.html','_blank'); App.closeUserMenu();">
@@ -1045,10 +1045,10 @@
           </div>
 
           <div class="sub-tabs" style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
-            <button class="devtools-sub-tab" data-sub="git" onclick="App.devtoolsSwitchSub('git')">Git</button>
-            <button class="devtools-sub-tab" data-sub="diagnosa" onclick="App.devtoolsSwitchSub('diagnosa')">Diagnosa Bug</button>
-            <button class="devtools-sub-tab" data-sub="monitor" onclick="App.devtoolsSwitchSub('monitor')">Monitor</button>
-            <button class="devtools-sub-tab" data-sub="info" onclick="App.devtoolsSwitchSub('info')">Info &amp; Flag</button>
+            <button class="devtools-sub-tab" data-sub="git" onclick="App.adminToolsSwitchSub('git')">Git</button>
+            <button class="devtools-sub-tab" data-sub="diagnosa" onclick="App.adminToolsSwitchSub('diagnosa')">Diagnosa Bug</button>
+            <button class="devtools-sub-tab" data-sub="monitor" onclick="App.adminToolsSwitchSub('monitor')">Monitor</button>
+            <button class="devtools-sub-tab" data-sub="info" onclick="App.adminToolsSwitchSub('info')">Info &amp; Flag</button>
           </div>
 
           <div id="devtools-sub-git" class="devtools-sub-panel">
