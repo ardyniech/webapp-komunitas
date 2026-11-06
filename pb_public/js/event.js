@@ -33,15 +33,30 @@ window.AppModules.Event = {
             dibatalkan: "var(--warna-merah)"
           };
           const color = statusColors[ev.status] || "var(--text-main)";
+          const jenisIcon = {
+            rapat: "🤝", sosial: "🍴", lomba: "🏆", pelatihan: "📚", bakti_sosial: "🤲", lainnya: "📅"
+          }[ev.jenis] || "📅";
+          const tglMulai = (ev.tanggal_mulai || "").split(" ")[0];
+          const tglSelesai = (ev.tanggal_selesai || "").split(" ")[0];
+          const rentangTanggal = tglSelesai && tglSelesai !== tglMulai ? `${tglMulai} – ${tglSelesai}` : tglMulai;
+          const panitiaCount = ev.panitia_count || 0;
 
           return `
-            <div class="kas-card" style="flex-direction:column; align-items:stretch; margin-bottom:12px;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="font-weight:700; font-size:0.95rem;">${this.escapeHtml(ev.judul)}</div>
+            <div class="kas-card dash-card-lift">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div style="font-size:1.2rem;">${jenisIcon}</div>
+                  <div>
+                    <div style="font-weight:700; font-size:0.95rem;">${this.escapeHtml(ev.judul)}</div>
+                    <div style="font-size:0.7rem; color:var(--text-sub);">${jenisIcon === '📅' ? 'Event Umum' : this.escapeHtml(ev.jenis)}</div>
+                  </div>
+                </div>
                 <span class="role-pill" style="color:${color}; border:1px solid ${color};">${ev.status.toUpperCase()}</span>
               </div>
               <div style="font-size:0.75rem; color:var(--text-sub); margin-top:4px;">
-                🏷️ Jenis: ${this.escapeHtml(ev.jenis)} | 📍 ${this.escapeHtml(ev.lokasi || 'Basecamp')} | 📅 ${(ev.tanggal_mulai || '').split(' ')[0]}
+                <span>📍 ${this.escapeHtml(ev.lokasi || 'Basecamp')}</span>
+                <span style="margin-left:8px;">📅 ${rentangTanggal}</span>
+                ${panitiaCount > 0 ? `<span style="margin-left:8px;">👥 ${panitiaCount} Panitia</span>` : ''}
               </div>
               <div style="font-size:0.78rem; color:var(--text-main); margin-top:6px; line-height:1.35;">
                 ${this.escapeHtml(ev.deskripsi || ev.tujuan || '')}
