@@ -1,6 +1,6 @@
 // Service Worker for Basecamp Komunitas PWA — True Offline-First (Stale-While-Revalidate)
-const CACHE_NAME = 'basecamp-cache-v17';
-const API_CACHE_NAME = 'basecamp-api-v17';
+const CACHE_NAME = 'basecamp-cache-v18';
+const API_CACHE_NAME = 'basecamp-api-v18';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
