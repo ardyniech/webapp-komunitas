@@ -2,6 +2,9 @@
 window.AppModules = window.AppModules || {};
 
 window.AppModules.Markas = {
+  inisial(nama) {
+    return (nama || "A").charAt(0).toUpperCase();
+  },
   renderMarkas() {
     let totalSaldo = 0;
     let masukBulan = 0;
@@ -45,10 +48,15 @@ window.AppModules.Markas = {
       } else {
         grid.innerHTML = nonAdminUsers.map(u => {
           const isLunas = lunasList.some(i => i.anggota === u.id);
+          const nama = this.escapeHtml(u.nama_panggilan || u.nama || u.username);
           return `
-            <div class="driver-item ${isLunas ? 'lunas' : 'belum'}" title="${this.escapeHtml(u.nama || u.username)}: ${isLunas ? 'Iuran Lunas' : 'Belum Lunas'}">
-              <div class="driver-icon">${isLunas ? '⛽' : '🛵'}</div>
-              <div class="driver-name">${this.escapeHtml(u.nama_panggilan || u.nama || u.username)}</div>
+            <div class="dashboard-member ${isLunas ? 'lunas' : 'belum'}" title="${this.escapeHtml(u.nama || u.username)}: ${isLunas ? 'Iuran Lunas' : 'Belum Lunas'}">
+              <div class="member-avatar ${isLunas ? 'lunas' : ''}">${inisial(u)}</div>
+              <div class="member-info">
+                <div class="member-name">${nama}</div>
+                <div class="member-contact">📱 ${this.escapeHtml(u.whatsapp || u.kontak || '-')}</div>
+              </div>
+              <div class="member-status ${isLunas ? 'lunas' : 'belum'}">${isLunas ? '✅ Lunas' : '⏳ Belum'}</div>
             </div>
           `;
         }).join("");
