@@ -9,12 +9,44 @@ window.AppModules.WizardKas = {
       nominal: 0,
       kategori: "iuran",
       keterangan: "",
-      buktiFile: null
+      buktiFile: null,
+      modeCepat: false
     };
     const modal = document.getElementById("wizard-modal");
     if (modal) modal.classList.add("show");
     this.renderWizardStep();
     Hero.setExpression("senang", Teks.hero.catat_kas);
+  },
+
+  toggleModeCepat() {
+    const cb = document.getElementById("wiz-mode-cepat");
+    const nomInput = document.getElementById("wiz-nominal");
+    const jenisSel = document.getElementById("wiz-jenis");
+    const katSel = document.getElementById("wiz-kategori");
+    this.wizardData.modeCepat = cb.checked;
+    if (cb.checked) {
+      // Isi otomatis dari konfigurasi komunitas (iuran_default) atau default 20000
+      const nominalOtomatis = Number(this.komunitas && this.komunitas.iuran_default ? this.komunitas.iuran_default : 20000);
+      this.wizardData.nominal = nominalOtomatis;
+      this.wizardData.kategori = "iuran";
+      this.wizardData.jenis = "masuk";
+      if (nomInput) nomInput.value = nominalOtomatis;
+      if (jenisSel) jenisSel.value = "masuk";
+      if (katSel) {
+        katSel.innerHTML = `
+          <option value="iuran">Iuran Anggota</option>
+          <option value="donasi">Donasi / Sukarela</option>
+          <option value="sisa_dana_event">Sisa Dana Event</option>
+          <option value="lainnya">Pemasukan Lainnya</option>
+        `;
+        katSel.value = "iuran";
+      }
+      Hero.setExpression("berpikir", "Mode cepat aktif — nominal diisi otomatis dari konfigurasi komunitas.");
+    } else {
+      this.wizardData.nominal = 0;
+      if (nomInput) nomInput.value = "";
+      Hero.setExpression("senang", Teks.hero.catat_kas);
+    }
   },
 
   closeWizard() {
@@ -33,7 +65,7 @@ window.AppModules.WizardKas = {
       ind.classList.toggle("active", (idx + 1) === this.wizardStep);
     });
 
-    if (this.wizardStep === 4) {
+    if (this.wizardStep === 3) {
       // Ringkasan ditulis ke container yang benar-benar ada di HTML
       const sumEl = document.getElementById("wizard-summary-content");
       if (sumEl) {
@@ -50,6 +82,13 @@ window.AppModules.WizardKas = {
 
   wizardNext() {
     if (this.wizardStep === 1) {
+      if (this.wizardData.modeCepat) {
+        // Mode cepat: lewati step 2, langsung ke konfirmasi (step 3)
+        this.wizardData.keterangan = `Iuran ${this.currentPeriod || ""} — mode cepat`;
+        this.wizardStep = 3;
+        this.renderWizardStep();
+        return;
+      }
       const checked = document.querySelector('input[name="wiz-jenis"]:checked');
       if (!checked) return;
       this.wizardData.jenis = checked.value;

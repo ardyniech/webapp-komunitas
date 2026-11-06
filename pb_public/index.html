@@ -1162,6 +1162,9 @@
           </select>
         </div>
         <div style="display: flex; gap: 8px; margin-top: 18px;">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer; margin:0; font-size:0.78rem;">
+            <input type="checkbox" id="wiz-mode-cepat" onchange="App.toggleModeCepat()"> Mode Cepat (nominal otomatis)
+          </label>
           <button class="btn btn-outline" onclick="App.closeWizard()">Batal</button>
           <button class="btn btn-primary" onclick="App.wizardNext()">Lanjut &rarr;</button>
         </div>
