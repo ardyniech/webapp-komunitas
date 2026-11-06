@@ -120,6 +120,8 @@ Banner di tab Progres menampilkan rinciannya. Scan terbaru:
   - `dt-links`: audit tautan live (curl semua route + file statis; kini 0 mati)
   - `dt-db`: kesegaran data per koleksi (row count + umur data)
   - `dt-history`: riwayat trunc append-only + sparkline + delta bug
+  - `dt-links`: audit tautan live (route + file statis) + **cek cache-busting
+    seragam ?v=N vs CACHE_NAME SW** (gagal = perubahan JS tidak sampai browser)
   - `dt-errors`: error journal dikelompokkan per pola signature
   - `dt-security`: audit secret di repo (0 temuan) + versi PocketBase + paparan JSON publik
   - Diagnosa dilengkapi blame git per file bug

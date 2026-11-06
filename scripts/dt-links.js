@@ -80,6 +80,25 @@ const builtin = ["health", "collections", "collections/users/records"].map((p) =
   return { path: "/api/" + p, http: status, hidup: status !== 0 && status !== 404 };
 });
 
+// ── 4. Cache-busting: semua <script src> harus ?v=N dan versi seragam dengan SW ──
+const scriptVers = [...indexHtml.matchAll(/<script src="([^"]+)"/g)].map((m) => m[1]);
+const tanpaVersi = scriptVers.filter((s) => !s.includes("?v="));
+const versiSet = new Set(scriptVers.filter((s) => s.includes("?v=")).map((s) => s.split("?v=")[1]));
+let swVersi = "";
+{
+  const swContent = readSafe(path.join(publicDir, "sw.js"));
+  const m = swContent.match(/basecamp-cache-v(\d+)/);
+  if (m) swVersi = m[1];
+}
+const versiSeragam = versiSet.size <= 1;
+const cacheBustingOk = tanpaVersi.length === 0 && versiSeragam && (!swVersi || ![...versiSet][0] === swVersi ? true : [...versiSet][0] === swVersi);
+const cacheBusting = {
+  ok: cacheBustingOk,
+  tanpa_versi: tanpaVersi,
+  versi_script: [...versiSet],
+  versi_sw: swVersi,
+};
+
 const report = {
   generated_at: new Date().toISOString(),
   static_total: staticChecks.length,
@@ -88,7 +107,8 @@ const report = {
   routes_dead: deadRoutes,
   route_checks: routeChecks,
   builtin,
-  total_dead: deadFiles.length + deadRoutes.length,
+  cache_busting: cacheBusting,
+  total_dead: deadFiles.length + deadRoutes.length + (cacheBusting.ok ? 0 : 1),
 };
 
 require("./dt-write").writeOutputs("devtools-links", report);
