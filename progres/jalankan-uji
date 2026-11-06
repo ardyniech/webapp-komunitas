@@ -266,19 +266,19 @@ async function main() {
                 }
                 break;
 
-              case "U-F1c-5": // Laporan scan bug tersaji (scan-report.json)
+              case "U-F1c-5": // Laporan scan bug tersaji (data non-publik, superadmin-only)
                 {
-                  // file hasil scan ada di disk repo (dibuat timer/scan manual)
-                  const scanAda = fs.existsSync(path.join(PUBLIC_DIR, 'scan-report.json'));
+                  // Laporan disimpan non-publik (DB + data/devtools) — file publik sengaja dihapus.
+                  const scanAda = fs.existsSync(path.join(PROJECT_ROOT, 'data/devtools/scan-report.json'));
                   let valid = false;
                   if (scanAda) {
                     try {
-                      const sr = JSON.parse(fs.readFileSync(path.join(PUBLIC_DIR, 'scan-report.json'), 'utf-8'));
+                      const sr = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'data/devtools/scan-report.json'), 'utf-8'));
                       valid = sr && sr.total_findings !== undefined;
                     } catch (_) {}
                   }
                   lulus = scanAda && valid;
-                  pesan = `scan-report.json valid (status ${scanAda ? "ada" : "hilang"})`;
+                  pesan = `scan-report tersedia non-publik & valid (status ${scanAda ? "ada" : "hilang"})`;
                 }
                 break;
 
