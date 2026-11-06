@@ -72,6 +72,25 @@ window.AppModules.Profil = {
       badgeContainer.innerHTML = badges.join("");
     }
 
+    // Statistik ringkasan anggota
+    const lunasCount = (this.allIuran || []).filter(i => i.anggota === this.user.id && i.status === "lunas").length;
+    const kasDicatat = (this.allKas || []).filter(k => k.dicatat_oleh === this.user.id).length;
+    const statContainer = document.getElementById("profil-stat-container");
+    if (statContainer) {
+      statContainer.innerHTML = `
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <div class="stat-tile" style="flex:1; background:var(--bg-input); border:1px solid var(--border-color); border-radius:10px; padding:8px; text-align:center;">
+            <div style="font-size:0.7rem; color:var(--text-sub);">Iuran Lunas</div>
+            <div style="font-size:1.1rem; font-weight:800; color:var(--warna-utama);">${lunasCount}</div>
+          </div>
+          <div class="stat-tile" style="flex:1; background:var(--bg-input); border:1px solid var(--border-color); border-radius:10px; padding:8px; text-align:center;">
+            <div style="font-size:0.7rem; color:var(--text-sub);">Kas Dicatat</div>
+            <div style="font-size:1.1rem; font-weight:800; color:var(--warna-aksen);">${kasDicatat}</div>
+          </div>
+        </div>
+      `;
+    }
+
     const checks = [
       !!(this.user.nama), !!(this.user.nama_panggilan), !!(this.user.tanggal_lahir),
       !!(this.user.foto), !!(this.user.whatsapp || this.user.kontak), !!this.user.domisili,
