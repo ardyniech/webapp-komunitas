@@ -10,6 +10,9 @@ pb_data/
 *.log
 caddy/caddy/
 
+# Output generator dev tools (scripts/dt-*.js) + backup migrasi
+data/
+
 # Snapshot dev tools (dihasilkan timer, jangan di-commit)
 pb_public/devtools-*.json
 pb_public/devtools-*.md
