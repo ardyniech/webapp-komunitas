@@ -12,7 +12,7 @@
   <meta name="theme-color" content="#10b981">
   <meta name="description" content="Aplikasi Komunitas Driver Ojol Ringan & Kas Transparan">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="app.css?v=24">
+  <link rel="stylesheet" href="app.css?v=25">
 </head>
 <body>
   <div id="global-loading-bar" style="position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg, rgba(31,164,99,0.7), var(--warna-utama)); z-index:9999; transition:width 0.2s ease-out, opacity 0.3s; opacity:0; pointer-events:none;"></div>
@@ -216,10 +216,18 @@
       
       <!-- TAB 1: MARKAS (DASHBOARD) -->
       <section id="panel-markas" class="view-panel active">
+        <!-- Hero Welcome Banner -->
+        <div class="dash-hero">
+          <div class="dash-hero-avatar">🛵</div>
+          <div class="dash-hero-text">
+            <div class="dash-hero-sapaan" id="dash-hero-sapaan">Yo, bro!</div>
+            <div class="dash-hero-ucapan" id="dash-hero-ucapan">Kondisi pangkalan hari ini aman, aspal lancar.</div>
+          </div>
+        </div>
         <!-- Banner Penunjukan Panitia Event (Plan §6.8 B) -->
         <div id="dash-panitia-banner" style="display:none; margin-bottom:14px; padding:12px 14px; background:rgba(255, 176, 32, 0.15); border:1px solid var(--warna-aksen); border-radius:12px;"></div>
         <!-- Dompet Kas Card -->
-        <div class="dompet-card">
+        <div class="dompet-card dash-card-lift">
           <div class="dompet-title">DOMPET KAS BASECAMP</div>
           <div class="dompet-saldo">
             <span class="rp">Rp</span>
@@ -238,7 +246,7 @@
         </div>
 
         <!-- Tangki Bensin Iuran -->
-        <div class="bensin-card">
+        <div class="bensin-card dash-card-lift">
           <div class="bensin-header">
             <div class="bensin-title">
               <span>⛽</span>
@@ -256,7 +264,7 @@
         </div>
 
         <!-- Status Kesiapan Anggota -->
-        <div style="margin-bottom: 16px;">
+        <div class="dash-card-lift" style="margin-bottom: 16px;">
           <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-sub); margin-bottom: 6px;">
             STATUS SETORAN ANGGOTA
           </div>
@@ -1538,60 +1546,60 @@
     </div>
   </div>
 
-  <script src="teks.js?v=24"></script>
-  <script src="hero.js?v=24"></script>
+  <script src="teks.js?v=25"></script>
+  <script src="hero.js?v=25"></script>
   <!-- Atomic Modules (Each < 200 lines) -->
-  <script src="js/auth.js?v=24"></script>
-  <script src="js/markas.js?v=24"></script>
-  <script src="js/kas.js?v=24"></script>
-  <script src="js/wizard-kas.js?v=24"></script>
-  <script src="js/koreksi-kas.js?v=24"></script>
-  <script src="js/iuran.js?v=24"></script>
-  <script src="js/astrologi.js?v=24"></script>
-  <script src="js/profil.js?v=24"></script>
-  <script src="js/profil-foto.js?v=24"></script>
-  <script src="js/profil-form.js?v=24"></script>
-  <script src="js/profil-aktivitas.js?v=24"></script>
-  <script src="js/profil-dokumen.js?v=24"></script>
-  <script src="js/profil-publik.js?v=24"></script>
-  <script src="js/pendaftaran.js?v=24"></script>
-  <script src="js/anggota.js?v=24"></script>
-  <script src="js/anggota-aksi.js?v=24"></script>
-  <script src="js/anggota-bidang.js?v=24"></script>
-  <script src="js/komunitas.js?v=24"></script>
-  <script src="js/struktur-aturan.js?v=24"></script>
-  <script src="js/event.js?v=24"></script>
-  <script src="js/event-peta-dana.js?v=24"></script>
-  <script src="js/event-lpj.js?v=24"></script>
-  <script src="js/event-detail.js?v=24"></script>
-  <script src="js/forum-panduan.js?v=24"></script>
-  <script src="js/pelengkap.js?v=24"></script>
-  <script src="js/pelengkap-pengaduan.js?v=24"></script>
-  <script src="js/pelengkap-kehadiran.js?v=24"></script>
-  <script src="js/kuesioner-dokumen.js?v=24"></script>
-  <script src="js/konfigurasi.js?v=24"></script>
-  <script src="js/progres.js?v=24"></script>
-  <script src="js/progres-bug.js?v=24"></script>
-  <script src="js/notifikasi.js?v=24"></script>
-  <script src="js/iuran-pengingat.js?v=24"></script>
-  <script src="js/tren.js?v=24"></script>
-  <script src="js/cari-global.js?v=24"></script>
-  <script src="js/admin-alert.js?v=24"></script>
-  <script src="js/ui-helpers.js?v=24"></script>
-  <script src="js/sync-status.js?v=24"></script>
-  <script src="js/sync-status-queue.js?v=24"></script>
-  <script src="js/devtools.js?v=24"></script>
-  <script src="js/devtools-git.js?v=24"></script>
-  <script src="js/devtools-diagnose.js?v=24"></script>
-  <script src="js/devtools-monitor.js?v=24"></script>
-  <script src="js/devtools-info.js?v=24"></script>
-  <script src="js/role-manajemen.js?v=24"></script>
-  <script src="js/core-events.js?v=24"></script>
-  <script src="js/scan-bugs.js?v=24"></script>
-  <script src="js/loading.js?v=24"></script>
+  <script src="js/auth.js?v=25"></script>
+  <script src="js/markas.js?v=25"></script>
+  <script src="js/kas.js?v=25"></script>
+  <script src="js/wizard-kas.js?v=25"></script>
+  <script src="js/koreksi-kas.js?v=25"></script>
+  <script src="js/iuran.js?v=25"></script>
+  <script src="js/astrologi.js?v=25"></script>
+  <script src="js/profil.js?v=25"></script>
+  <script src="js/profil-foto.js?v=25"></script>
+  <script src="js/profil-form.js?v=25"></script>
+  <script src="js/profil-aktivitas.js?v=25"></script>
+  <script src="js/profil-dokumen.js?v=25"></script>
+  <script src="js/profil-publik.js?v=25"></script>
+  <script src="js/pendaftaran.js?v=25"></script>
+  <script src="js/anggota.js?v=25"></script>
+  <script src="js/anggota-aksi.js?v=25"></script>
+  <script src="js/anggota-bidang.js?v=25"></script>
+  <script src="js/komunitas.js?v=25"></script>
+  <script src="js/struktur-aturan.js?v=25"></script>
+  <script src="js/event.js?v=25"></script>
+  <script src="js/event-peta-dana.js?v=25"></script>
+  <script src="js/event-lpj.js?v=25"></script>
+  <script src="js/event-detail.js?v=25"></script>
+  <script src="js/forum-panduan.js?v=25"></script>
+  <script src="js/pelengkap.js?v=25"></script>
+  <script src="js/pelengkap-pengaduan.js?v=25"></script>
+  <script src="js/pelengkap-kehadiran.js?v=25"></script>
+  <script src="js/kuesioner-dokumen.js?v=25"></script>
+  <script src="js/konfigurasi.js?v=25"></script>
+  <script src="js/progres.js?v=25"></script>
+  <script src="js/progres-bug.js?v=25"></script>
+  <script src="js/notifikasi.js?v=25"></script>
+  <script src="js/iuran-pengingat.js?v=25"></script>
+  <script src="js/tren.js?v=25"></script>
+  <script src="js/cari-global.js?v=25"></script>
+  <script src="js/admin-alert.js?v=25"></script>
+  <script src="js/ui-helpers.js?v=25"></script>
+  <script src="js/sync-status.js?v=25"></script>
+  <script src="js/sync-status-queue.js?v=25"></script>
+  <script src="js/devtools.js?v=25"></script>
+  <script src="js/devtools-git.js?v=25"></script>
+  <script src="js/devtools-diagnose.js?v=25"></script>
+  <script src="js/devtools-monitor.js?v=25"></script>
+  <script src="js/devtools-info.js?v=25"></script>
+  <script src="js/role-manajemen.js?v=25"></script>
+  <script src="js/core-events.js?v=25"></script>
+  <script src="js/scan-bugs.js?v=25"></script>
+  <script src="js/loading.js?v=25"></script>
   <!-- Core Controller -->
-  <script src="js/app-fetch.js?v=24"></script>
-  <script src="app.js?v=24"></script>
+  <script src="js/app-fetch.js?v=25"></script>
+  <script src="app.js?v=25"></script>
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration skipped', err));

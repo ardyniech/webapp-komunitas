@@ -65,6 +65,21 @@ window.AppModules.Markas = {
       }
     }
 
+    // ── Hero Welcome Banner dinamis ──
+    const sapaanEl = document.getElementById("dash-hero-sapaan");
+    const ucapanEl = document.getElementById("dash-hero-ucapan");
+    if (sapaanEl && ucapanEl && this.user) {
+      const nama = this.user.nama_panggilan || this.user.nama || this.user.username || "bro";
+      const jam = new Date().getHours();
+      let sapaan, ucapan;
+      if (jam < 10) { sapaan = "Pagi, " + nama + "!"; ucapan = "Yuk cek kondisi pangkalan hari ini."; }
+      else if (jam < 15) { sapaan = "Siang, " + nama + "!"; ucapan = "Semoga harimu lancar dan penuh rezeki."; }
+      else if (jam < 18) { sapaan = "Sore, " + nama + "!"; ucapan = "Cek saldo kas sebelum berangkat lapangan."; }
+      else { sapaan = "Malam, " + nama + "!"; ucapan = "Selesaikan catatan kas hari ini ya bos."; }
+      sapaanEl.textContent = sapaan;
+      ucapanEl.textContent = ucapan;
+    }
+
     // ── Pengumuman Penting di Dashboard (di-sematkan) ───────────────────
     const pinEl = document.getElementById("dash-pengumuman-container");
     const pinList = document.getElementById("dash-pengumuman-list");
