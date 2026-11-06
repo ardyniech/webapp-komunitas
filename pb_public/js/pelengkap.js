@@ -69,21 +69,38 @@ window.AppModules.Pelengkap = {
       });
       if (!res.ok) throw new Error("Gagal");
       const items = (await res.json()).items || [];
+      await this.loadKehadiranSemua();
       if (items.length === 0) {
         if (el) el.innerHTML = `<div class="empty-state">Belum ada agenda kumpul atau rapat terdaftar.</div>`;
         return;
       }
+      const bolehTandai = this.user && (this.user.role === "admin" || this.user.role === "pengurus");
       if (el) {
-        el.innerHTML = items.map(a => `
-          <div class="kas-card" style="flex-direction:column; align-items:stretch; margin-bottom:12px;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div style="font-weight:700; font-size:0.95rem;">📅 ${this.escapeHtml(a.judul)}</div>
-              <span class="role-pill role-anggota">${(a.tanggal || '').split(' ')[0]}</span>
+        el.innerHTML = items.map(a => {
+          const rekap = this.hitungRekapKehadiran(a.id) || { hadir: 0, izin: 0, tidakHadir: 0, total: 0 };
+          const saya = this.statusKehadiranSaya(a.id) || "";
+          const badgeSaya = saya ? ` <span class="role-pill role-anggota" style="font-size:0.68rem; margin-left:6px;">Anda: ${saya}</span>` : "";
+          const tombolTandai = bolehTandai ? `
+            <button class="btn btn-outline" style="width:auto; padding:2px 8px; font-size:0.7rem; margin-top:6px;" onclick="App.bukaModalKehadiran('${a.id}')">
+              ✏️ Tandai Kehadiran
+            </button>
+          ` : "";
+          return `
+            <div class="kas-card" style="flex-direction:column; align-items:stretch; margin-bottom:12px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-weight:700; font-size:0.95rem;">📅 ${this.escapeHtml(a.judul)}</div>
+                <span class="role-pill role-anggota">${(a.tanggal || '').split(' ')[0]}</span>
+              </div>
+              <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
+                <span class="role-pill role-anggota" style="font-size:0.7rem;">H${rekap.hadir} I${rekap.izin} T${rekap.tidakHadir}</span>
+                ${badgeSaya}
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-sub); margin-top:2px;">📍 Lokasi: ${this.escapeHtml(a.lokasi || 'Basecamp')}</div>
+              <div style="font-size:0.8rem; color:var(--text-main); margin-top:6px; line-height:1.35;">${this.escapeHtml(a.catatan || '')}</div>
+              ${tombolTandai}
             </div>
-            <div style="font-size:0.75rem; color:var(--text-sub); margin-top:2px;">📍 Lokasi: ${this.escapeHtml(a.lokasi || 'Basecamp')}</div>
-            <div style="font-size:0.8rem; color:var(--text-main); margin-top:6px; line-height:1.35;">${this.escapeHtml(a.catatan || '')}</div>
-          </div>
-        `).join("");
+          `;
+        }).join("");
       }
     } catch (e) {
       if (el) el.innerHTML = `<div class="empty-state">Gagal memuat agenda.</div>`;
