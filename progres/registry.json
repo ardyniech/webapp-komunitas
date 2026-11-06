@@ -11,8 +11,16 @@
           "nama": "Kondisi Server & Port",
           "deskripsi": "Memastikan laptop aman, RAM cukup, dan port bebas",
           "uji": [
-            { "kode": "U-F0-1", "nama": "Uji Kapasitas RAM & Swap", "jenis": "uji_statis" },
-            { "kode": "U-F0-2", "nama": "Uji Port 8095 PocketBase", "jenis": "ada_route" }
+            {
+              "kode": "U-F0-1",
+              "nama": "Uji Kapasitas RAM & Swap",
+              "jenis": "uji_statis"
+            },
+            {
+              "kode": "U-F0-2",
+              "nama": "Uji Port 8095 PocketBase",
+              "jenis": "ada_route"
+            }
           ]
         }
       ]
@@ -28,10 +36,26 @@
           "nama": "Koleksi Inti Kas & Iuran",
           "deskripsi": "Tabel kas, iuran, dan proteksi permanen (tanpa edit/hapus)",
           "uji": [
-            { "kode": "U-F1-1", "nama": "Koleksi kas tersedia", "jenis": "ada_koleksi" },
-            { "kode": "U-F1-2", "nama": "Koleksi iuran tersedia", "jenis": "ada_koleksi" },
-            { "kode": "U-F1-3", "nama": "Anggota dilarang input/edit/hapus kas", "jenis": "uji_api" },
-            { "kode": "U-F1-4", "nama": "Bendahara dilarang edit/hapus kas", "jenis": "uji_api" }
+            {
+              "kode": "U-F1-1",
+              "nama": "Koleksi kas tersedia",
+              "jenis": "ada_koleksi"
+            },
+            {
+              "kode": "U-F1-2",
+              "nama": "Koleksi iuran tersedia",
+              "jenis": "ada_koleksi"
+            },
+            {
+              "kode": "U-F1-3",
+              "nama": "Anggota dilarang input/edit/hapus kas",
+              "jenis": "uji_api"
+            },
+            {
+              "kode": "U-F1-4",
+              "nama": "Bendahara dilarang edit/hapus kas",
+              "jenis": "uji_api"
+            }
           ]
         }
       ]
@@ -47,8 +71,16 @@
           "nama": "Konfigurasi Terpusat",
           "deskripsi": "Semua angka kebijakan dan setelan disimpan di database",
           "uji": [
-            { "kode": "U-F1b-1", "nama": "Koleksi konfigurasi & referensi tersedia", "jenis": "ada_koleksi" },
-            { "kode": "U-F1b-2", "nama": "Koleksi pemetaan_izin tersedia", "jenis": "ada_koleksi" }
+            {
+              "kode": "U-F1b-1",
+              "nama": "Koleksi konfigurasi & referensi tersedia",
+              "jenis": "ada_koleksi"
+            },
+            {
+              "kode": "U-F1b-2",
+              "nama": "Koleksi pemetaan_izin tersedia",
+              "jenis": "ada_koleksi"
+            }
           ]
         },
         {
@@ -56,7 +88,23 @@
           "nama": "Sinkron Izin Otomatis",
           "deskripsi": "Hitung ulang izin & tim dari jabatan dan pemetaan izin",
           "uji": [
-            { "kode": "U-F1b-3", "nama": "Route sync-izin terdaftar dan terproteksi", "jenis": "ada_route" }
+            {
+              "kode": "U-F1b-3",
+              "nama": "Route sync-izin terdaftar dan terproteksi",
+              "jenis": "ada_route"
+            }
+          ]
+        },
+        {
+          "kode": "F1b-3",
+          "nama": "Penegakan Feature Flag di API",
+          "deskripsi": "Hook menolak create/update koleksi modul yang dimatikan admin",
+          "uji": [
+            {
+              "kode": "U-F1b-4",
+              "nama": "Hook flag guard terdaftar",
+              "jenis": "uji_statis"
+            }
           ]
         }
       ]
@@ -72,8 +120,16 @@
           "nama": "Pelacakan Progres Terbuka",
           "deskripsi": "Anggota dapat memantau status pembuatan fitur secara transparan",
           "uji": [
-            { "kode": "U-F1c-1", "nama": "Koleksi progres_* lengkap", "jenis": "ada_koleksi" },
-            { "kode": "U-F1c-2", "nama": "Route API progres aktif", "jenis": "ada_route" }
+            {
+              "kode": "U-F1c-1",
+              "nama": "Koleksi progres_* lengkap",
+              "jenis": "ada_koleksi"
+            },
+            {
+              "kode": "U-F1c-2",
+              "nama": "Route API progres aktif",
+              "jenis": "ada_route"
+            }
           ]
         },
         {
@@ -81,7 +137,11 @@
           "nama": "Penalti Bug masuk Nilai Progres",
           "deskripsi": "Temuan Bug Hunter menurunkan nilai progres secara jujur (proporsional, lantai 5%)",
           "uji": [
-            { "kode": "U-F1c-3", "nama": "Route penalti-bug merespons JSON valid", "jenis": "ada_route" }
+            {
+              "kode": "U-F1c-3",
+              "nama": "Route penalti-bug merespons JSON valid",
+              "jenis": "ada_route"
+            }
           ]
         },
         {
@@ -89,8 +149,16 @@
           "nama": "Dev Tools Pemantauan & Diagnosa",
           "deskripsi": "Halaman Dev Tools: git, diagnosa akar masalah, heartbeat, inventaris, rilis, feature flag",
           "uji": [
-            { "kode": "U-F1c-4", "nama": "Panel Dev Tools dan scanner tersedia", "jenis": "uji_statis" },
-            { "kode": "U-F1c-5", "nama": "Laporan scan bug tersaji (scan-report.json)", "jenis": "ada_route" }
+            {
+              "kode": "U-F1c-4",
+              "nama": "Panel Dev Tools dan scanner tersedia",
+              "jenis": "uji_statis"
+            },
+            {
+              "kode": "U-F1c-5",
+              "nama": "Laporan scan bug tersaji (scan-report.json)",
+              "jenis": "ada_route"
+            }
           ]
         }
       ]
@@ -106,8 +174,16 @@
           "nama": "Login & Logout Aman",
           "deskripsi": "Masuk akun basecamp dan keluar aman",
           "uji": [
-            { "kode": "U-F2-1", "nama": "Autentikasi akun uji berfungsi", "jenis": "uji_api" },
-            { "kode": "U-F2-2", "nama": "Menu pengguna & tombol Keluar tersedia", "jenis": "uji_ui_ringan" }
+            {
+              "kode": "U-F2-1",
+              "nama": "Autentikasi akun uji berfungsi",
+              "jenis": "uji_api"
+            },
+            {
+              "kode": "U-F2-2",
+              "nama": "Menu pengguna & tombol Keluar tersedia",
+              "jenis": "uji_ui_ringan"
+            }
           ]
         },
         {
@@ -115,8 +191,52 @@
           "nama": "Dompet Saldo Kas Transparan",
           "deskripsi": "Angka saldo besar dan ringkasan masuk/keluar bulan ini",
           "uji": [
-            { "kode": "U-F2-3", "nama": "Perhitungan saldo otomatis cocok", "jenis": "uji_api" },
-            { "kode": "U-F2-4", "nama": "Ekspor CSV riwayat kas", "jenis": "uji_ui_ringan" }
+            {
+              "kode": "U-F2-3",
+              "nama": "Perhitungan saldo otomatis cocok",
+              "jenis": "uji_api"
+            },
+            {
+              "kode": "U-F2-4",
+              "nama": "Ekspor CSV riwayat kas",
+              "jenis": "uji_ui_ringan"
+            }
+          ]
+        },
+        {
+          "kode": "F2-3",
+          "nama": "Pusat Notifikasi In-App",
+          "deskripsi": "Bell header dengan inbox notifikasi (pendaftaran, pengumuman, event, pengaduan) + tandai dibaca",
+          "uji": [
+            {
+              "kode": "U-F2-5",
+              "nama": "Koleksi notifikasi tersedia",
+              "jenis": "ada_koleksi"
+            }
+          ]
+        },
+        {
+          "kode": "F2-4",
+          "nama": "Tren Kas & Iuran 6 Bulan",
+          "deskripsi": "Grafik kas masuk/keluar dan % iuran lunas per bulan di dashboard",
+          "uji": [
+            {
+              "kode": "U-F2-6",
+              "nama": "Modul tren tersedia",
+              "jenis": "uji_statis"
+            }
+          ]
+        },
+        {
+          "kode": "F2-5",
+          "nama": "Pencarian Global",
+          "deskripsi": "Cari anggota, kas, forum, panduan dari header",
+          "uji": [
+            {
+              "kode": "U-F2-7",
+              "nama": "Modul cari-global tersedia",
+              "jenis": "uji_statis"
+            }
           ]
         }
       ]
@@ -132,12 +252,36 @@
           "nama": "Pendaftaran Anggota Mandiri",
           "deskripsi": "Calon anggota daftar sendiri, status menunggu persetujuan",
           "uji": [
-            { "kode": "U-F2b-1", "nama": "Koleksi pendaftaran & profil_publik tersedia", "jenis": "ada_koleksi" },
-            { "kode": "U-F2b-2", "nama": "Akun menunggu dilarang login", "jenis": "uji_api" },
-            { "kode": "U-F2b-3", "nama": "Route pendaftaran & status merespons", "jenis": "ada_route" },
-            { "kode": "U-F2b-4", "nama": "Route logout-all & permintaan-hapus-data tersedia", "jenis": "ada_route" },
-            { "kode": "U-F2b-5", "nama": "users list hanya self + manajemen anggota", "jenis": "uji_api" },
-            { "kode": "U-F2b-6", "nama": "profil_publik hanya field terpilih anggota", "jenis": "uji_api" }
+            {
+              "kode": "U-F2b-1",
+              "nama": "Koleksi pendaftaran & profil_publik tersedia",
+              "jenis": "ada_koleksi"
+            },
+            {
+              "kode": "U-F2b-2",
+              "nama": "Akun menunggu dilarang login",
+              "jenis": "uji_api"
+            },
+            {
+              "kode": "U-F2b-3",
+              "nama": "Route pendaftaran & status merespons",
+              "jenis": "ada_route"
+            },
+            {
+              "kode": "U-F2b-4",
+              "nama": "Route logout-all & permintaan-hapus-data tersedia",
+              "jenis": "ada_route"
+            },
+            {
+              "kode": "U-F2b-5",
+              "nama": "users list hanya self + manajemen anggota",
+              "jenis": "uji_api"
+            },
+            {
+              "kode": "U-F2b-6",
+              "nama": "profil_publik hanya field terpilih anggota",
+              "jenis": "uji_api"
+            }
           ]
         },
         {
@@ -145,8 +289,16 @@
           "nama": "Manajemen Anggota & Bidang Profil",
           "deskripsi": "Direktori anggota, ubah role/status, dan kelola bidang profil kustom",
           "uji": [
-            { "kode": "U-F2b-7", "nama": "Direktori anggota via profil_publik", "jenis": "uji_api" },
-            { "kode": "U-F2b-8", "nama": "Bidang profil kustom terlindungi kelola_pengaturan", "jenis": "uji_api" }
+            {
+              "kode": "U-F2b-7",
+              "nama": "Direktori anggota via profil_publik",
+              "jenis": "uji_api"
+            },
+            {
+              "kode": "U-F2b-8",
+              "nama": "Bidang profil kustom terlindungi kelola_pengaturan",
+              "jenis": "uji_api"
+            }
           ]
         },
         {
@@ -154,7 +306,11 @@
           "nama": "Sinkron Profil Publik Massal",
           "deskripsi": "Admin bisa memicu sinkron ulang seluruh profil publik via route hook",
           "uji": [
-            { "kode": "U-F2b-9", "nama": "Route sync-profil-publik terdaftar dan terproteksi", "jenis": "ada_route" }
+            {
+              "kode": "U-F2b-9",
+              "nama": "Route sync-profil-publik terdaftar dan terproteksi",
+              "jenis": "ada_route"
+            }
           ]
         },
         {
@@ -162,7 +318,11 @@
           "nama": "Proses Pendaftaran oleh Admin",
           "deskripsi": "Route proses pendaftaran (setujui/tolak/minta data) terproteksi izin sahkan",
           "uji": [
-            { "kode": "U-F2b-10", "nama": "Route pendaftaran/:id/proses terdaftar dan terproteksi", "jenis": "ada_route" }
+            {
+              "kode": "U-F2b-10",
+              "nama": "Route pendaftaran/:id/proses terdaftar dan terproteksi",
+              "jenis": "ada_route"
+            }
           ]
         }
       ]
@@ -178,7 +338,23 @@
           "nama": "Setoran Iuran & Tangki Bensin",
           "deskripsi": "Tandai lunas otomatis masuk kas dan visual tangki bensin",
           "uji": [
-            { "kode": "U-F3-1", "nama": "Pencatatan iuran otomatis masuk kas", "jenis": "uji_api" }
+            {
+              "kode": "U-F3-1",
+              "nama": "Pencatatan iuran otomatis masuk kas",
+              "jenis": "uji_api"
+            }
+          ]
+        },
+        {
+          "kode": "F3-2",
+          "nama": "Pengingat Iuran Tenggat",
+          "deskripsi": "Banner pengingat lunas lewat tenggat konfigurasi (jatuh_tempo_tgl)",
+          "uji": [
+            {
+              "kode": "U-F3-2",
+              "nama": "Modul pengingat iuran tersedia",
+              "jenis": "uji_statis"
+            }
           ]
         }
       ]
@@ -194,8 +370,16 @@
           "nama": "Maskot Bang Gas & Wizard",
           "deskripsi": "Driver ojol pemandu santai dan dialog konfirmasi kas",
           "uji": [
-            { "kode": "U-F3b-1", "nama": "Aset visual di bawah 150KB", "jenis": "uji_statis" },
-            { "kode": "U-F3b-2", "nama": "Mode hemat animasi tersedia", "jenis": "uji_ui_ringan" }
+            {
+              "kode": "U-F3b-1",
+              "nama": "Aset visual di bawah 150KB",
+              "jenis": "uji_statis"
+            },
+            {
+              "kode": "U-F3b-2",
+              "nama": "Mode hemat animasi tersedia",
+              "jenis": "uji_ui_ringan"
+            }
           ]
         }
       ]
@@ -211,7 +395,11 @@
           "nama": "Bagan Struktur Unit & Jabatan",
           "deskripsi": "Bagan kepengurusan, dewan etik, satgas, dan unit komunitas",
           "uji": [
-            { "kode": "U-F3c-1", "nama": "Koleksi unit & jabatan tersedia", "jenis": "ada_koleksi" }
+            {
+              "kode": "U-F3c-1",
+              "nama": "Koleksi unit & jabatan tersedia",
+              "jenis": "ada_koleksi"
+            }
           ]
         }
       ]
@@ -227,7 +415,11 @@
           "nama": "Bab & Pasal Aturan Komunitas",
           "deskripsi": "Penyusunan aturan bersama Dewan Etik dan pengesahan",
           "uji": [
-            { "kode": "U-F3c2-1", "nama": "Koleksi aturan_* dan keputusan_etik tersedia", "jenis": "ada_koleksi" }
+            {
+              "kode": "U-F3c2-1",
+              "nama": "Koleksi aturan_* dan keputusan_etik tersedia",
+              "jenis": "ada_koleksi"
+            }
           ]
         }
       ]
@@ -243,7 +435,11 @@
           "nama": "Pusat Panduan & Forum",
           "deskripsi": "Artikel solusi masalah ojol dan forum santai bermoderasi",
           "uji": [
-            { "kode": "U-F3d-1", "nama": "Koleksi forum_* dan panduan tersedia", "jenis": "ada_koleksi" }
+            {
+              "kode": "U-F3d-1",
+              "nama": "Koleksi forum_* dan panduan tersedia",
+              "jenis": "ada_koleksi"
+            }
           ]
         },
         {
@@ -251,7 +447,11 @@
           "nama": "Dokumen & Berkas Basecamp",
           "deskripsi": "Unduh berkas AD/ART, SK, formulir, dan template resmi pangkalan",
           "uji": [
-            { "kode": "U-F3d-2", "nama": "Koleksi dokumen tersedia", "jenis": "ada_koleksi" }
+            {
+              "kode": "U-F3d-2",
+              "nama": "Koleksi dokumen tersedia",
+              "jenis": "ada_koleksi"
+            }
           ]
         },
         {
@@ -259,7 +459,11 @@
           "nama": "Pengaduan ke Dewan Etik",
           "deskripsi": "Laporan anonim dan cek status laporan dengan kode cek",
           "uji": [
-            { "kode": "U-F3d-3", "nama": "Koleksi pengaduan tersedia dan terproteksi", "jenis": "ada_koleksi" }
+            {
+              "kode": "U-F3d-3",
+              "nama": "Koleksi pengaduan tersedia dan terproteksi",
+              "jenis": "ada_koleksi"
+            }
           ]
         }
       ]
@@ -275,7 +479,11 @@
           "nama": "Kuesioner & Penilaian Rahasia Server",
           "deskripsi": "Kunci jawaban tersembunyi dan nilai dihitung server",
           "uji": [
-            { "kode": "U-F3e-1", "nama": "Kunci jawaban dilarang dibaca anggota", "jenis": "uji_api" }
+            {
+              "kode": "U-F3e-1",
+              "nama": "Kunci jawaban dilarang dibaca anggota",
+              "jenis": "uji_api"
+            }
           ]
         }
       ]
@@ -291,7 +499,11 @@
           "nama": "Kepanitiaan & Anggaran Event",
           "deskripsi": "Penunjukan ketua pelaksana, pembentukan seksi, dan RAB",
           "uji": [
-            { "kode": "U-F3g-1", "nama": "Koleksi event_* lengkap", "jenis": "ada_koleksi" }
+            {
+              "kode": "U-F3g-1",
+              "nama": "Koleksi event_* lengkap",
+              "jenis": "ada_koleksi"
+            }
           ]
         }
       ]
@@ -307,8 +519,16 @@
           "nama": "Akses Publik Aman",
           "deskripsi": "Aplikasi dapat diakses publik via https://ardyvaio.taild277bb.ts.net/drg/",
           "uji": [
-            { "kode": "U-F4-1", "nama": "URL publik merespons HTTP 200", "jenis": "ada_route" },
-            { "kode": "U-F4-2", "nama": "Admin UI publik diblokir HTTP 403", "jenis": "uji_api" }
+            {
+              "kode": "U-F4-1",
+              "nama": "URL publik merespons HTTP 200",
+              "jenis": "ada_route"
+            },
+            {
+              "kode": "U-F4-2",
+              "nama": "Admin UI publik diblokir HTTP 403",
+              "jenis": "uji_api"
+            }
           ]
         }
       ]

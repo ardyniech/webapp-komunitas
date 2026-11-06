@@ -236,6 +236,14 @@ async function main() {
                 }
                 break;
 
+              case "U-F1b-4": // Hook flag guard terdaftar
+                {
+                  const hook = fs.readFileSync(path.join(HOOKS_DIR, 'flag_guard.pb.js'), 'utf-8');
+                  lulus = hook.includes('modul_aktif') && hook.includes('onRecordBeforeCreateRequest');
+                  pesan = "Hook penegakan feature flag API terdaftar";
+                }
+                break;
+
               case "U-F1c-1": // Koleksi progres_* lengkap
                 lulus = tableExists("progres_fase") && tableExists("progres_fitur");
                 pesan = "Koleksi progres_fase & progres_fitur terpasang";
@@ -307,6 +315,21 @@ async function main() {
                   lulus = js.includes('exportKasCSV');
                   pesan = "Fungsi exportKasCSV tersedia di app.js";
                 }
+                break;
+
+              case "U-F2-5": // Koleksi notifikasi tersedia
+                lulus = tableExists("notifikasi");
+                pesan = "Koleksi notifikasi in-app terpasang";
+                break;
+
+              case "U-F2-6": // Modul tren tersedia
+                lulus = fs.existsSync(path.join(PUBLIC_DIR, 'js/tren.js')) && fs.existsSync(path.join(PUBLIC_DIR, 'js/notifikasi.js'));
+                pesan = "Modul tren + notifikasi tersedia";
+                break;
+
+              case "U-F2-7": // Modul cari-global tersedia
+                lulus = fs.existsSync(path.join(PUBLIC_DIR, 'js/cari-global.js'));
+                pesan = "Modul pencarian global tersedia";
                 break;
 
               case "U-F2b-1": // Koleksi pendaftaran & profil_publik tersedia
@@ -389,6 +412,14 @@ async function main() {
                   const js = fs.readFileSync(path.join(PUBLIC_DIR, 'app.js'), 'utf-8');
                   lulus = js.includes('iuranPayload') && js.includes('collections/iuran/records');
                   pesan = "Sinkronisasi setoran iuran ke catatan kas terverifikasi";
+                }
+                break;
+
+              case "U-F3-2": // Modul pengingat iuran tersedia
+                {
+                  const js = fs.readFileSync(path.join(PUBLIC_DIR, 'js/iuran-pengingat.js'), 'utf-8');
+                  lulus = js.includes('jatuh_tempo') || js.includes('iuran_jatuh_tempo_tgl');
+                  pesan = "Pengingat iuran tenggat tersedia";
                 }
                 break;
 
