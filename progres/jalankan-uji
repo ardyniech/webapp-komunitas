@@ -512,6 +512,29 @@ async function main() {
                 }
                 break;
 
+              case "U-F5-1": // Koleksi progres_* tersedia untuk ingest hasil uji
+                lulus = tableExists("progres_fase") && tableExists("progres_fitur") && tableExists("progres_uji");
+                pesan = lulus ? "Koleksi progres_fase/fitur/uji terpasang" : "Koleksi progres_* hilang";
+                break;
+
+              case "U-F5-2": // Health API 200 (prasyarat restore)
+                {
+                  try {
+                    const h = await fetchJson(`http://${TAILSCALE_IP}:8095/api/health`);
+                    lulus = (h.status === 200);
+                    pesan = `Health API merespons HTTP 200`;
+                  } catch (e) {
+                    lulus = false;
+                    pesan = `Health API tidak merespons: ${e.message}`;
+                  }
+                }
+                break;
+
+              case "U-F6-1": // Koleksi agenda, kehadiran & notulen tersedia
+                lulus = tableExists("agenda") && tableExists("kehadiran") && tableExists("notulen");
+                pesan = lulus ? "Koleksi agenda/kehadiran/notulen terpasang" : "Koleksi agenda/kehadiran/notulen hilang";
+                break;
+
               default:
                 lulus = true;
                 pesan = "Uji lolos verifikasi standar";
