@@ -57,6 +57,18 @@ window.AppModules.Profil = {
         badges.push('<span class="badge" style="background:var(--warna-aksen); color:#000; font-size:0.7rem; padding:2px 8px; border-radius:10px;">🛡️ Pengawal Aspal</span>');
       }
       badges.push('<span class="badge" style="background:var(--bg-input); color:var(--text-primary); font-size:0.7rem; padding:2px 8px; border-radius:10px; border:1px solid var(--border-color);">🛵 Rider Satu Aspal</span>');
+
+      // Pangkat & badge ringan (Plan §6.6-7): berdasarkan tanggal gabung
+      const tglGabung = this.user.tanggal_gabung;
+      if (tglGabung) {
+        const hari = Math.floor((Date.now() - new Date(tglGabung).getTime()) / (1000*60*60*24));
+        if (hari >= 180) {
+          badges.push('<span class="badge" style="background:#6366f1; color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:10px;">🏆 Anggora Setia ('+hari+' hari)</span>');
+        } else if (hari >= 90) {
+          badges.push('<span class="badge" style="background:#a855f7; color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:10px;">🌙 Setia ('+hari+' hari)</span>');
+        }
+      }
+
       badgeContainer.innerHTML = badges.join("");
     }
 
