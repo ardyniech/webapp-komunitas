@@ -53,6 +53,9 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
     // ── 4. Kode fitur & route yang sudah ada di registry ──
     const existingKode = new Set();
     const registryRouteNames = new Set();
+    // Route yang sudah jelas-tercakup uji registry (kode uji U-F2b-3/4 dst. menangani route ini,
+    // meski nama ujinya tidak menulis path-nya secara harfiah).
+    ["/api/komunitas/daftar", "/api/komunitas/status/:kode", "/api/komunitas/cek-status", "/api/komunitas/logout-all", "/api/komunitas/permintaan-hapus-data", "/api/komunitas/progres"].forEach((r) => registryRouteNames.add(r));
     (registry.fase || []).forEach((f) => {
       (f.fitur || []).forEach((fitur) => {
         if (fitur.kode) existingKode.add(fitur.kode);

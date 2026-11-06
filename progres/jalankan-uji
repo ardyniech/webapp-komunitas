@@ -344,6 +344,22 @@ async function main() {
                 }
                 break;
 
+              case "U-F2b-9": // Route sync-profil-publik terdaftar dan terproteksi
+                {
+                  const resSync = await fetchJson(`${testBaseUrl}/api/komunitas/sync-profil-publik`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: {} });
+                  lulus = (resSync.status === 401 || resSync.status === 403);
+                  pesan = `Route sync-profil-publik terproteksi (status ${resSync.status})`;
+                }
+                break;
+
+              case "U-F2b-10": // Route pendaftaran/:id/proses terdaftar dan terproteksi
+                {
+                  const resPrs = await fetchJson(`${testBaseUrl}/api/komunitas/pendaftaran/testid123456/proses`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: {} });
+                  lulus = (resPrs.status === 401 || resPrs.status === 403);
+                  pesan = `Route proses pendaftaran terproteksi (status ${resPrs.status})`;
+                }
+                break;
+
               case "U-F3-1": // Pencatatan iuran otomatis masuk kas
                 {
                   const js = fs.readFileSync(path.join(PUBLIC_DIR, 'app.js'), 'utf-8');

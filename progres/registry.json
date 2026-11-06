@@ -139,6 +139,22 @@
             { "kode": "U-F2b-7", "nama": "Direktori anggota via profil_publik", "jenis": "uji_api" },
             { "kode": "U-F2b-8", "nama": "Bidang profil kustom terlindungi kelola_pengaturan", "jenis": "uji_api" }
           ]
+        },
+        {
+          "kode": "F2b-3",
+          "nama": "Sinkron Profil Publik Massal",
+          "deskripsi": "Admin bisa memicu sinkron ulang seluruh profil publik via route hook",
+          "uji": [
+            { "kode": "U-F2b-9", "nama": "Route sync-profil-publik terdaftar dan terproteksi", "jenis": "ada_route" }
+          ]
+        },
+        {
+          "kode": "F2b-4",
+          "nama": "Proses Pendaftaran oleh Admin",
+          "deskripsi": "Route proses pendaftaran (setujui/tolak/minta data) terproteksi izin sahkan",
+          "uji": [
+            { "kode": "U-F2b-10", "nama": "Route pendaftaran/:id/proses terdaftar dan terproteksi", "jenis": "ada_route" }
+          ]
         }
       ]
     },
