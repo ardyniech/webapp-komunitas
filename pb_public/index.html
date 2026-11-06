@@ -140,7 +140,7 @@
               <label for="login-password">Password Akun</label>
               <input type="password" id="login-password" class="form-control" placeholder="Masukkan password" required autocomplete="current-password">
             </div>
-            <button type="submit" class="btn btn-primary" style="margin-top: 8px;">
+            <button type="submit" id="btn-login-submit" class="btn btn-primary" style="margin-top: 8px;">
               🛵 Masuk Basecamp
             </button>
           </form>
@@ -160,6 +160,11 @@
             <div class="form-group">
               <label>Nomor WhatsApp Aktif</label>
               <input type="tel" id="reg-wa" class="form-control" placeholder="Contoh: 081234567890" required>
+            </div>
+            <div class="form-group">
+              <label>Email (untuk login masuk basecamp)</label>
+              <input type="email" id="reg-email" class="form-control" placeholder="Contoh: nama.saya@email.com" required autocomplete="email">
+              <div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px;">Akun login kamu memakai email ini. Username akan dibuatkan otomatis dari email.</div>
             </div>
             <div class="form-group">
               <label>Domisili / Wilayah Pangkalan</label>
@@ -1540,6 +1545,7 @@
   <script src="js/konfigurasi.js"></script>
   <script src="js/progres.js?v=8"></script>
   <script src="js/progres-bug.js?v=8"></script>
+  <script src="js/admin-alert.js?v=1"></script>
   <script src="js/ui-helpers.js?v=1"></script>
   <script src="js/sync-status.js?v=1"></script>
   <script src="js/devtools.js?v=4"></script>

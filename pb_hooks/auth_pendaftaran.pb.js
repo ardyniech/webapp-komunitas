@@ -38,10 +38,14 @@ routerAdd("POST", "/api/komunitas/daftar", (c) => {
     const domisili = lib.aman(data.domisili)
     const password = lib.aman(data.password)
     const alasan = lib.aman(data.alasan_bergabung)
+    const email = lib.aman(data.email).toLowerCase()
     const setuju = data.setuju_privasi === true || data.setuju_aturan === true
 
-    if (!nama || !whatsapp || !password) {
-      return c.json(400, { error: "Nama lengkap, nomor WhatsApp, dan password wajib diisi!" })
+    if (!nama || !whatsapp || !password || !email) {
+      return c.json(400, { error: "Nama lengkap, nomor WhatsApp, email, dan password wajib diisi!" })
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return c.json(400, { error: "Format email tidak valid. Gunakan email aktif yang bisa kamu buka." })
     }
     if (whatsapp.length < 9) {
       return c.json(400, { error: "Nomor WhatsApp kelihatannya belum lengkap." })
@@ -53,11 +57,17 @@ routerAdd("POST", "/api/komunitas/daftar", (c) => {
       return c.json(400, { error: "Persetujuan aturan basecamp & privasi wajib dicentang!" })
     }
 
-    // Cek duplikat nomor WhatsApp.
+    // Cek duplikat nomor WhatsApp & email (email = identitas login).
     try {
       const existingUser = dao.findFirstRecordByData("users", "whatsapp", whatsapp)
       if (existingUser) {
         return c.json(400, { error: "Nomor WhatsApp ini sudah terdaftar sebagai anggota!" })
+      }
+    } catch (_) {}
+    try {
+      const existingEmail = dao.findFirstRecordByData("users", "email", email)
+      if (existingEmail) {
+        return c.json(400, { error: "Email ini sudah terdaftar. Gunakan email lain atau masuk dengan email tersebut." })
       }
     } catch (_) {}
 
@@ -65,12 +75,14 @@ routerAdd("POST", "/api/komunitas/daftar", (c) => {
       // mode dengan undangan belum dipaksakan di sini; admin tetap mengesahkan.
     }
 
-    let cleanUsername = "usr_" + whatsapp.slice(-6) + "_" + Math.floor(Math.random() * 1000)
+    // Username diturunkan dari bagian lokal email (mudah diingat), bukan dari WA.
+    const localpart = email.split("@")[0].replace(/[^a-z0-9]/gi, "").toLowerCase();
+    let cleanUsername = (localpart || "usr").slice(0, 20);
     for (let i = 0; i < 3; i++) {
       try {
         const cek = dao.findFirstRecordByData("users", "username", cleanUsername)
         if (!cek) break
-        cleanUsername = "usr_" + whatsapp.slice(-6) + "_" + Math.floor(Math.random() * 10000)
+        cleanUsername = (localpart || "usr").slice(0, 12) + "_" + Math.floor(Math.random() * 10000)
       } catch (_) { break }
     }
 
@@ -80,7 +92,7 @@ routerAdd("POST", "/api/komunitas/daftar", (c) => {
     const usersCol = dao.findCollectionByNameOrId("users")
     const user = new Record(usersCol)
     user.setUsername(cleanUsername)
-    user.setEmail(whatsapp + "@komunitas.local")
+    user.setEmail(email)
     user.setPassword(password)
     user.set("nama", nama)
     user.set("kontak", whatsapp)
@@ -112,8 +124,9 @@ routerAdd("POST", "/api/komunitas/daftar", (c) => {
     return c.json(200, {
       success: true,
       username: cleanUsername,
+      email: email,
       kode_cek: kodeCek,
-      message: "Pendaftaran berhasil diajukan! Simpan kode cek untuk memantau persetujuan admin."
+      message: "Pendaftaran berhasil diajukan! Simpan kode cek untuk memantau persetujuan admin. Setelah disetujui admin, masuk dengan EMAIL kamu (bukan username) + password yang dibuat."
     })
   } catch (err) {
     return c.json(500, { error: "Gagal memproses pendaftaran: " + err.message })

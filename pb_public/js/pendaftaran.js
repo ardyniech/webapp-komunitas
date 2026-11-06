@@ -10,13 +10,20 @@ window.AppModules.Pendaftaran = {
 
     const nama_lengkap = document.getElementById("reg-nama")?.value.trim();
     const whatsapp = document.getElementById("reg-wa")?.value.trim();
+    const email = document.getElementById("reg-email")?.value.trim().toLowerCase();
     const domisili = document.getElementById("reg-domisili")?.value.trim() || "";
     const password = document.getElementById("reg-password")?.value;
     const alasan_bergabung = document.getElementById("reg-alasan")?.value.trim() || "";
     const setuju = document.getElementById("reg-setuju")?.checked;
+    const btn = document.querySelector('#daftar-form button[type="submit"]');
+    const btnLabel = btn ? btn.innerHTML : "";
 
-    if (!nama_lengkap || !whatsapp || !password) {
-      alert("Harap lengkapi nama, nomor WhatsApp, dan password!");
+    if (!nama_lengkap || !whatsapp || !email || !password) {
+      alert("Harap lengkapi nama, nomor WhatsApp, email, dan password!");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert("Format email tidak valid. Gunakan email aktif yang bisa kamu buka.");
       return;
     }
     if (password.length < 8) {
@@ -28,6 +35,7 @@ window.AppModules.Pendaftaran = {
       return;
     }
 
+    if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Mengirim ke server..."; }
     try {
       Hero.setExpression("berpikir", "Mengirim formulir pendaftaran pangkalan...");
       const res = await fetch(`${this.apiBase}/komunitas/daftar`, {
@@ -36,6 +44,7 @@ window.AppModules.Pendaftaran = {
         body: JSON.stringify({
           nama_lengkap,
           whatsapp,
+          email,
           domisili,
           password,
           alasan_bergabung,
@@ -47,30 +56,39 @@ window.AppModules.Pendaftaran = {
       const data = await res.json();
       if (!res.ok) {
         Hero.setExpression("waspada", "Waduh, pengajuan pendaftaran gagal.");
-        alert("Gagal daftar: " + (data.message || JSON.stringify(data)));
+        alert("Gagal daftar: " + (data.error || data.message || JSON.stringify(data)));
+        if (btn) { btn.disabled = false; btn.innerHTML = btnLabel; }
         return;
       }
 
       const msgBox = document.getElementById("daftar-success-msg");
       if (msgBox) {
         msgBox.innerHTML = `
-          <div style="font-weight:700; color:var(--warna-utama); margin-bottom:6px;">🎉 PENDAFTARAN BERHASIL DIAJUKAN!</div>
-          <div>Simpan <strong>Kode Registrasi</strong> kamu bro:</div>
+          <div style="font-weight:700; color:var(--warna-utama); margin-bottom:6px;">🎉 PENDAFTARAN BERHASIL DIAJUKAN + SERVER TERIMA!</div>
+          <div>Kode cek kamu:</div>
           <div style="font-size:1.2rem; font-weight:800; letter-spacing:1px; margin:8px 0; color:var(--warna-aksen);">${data.kode_cek}</div>
-          <div style="font-size:0.75rem; color:var(--text-sub);">
-            Username akun kamu: <strong>${data.username}</strong><br>
-            Status akun masih <em>menunggu verifikasi pengurus</em>. Kamu bisa cek berkala di tab <strong>Cek Status</strong>.
+          <div style="font-size:0.78rem; color:var(--text-sub); line-height:1.5;">
+            ✅ Data masuk server (diterima).<br>
+            ⏳ Status: <em>menunggu verifikasi admin</em> (tidak otomatis aktif).<br>
+            🔑 Setelah disetujui: masuk pakai <strong>email ${data.email || email}</strong> + password yang kamu buat. Username (${data.username}) dibuat sistem, tidak perlu dihafal.<br>
+            🔍 Pantau berkala di tab <strong>Cek Status</strong> dengan kode di atas.
           </div>
         `;
         msgBox.style.display = "block";
       }
 
       document.getElementById("daftar-form").reset();
-      Hero.setExpression("senang", "Pendaftaran terkirim! Simpan kode cek kamu ya bro.");
+      Hero.setExpression("senang", "Pendaftaran tercatat di server! Simpan kode cek kamu ya bro.");
     } catch (err) {
       console.error(err);
-      Hero.setExpression("waspada", "Koneksi ke server pendaftaran terganggu.");
-      alert("Terjadi kendala jaringan saat mendaftar.");
+      // Bedakan: network gagal vs response lambat. Jangan vonis "gagal jaringan" membabi-buta.
+      const network = err instanceof TypeError || /network|fetch|failed/i.test(String(err && err.message));
+      Hero.setExpression("waspada", network ? "Koneksi ke server putus/pelan. Pastikan WiFi/data menyala, lalu coba lagi." : "Terjadi kesalahan saat mendaftar.");
+      alert(network
+        ? "Koneksi ke server gagal/terputus.\n\nPastikan WiFi/data menyala, lalu tekan kirim ulang.\nData BELUM terkirim (tidak ada kode cek)."
+        : "Gagal mendaftar: " + (err.message || err));
+    } finally {
+      if (btn) { btn.disabled = false; btn.innerHTML = btnLabel; }
     }
   },
 

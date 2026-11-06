@@ -87,8 +87,10 @@ window.AppModules.Auth = {
   },
 
   async login(identity, password) {
+    const btnLogin = document.getElementById("btn-login-submit");
     try {
-      Hero.setExpression("berpikir", Teks.hero.loading);
+      Hero.setExpression("berpikir", "Menghubungi server basecamp...");
+      if (btnLogin) { btnLogin.disabled = true; btnLogin.innerHTML = "⏳ Menghubungi server..."; }
       const res = await fetch(`${this.apiBase}/collections/users/auth-with-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -96,8 +98,13 @@ window.AppModules.Auth = {
       });
 
       if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        let serverMsg = "";
+        try { serverMsg = (JSON.parse(errText).message || ""); } catch (_) {}
         Hero.setExpression("waspada", Teks.hero.fail_login);
-        alert("Gagal masuk pangkalan: Cek email/username dan password kamu bro!");
+        // Tampilkan pesan server bila ada (mis. akun menunggu/ditolak) — bukan tuduhan jaringan
+        alert("Gagal masuk pangkalan: " + (serverMsg || "Cek email dan password kamu bro!"));
+        if (btnLogin) { btnLogin.disabled = false; btnLogin.innerHTML = "🛵 Masuk Basecamp"; }
         return false;
       }
 
@@ -105,6 +112,7 @@ window.AppModules.Auth = {
       if (data.record.status !== "aktif") {
         Hero.setExpression("waspada", "Akun kamu masih dalam antrean verifikasi atau nonaktif!");
         alert("Akun kamu berstatus " + data.record.status + ". Silakan hubungi pengurus basecamp!");
+        if (btnLogin) { btnLogin.disabled = false; btnLogin.innerHTML = "🛵 Masuk Basecamp"; }
         return false;
       }
 
@@ -113,13 +121,23 @@ window.AppModules.Auth = {
       localStorage.setItem("pb_token", this.token);
       localStorage.setItem("pb_user", JSON.stringify(this.user));
 
+      // LOGIN SUKSES — jangan diam. Tampilkan proses memuat data secara jujur,
+      // lalu masuk dashboard hanya setelah data pertama selesai ditarik.
+      Hero.setExpression("senang", "Login berhasil! Memuat data basecamp kamu — tunggu bar sinkron di atas selesai ya.");
       this.showAppView();
       await this.refreshData();
+      Hero.setExpression("senang", "Halo, " + (this.user.nama || this.user.nama_panggilan || "anggota") + "! Kamu sudah masuk basecamp.");
+      if (btnLogin) { btnLogin.disabled = false; btnLogin.innerHTML = "🛵 Masuk Basecamp"; }
       return true;
     } catch (err) {
       console.error(err);
-      Hero.setExpression("waspada", "Waduh, koneksi ke basecamp error nih.");
-      alert("Terjadi kendala jaringan saat menghubungkan ke server.");
+      // Network error sejati (fetch melempar TypeError) vs timeout server lambat
+      const network = err instanceof TypeError || /network|fetch|failed/i.test(String(err && err.message));
+      Hero.setExpression("waspada", network ? "Koneksi ke server putus/pelan. Pastikan WiFi/data menyala, lalu coba lagi." : "Terjadi kesalahan saat menghubungkan ke server.");
+      alert(network
+        ? "Koneksi ke server gagal/terputus.\n\nPastikan WiFi/data menyala, lalu tekan masuk lagi.\nLogin BELUM berhasil (tidak ada sesi tersimpan)."
+        : "Gagal menghubungi server: " + (err.message || err));
+      if (btnLogin) { btnLogin.disabled = false; btnLogin.innerHTML = "🛵 Masuk Basecamp"; }
       return false;
     }
   },
