@@ -145,6 +145,27 @@ for (const ref of getElementByIdMatches) {
   }
 }
 
+// ── 5b. Cek pola precedence meragukan (|| + === di kondisi ternary tanpa kurung) ──
+{
+  const re = /\|\|\s*[\w.$]+(?:\))?\s*===?\s*[^?\n]{0,60}\?/g;
+  let pm;
+  for (const jf of jsFiles) {
+    const content = readFileSafe(jf);
+    if (!content) continue;
+    const rel = path.relative(projectRoot, jf);
+    let m;
+    while ((m = re.exec(content)) !== null) {
+      // Lewati bila ada '(' antara || dan === (sudah diprioritaskan dengan benar, mis. `|| (u.aktif === false ?`)
+      const seg = content.slice(m.index, m.index + 80);
+      const antara = seg.slice(0, seg.indexOf("?"));
+      if (antara.includes("(") || antara.includes("===")) continue;
+      addFinding("precedence_ragu", "medium", rel, -1,
+        "Pola `a || b === c ? ...` rawan salah prioritas: `||` didahulukan dibanding `===` di kondisi ternary. Tanpa kurung, status 'menunggu' bisa terbaca 'nonaktif'.",
+        "Bungkus: (a.status ? a.status : (b === false ? x : y)).");
+    }
+  }
+}
+
 // ── 5. Cek fungsi App.xxx / module.xxx yang dipanggil onclick di HTML tapi tidak ada di JS ──
 if (indexHtml && jsAll) {
   const onclickMatches = indexHtml.match(/onclick="([^"]+)"/g) || [];

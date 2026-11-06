@@ -45,7 +45,7 @@ window.AppModules.Anggota = {
       const nama = (a.nama || a.nama_lengkap || a.nama_tampil || a.username || "").toLowerCase();
       const wa = (a.whatsapp || a.kontak || "").toLowerCase();
       const role = (a.role || a.role_ringkas || "").toLowerCase();
-      const status = (a.status || a.aktif === false ? "nonaktif" : "aktif").toLowerCase();
+      const status = (a.status ? a.status : (a.aktif === false ? "nonaktif" : "aktif")).toLowerCase();
       const cocokCari = !cari || nama.includes(cari) || wa.includes(cari) || role.includes(cari);
       const cocokRole = fRole === "all" || role === fRole;
       const cocokStatus = fStatus === "all" || status === fStatus;
