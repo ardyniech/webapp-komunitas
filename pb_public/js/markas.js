@@ -64,5 +64,27 @@ window.AppModules.Markas = {
         txList.innerHTML = recent.map(t => this.renderKasCardHtml(t)).join("");
       }
     }
+
+    // ── Pengumuman Penting di Dashboard (di-sematkan) ───────────────────
+    const pinEl = document.getElementById("dash-pengumuman-container");
+    const pinList = document.getElementById("dash-pengumuman-list");
+    const pin = (this._allPengumuman || []).filter(p => p.disematkan === true || p.disematkan === "true").slice(0, 3);
+    if (pinEl && pinList) {
+      if (pin.length === 0) {
+        pinEl.style.display = "none";
+      } else {
+        pinEl.style.display = "block";
+        pinList.innerHTML = pin.map(p => `
+          <div class="kas-card" style="flex-direction:column; align-items:stretch; margin-bottom:8px; border-left:3px solid var(--warna-aksen);">
+            <div style="font-weight:700; font-size:0.88rem; margin-bottom:4px;">
+              ${p.penting ? '📌 ' : ''}${this.escapeHtml(p.judul)}
+              ${p.penting ? '<span style="font-size:0.68rem; margin-left:6px; background:var(--warna-merah); color:#fff; padding:1px 6px; border-radius:4px;">PENTING</span>' : ''}
+            </div>
+            <div style="font-size:0.78rem; color:var(--text-main); line-height:1.35;">${this.escapeHtml(p.isi)}</div>
+            <div style="font-size:0.68rem; color:var(--text-sub); margin-top:4px;">📅 ${(p.created || '').split(' ')[0]}</div>
+          </div>
+        `).join("");
+      }
+    }
   }
 };

@@ -107,7 +107,7 @@ const App = {
   async refreshData() {
     Hero.setExpression("berpikir", Teks.hero.loading);
     try {
-      await Promise.all([this.fetchKas(), this.fetchAnggotaData(), this.fetchIuran()]);
+      await Promise.all([this.fetchKas(), this.fetchAnggotaData(), this.fetchIuran(), this.loadPengumuman()]);
       this.renderMarkas();
       this.renderKasList();
       this.renderIuran();
