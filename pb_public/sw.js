@@ -56,6 +56,7 @@ const ASSETS_TO_CACHE = [
   './js/scan-bugs.js',
   './js/loading.js',
   './js/panel-admin.js',
+  './js/panel-admin-tambah.js',
   './panel-admin.html',
 ];
 

@@ -108,6 +108,24 @@
   </form>
 
   <div class="card">
+    <h2>➕ Buat Komunitas Baru</h2>
+    <form id="form-tambah-komunitas" autocomplete="off">
+      <div class="row">
+        <div class="field"><label>Nama komunitas baru <span style="color:var(--warna-merah)">*</span></label><input type="text" id="t-nama" maxlength="120"></div>
+        <div class="field"><label>Sapaan</label><input type="text" id="t-sapaan" maxlength="50"></div>
+      </div>
+      <div class="field"><label>Tagline</label><input type="text" id="t-tagline" maxlength="200"></div>
+      <div class="row">
+        <div class="field"><label>Warna utama (hex)</label><input type="text" id="t-warna-utama" maxlength="20" placeholder="#1FA463"></div>
+        <div class="field"><label>Warna aksen (hex)</label><input type="text" id="t-warna-aksen" maxlength="20" placeholder="#FFB020"></div>
+      </div>
+      <div class="field"><label>Tentang komunitas</label><textarea id="t-tentang" style="min-height:64px"></textarea></div>
+      <button type="submit" class="btn btn-primary" id="btn-buat">➕ Buat Komunitas</button>
+      <div class="hint">Komunitas baru otomatis dapat komunitas_id + slug + status aktif. Setelah dibuat, pilih dari daftar di atas untuk personalisasi.</div>
+    </form>
+  </div>
+
+  <div class="card">
     <h2>👥 Info Pengurus (Read-Only)</h2>
     <div class="stat-tiles" id="pengurus-tiles"></div>
     <ul class="pengurus" id="pengurus-list"></ul>
@@ -117,5 +135,6 @@
   <footer id="footer-meta">Panel Admin Personalisasi · data dikelola via koleksi <i>komunitas</i>.</footer>
 </div>
 <script src="js/panel-admin.js?v=17"></script>
+<script src="js/panel-admin-tambah.js?v=17"></script>
 </body>
 </html>
