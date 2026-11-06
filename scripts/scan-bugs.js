@@ -98,13 +98,21 @@ for (const jf of jsFiles) {
   }
 }
 
-// ── 3. Baca index.html untuk referensi elemen & skrip ──
-const indexHtml = readFileSafe(indexHtmlPath);
+// ── 3. Baca SEMUA HTML di pb_public untuk referensi elemen (halaman dedicated
+// seperti panel-admin.html itu halaman sah; ID di sana bukan bug missing_html_id) ──
+const indexHtml = readFileSafe(indexHtmlPath) || "";
 const htmlIds = new Set();
-if (indexHtml) {
-  const idMatches = indexHtml.match(/id="([^"]+)"/g) || [];
-  for (const ref of idMatches) {
+function collectIds(html) {
+  for (const ref of html.match(/id="([^"]+)"/g) || []) {
     htmlIds.add(ref.replace(/id="/, "").replace(/"/, ""));
+  }
+}
+collectIds(indexHtml);
+if (fs.existsSync(publicDir)) {
+  for (const f of fs.readdirSync(publicDir)) {
+    if (f.endsWith(".html") && path.join(publicDir, f) !== indexHtmlPath) {
+      collectIds(readFileSafe(path.join(publicDir, f)) || "");
+    }
   }
 }
 
@@ -140,8 +148,8 @@ for (const ref of getElementByIdMatches) {
   totalChecked++;
   if (!htmlIds.has(id) && !dynamicIds.has(id) && !pairedFallbackIds.has(id)) {
     addFinding("missing_html_id", "medium", "pb_public/js/*.js", -1,
-      "ID elemen '" + id + "' dipanggil via document.getElementById tetapi tidak ada di index.html.",
-      "Tambahkan elemen dengan id='" + id + "' di index.html atau hapus pemanggilan.");
+      "ID elemen '" + id + "' dipanggil via document.getElementById tetapi tidak ada di HTML (index.html / halaman dedicated lain).",
+      "Tambahkan elemen dengan id='" + id + "' di HTML terkait atau hapus pemanggilan.");
   }
 }
 
@@ -181,6 +189,8 @@ if (indexHtml && jsAll) {
   while ((mm = moduleMethodRegex.exec(jsAll)) !== null) {
     declaredAppFuncs.add(mm[1]);
   }
+  // fungsi native yang sah dipanggil di onclick HTML (tidak perlu di-deklarasi)
+  const nativeFuncs = ["alert", "confirm", "console", "fetch", "JSON", "Math", "parseInt", "parseFloat", "encodeURIComponent", "decodeURIComponent", "new", "this", "event", "document", "window", "localStorage", "Hero", "Teks", "getElementById", "getElementsByClassName", "querySelector", "querySelectorAll", "addEventListener", "stopPropagation", "preventDefault", "classList", "setAttribute", "removeAttribute", "style", "innerHTML", "textContent", "value", "checked", "files", "target", "open"];
 
   for (const ref of onclickMatches) {
     const onclick = ref.match(/onclick="([^"]+)"/)[1];
@@ -190,7 +200,6 @@ if (indexHtml && jsAll) {
       const funcName = funcMatch[1];
       totalChecked++;
       // skip fungsi native/bawaan browser
-      const nativeFuncs = ["alert", "confirm", "console", "fetch", "JSON", "Math", "parseInt", "parseFloat", "encodeURIComponent", "decodeURIComponent", "new", "this", "event", "document", "window", "localStorage", "Hero", "Teks", "getElementById", "getElementsByClassName", "querySelector", "querySelectorAll", "addEventListener", "stopPropagation", "preventDefault", "classList", "setAttribute", "removeAttribute", "style", "innerHTML", "textContent", "value", "checked", "files", "target"];
       if (nativeFuncs.indexOf(funcName) !== -1) continue;
       if (!declaredAppFuncs.has(funcName)) {
         addFinding("missing_js_function", "high", "pb_public/index.html", -1,
