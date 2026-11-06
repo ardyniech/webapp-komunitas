@@ -532,6 +532,51 @@
           ]
         }
       ]
+    },
+    {
+      "kode": "F5",
+      "nama": "Backup dan Uji Akhir",
+      "deskripsi": "Backup otomatis harian, uji restore bulanan, dan alert kegagalan (PLAN §9)",
+      "urutan": 15,
+      "fitur": [
+        {
+          "kode": "F5-1",
+          "nama": "Backup Harian & Restore Teruji",
+          "deskripsi": "Backup SQLite hot-online harian dengan integrity_check; restore ke sandbox lolos health 200",
+          "uji": [
+            {
+              "kode": "U-F5-1",
+              "nama": "Koleksi progres_* tersedia untuk ingest hasil uji",
+              "jenis": "ada_koleksi"
+            },
+            {
+              "kode": "U-F5-2",
+              "nama": "Health API 200 (prasyarat restore)",
+              "jenis": "ada_route"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kode": "F6",
+      "nama": "Agenda & Kehadiran (Opsional)",
+      "deskripsi": "Agenda kumpul rutin, absensi, dan notulen (PLAN §6.6 butir 3)",
+      "urutan": 16,
+      "fitur": [
+        {
+          "kode": "F6-1",
+          "nama": "Agenda & Absensi",
+          "deskripsi": "Jadwal pertemuan, hadir/izin/tidak hadir, dan notulen rapat",
+          "uji": [
+            {
+              "kode": "U-F6-1",
+              "nama": "Koleksi agenda, kehadiran & notulen tersedia",
+              "jenis": "ada_koleksi"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
