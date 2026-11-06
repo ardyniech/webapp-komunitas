@@ -575,6 +575,17 @@
             <div style="font-size:0.85rem; font-weight:700; color:var(--text-sub);">DATA PRIBADI &amp; KELENGKAPAN</div>
             <form id="form-profil-pribadi" onsubmit="App.saveProfilData(event)">
               <div class="form-group">
+                <label>Foto Profil</label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div id="prof-foto-preview" style="width:48px;height:48px;border-radius:50%;background:var(--warna-utama);display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;">🛵</div>
+                  <div>
+                    <input type="file" id="prof-foto-file" class="form-control" accept="image/png,image/jpeg,image/webp" style="max-width:190px;" onchange="App.handleUploadFotoProfil(event)">
+                    <div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px;">Pilih foto → tersimpan <b>otomatis</b> (kompres + upload langsung, tanpa tombol Simpan).</div>
+                    <div id="prof-foto-status" style="font-size:0.72rem;color:var(--warna-utama);margin-top:2px;"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
                 <label>Nama Lengkap (Sesuai KTP)</label>
                 <input type="text" id="prof-nama-lengkap" class="form-control" placeholder="Nama lengkap">
               </div>

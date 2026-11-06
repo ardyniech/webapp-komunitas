@@ -140,9 +140,13 @@ window.AppModules.Profil = {
   async handleUploadFotoProfil(e) {
     const file = e.target.files[0];
     if (!file || !this.user) return;
+    const prevEl = document.getElementById("prof-foto-preview");
+    const statEl = document.getElementById("prof-foto-status");
     if (file.size > 2 * 1024 * 1024) {
-      alert("Ukuran foto maksimal 2MB!"); e.target.value = ""; return;
+      if (statEl) { statEl.style.color = "var(--warna-merah)"; statEl.textContent = "Ukuran maksimal 2MB!"; }
+      e.target.value = ""; return;
     }
+    if (statEl) { statEl.style.color = "var(--text-sub)"; statEl.textContent = "Mengompres & mengunggah..."; }
     const kompres = await this.compressImage(file, 0.75);
     const fd = new FormData();
     fd.append("foto", kompres, "foto.jpg");
@@ -155,9 +159,20 @@ window.AppModules.Profil = {
       const updated = await res.json();
       this.user = { ...this.user, ...updated };
       localStorage.setItem("pb_user", JSON.stringify(this.user));
+      if (prevEl && updated.foto) {
+        prevEl.innerHTML = `<img src="${this.apiBase}/files/${this.user.collectionId}/${this.user.id}/${updated.foto}" style="width:100%;height:100%;object-fit:cover;">`;
+      }
+      if (statEl) { statEl.style.color = "var(--warna-utama)"; statEl.textContent = "✅ Foto tersimpan otomatis!"; }
       Hero.setExpression("senang", "Foto profil berhasil diperbarui!");
       this.renderProfil();
+      // perbarui badge header (foto user)
+      const badge = document.getElementById("user-header-badge");
+      if (badge && this.user.foto) {
+        const img = badge.querySelector("img");
+        if (img) img.src = `${this.apiBase}/files/${this.user.collectionId}/${this.user.id}/${this.user.foto}`;
+      }
     } catch (err) {
+      if (statEl) { statEl.style.color = "var(--warna-merah)"; statEl.textContent = "Gagal: " + err.message; }
       alert("Gagal mengunggah foto profil: " + err.message);
     }
     e.target.value = "";

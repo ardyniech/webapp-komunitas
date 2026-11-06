@@ -47,8 +47,12 @@ window.AppModules.Auth = {
 
     const badge = document.getElementById("user-header-badge");
     if (badge && this.user) {
+      const fotoHtml = this.user.foto
+        ? `<img src="${this.apiBase}/files/${this.user.collectionId}/${this.user.id}/${this.user.foto}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;" alt="foto">`
+        : `<span style="font-size:15px;">🛵</span>`;
       badge.innerHTML = `
-        <span>${this.user.nama || this.user.username}</span>
+        ${fotoHtml}
+        <span>${this.user.nama || this.user.nama_panggilan || this.user.username}</span>
         <span class="role-pill role-${this.user.role}">${this.user.role}</span>
       `;
     }
