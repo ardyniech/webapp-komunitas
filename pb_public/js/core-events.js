@@ -28,9 +28,9 @@ window.AppModules.CoreEvents = {
   },
 
   switchTab(tabName) {
-    // Dev Tools & Bug Hunter khusus superadmin (data sensitif internal)
+    // Admin Tools khusus superadmin (data sensitif internal)
     const role = (this.user && this.user.role) || "";
-    if ((tabName === "devtools" || tabName === "bug-hunter") && role !== "superadmin") {
+    if (tabName === "admin-tools" && role !== "superadmin") {
       alert("Halaman ini khusus superadmin.");
       return;
     }
@@ -86,12 +86,25 @@ window.AppModules.CoreEvents = {
     else if (tabName === "dokumen" && this.loadDokumen) this.loadDokumen();
     else if (tabName === "devtools" && this.devtoolsLoadAll) this.devtoolsLoadAll();
   else if (tabName === "role" && this.renderRole) this.renderRole();
-    else if (tabName === "bug-hunter" && this.loadScanBugs) {
-      this.loadScanBugs();
+    else if (tabName === "admin-tools" && this.loadProgres) {
+      this.loadProgres();
+      this.adminToolsSwitchSub("progres");
     } else if (tabName === "bug-hunter") {
       const listEl = document.getElementById("bug-hunter-list");
       if (listEl) listEl.innerHTML = `<div class="empty-state" style="color:var(--warna-merah);">Modul scan belum siap. Silakan muat ulang halaman (Ctrl+F5) dan coba lagi.</div>`;
     }
+  },
+
+  adminToolsSwitchSub(sub) {
+    document.querySelectorAll(".devtools-sub-tab").forEach(b => {
+      b.classList.toggle("admin-tab-active", b.dataset.sub === sub);
+    });
+    document.querySelectorAll(".admin-sub-panel").forEach(p => {
+      p.style.display = (p.id === "admin-sub-" + sub) ? "block" : "none";
+    });
+    if (sub === "progres" && this.loadProgres) this.loadProgres();
+    if (sub === "bug-hunter" && this.loadScanBugs) this.loadScanBugs();
+    if (sub === "devtools" && this.devtoolsLoadAll) this.devtoolsLoadAll();
   },
 
   setupEventListeners() {

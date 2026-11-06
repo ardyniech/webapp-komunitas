@@ -66,7 +66,7 @@ window.AppModules.Auth = {
 
     // Dev Tools & Bug Hunter: khusus superadmin (data sensitif internal)
     const isSuper = this.user && this.user.role === "superadmin";
-    document.querySelectorAll('.nav-item[data-tab="devtools"], .nav-item[data-tab="bug-hunter"]').forEach((btn) => {
+    document.querySelectorAll('.nav-item[data-tab="admin-tools"]').forEach((btn) => {
       btn.style.display = isSuper ? "flex" : "none";
     });
     // Role & Manajemen: khusus admin/superadmin
@@ -75,12 +75,10 @@ window.AppModules.Auth = {
     if (navRole) navRole.style.display = isAdmin ? "flex" : "none";
     document.querySelectorAll(".dropdown-item").forEach((btn) => {
       const oc = btn.getAttribute("onclick") || "";
-      if (/switchTab\('(devtools|bug-hunter)'\)/.test(oc)) btn.style.display = isSuper ? "" : "none";
+      if (/switchTab\('(admin-tools|bug-hunter)'\)/.test(oc)) btn.style.display = isSuper ? "" : "none";
     });
-    const panelDev = document.getElementById("panel-devtools");
-    const panelBug = document.getElementById("panel-bug-hunter");
-    if (panelDev) panelDev.style.display = isSuper ? "" : "none";
-    if (panelBug) panelBug.style.display = isSuper ? "" : "none";
+    const panelAdmin = document.getElementById("panel-admin-tools");
+    if (panelAdmin) panelAdmin.style.display = isSuper ? "" : "none";
 
     const setupSection = document.getElementById("admin-setup-komunitas-section");
     if (setupSection) setupSection.style.display = (this.user.role === "admin") ? "block" : "none";

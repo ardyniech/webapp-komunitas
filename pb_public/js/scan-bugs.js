@@ -58,7 +58,7 @@ window.AppModules.ScanBugs = {
         const sevLabel = { critical: "KRITIKAL", high: "TINGGI", medium: "SEDANG", low: "RENDAH" };
 
         listEl.innerHTML = data.findings.map(f => `
-          <div class="bug-item" title="Klik untuk lihat diagnosa akar masalah di Dev Tools" style="padding:10px 12px; border:1px solid var(--border-color); border-radius:10px; margin-bottom:8px; background:var(--bg-card);cursor:pointer;" onclick="App.switchTab('devtools'); if(App.devtoolsSwitchSub) App.devtoolsSwitchSub('diagnosa'); if(App.renderDiagnose) App.renderDiagnose();">
+          <div class="bug-item" title="Klik untuk lihat diagnosa akar masalah di Admin Tools" style="padding:10px 12px; border:1px solid var(--border-color); border-radius:10px; margin-bottom:8px; background:var(--bg-card);cursor:pointer;" onclick="App.switchTab('admin-tools'); if(App.adminToolsSwitchSub) App.adminToolsSwitchSub('devtools'); if(App.devtoolsSwitchSub) App.devtoolsSwitchSub('diagnosa'); if(App.renderDiagnose) App.renderDiagnose();">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
               <div>
                 <span class="badge" style="background:${sevColor[f.severity] || 'var(--text-sub)'}; color:#fff; font-size:0.7rem; font-weight:700; padding:2px 8px; border-radius:10px; margin-right:6px;">

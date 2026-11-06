@@ -1253,8 +1253,20 @@ body.mode-hemat-animasi * {
   color: #fff;
   border-color: var(--warna-utama);
 }
+.devtools-sub-tab.admin-tab-active {
+  background: var(--warna-aksen);
+  color: #000;
+  border-color: var(--warna-aksen);
+}
 .devtools-sub-panel {
   margin-top: 10px;
+}
+.admin-sub-panel {
+  display: none;
+}
+.admin-sub-panel.admin-tab-active,
+.admin-sub-panel:not([style*="display:none"]) {
+  display: block !important;
 }
 
 /* ── Direktori Anggota ── */

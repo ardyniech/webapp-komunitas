@@ -716,38 +716,6 @@
       </section>
 
       <!-- TAB 7: PROGRES PENGEMBANGAN (6.14) -->
-      <section id="panel-progres" class="view-panel">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-          <div>
-            <h2 style="font-size:1.15rem; font-weight:700;">Progres Pengembangan</h2>
-            <div style="font-size:0.75rem; color:var(--text-sub);">Pelacakan otomatis berbasis hasil uji nyata</div>
-          </div>
-          <button class="btn btn-outline" style="width:auto; padding:6px 10px; font-size:0.75rem;" onclick="App.loadProgres()">
-            🔄 Muat Ulang
-          </button>
-        </div>
-
-        <!-- Ringkasan Progres Bar -->
-        <div class="dompet-card" style="padding:16px; margin-bottom:14px;">
-          <div style="display:flex; justify-content:space-between; align-items:baseline;">
-            <div style="font-size:0.78rem; color:#a7f3d0; font-weight:700;">FITUR BERFUNGSI</div>
-            <div id="progres-pct-headline" style="font-size:1.4rem; font-weight:800; color:#fff;">0%</div>
-          </div>
-          <div class="bensin-bar-wrap" style="height:14px; margin:10px 0;">
-            <div id="progres-bar-fill" class="bensin-bar-fill" style="width:0%;"></div>
-          </div>
-          <div id="progres-summary-sub" style="font-size:0.75rem; color:#d1fae5;">Memuat data uji...</div>
-        </div>
-
-        <!-- Pos Pemberhentian Rute Ojol -->
-        <div style="font-size:0.8rem; font-weight:700; color:var(--text-sub); margin-bottom:4px;">POS RUTE PENGEMBANGAN</div>
-        <div id="progres-roadmap-wrap" class="progres-roadmap"></div>
-
-        <!-- Accordion Daftar Fase & Fitur -->
-        <div style="font-size:0.8rem; font-weight:700; color:var(--text-sub); margin:14px 0 8px 0;">DETAIL FASE & HASIL UJI</div>
-        <div id="progres-fase-accordion"></div>
-      </section>
-
       <!-- TAB 8: STRUKTUR PENGURUS (F3c) -->
       <section id="panel-struktur" class="view-panel">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
@@ -970,99 +938,154 @@
       </section>
 
       <!-- TAB 19: BUG HUNTER & SCAN OTOMATIS -->
-      <section id="panel-bug-hunter" class="view-panel">
+      <section id="panel-struktur" class="view-panel">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
           <div>
-            <h2 style="font-size:1.15rem; font-weight:700;">🐛 Bug Hunter &amp; Scan Otomatis</h2>
-            <div style="font-size:0.75rem; color:var(--text-sub);">Pindai kode, hook, rute, berkas, dan database untuk menemukan potensi bug sebelum menyebabkan gangguan.</div>
+            <h2 style="font-size:1.15rem; font-weight:700;">Struktur Basecamp</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Bagan kepengurusan & penanggung jawab pangkalan</div>
           </div>
-          <button class="btn btn-primary" style="width:auto; padding:6px 12px; font-size:0.78rem;" onclick="App.refreshScan()">
-            🔄 Jalankan Scan Sekarang
+          <button class="btn btn-outline" style="width:auto; padding:6px 10px; font-size:0.75rem;" onclick="App.loadStruktur()">
+            🔄 Segarkan
           </button>
         </div>
-
-        <div class="kas-card" style="margin-bottom:14px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:14px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-            <div style="font-size:0.8rem; color:var(--text-sub); font-weight:600;">Dicek: <span id="bh-total-checked">-</span> &nbsp;|&nbsp; Temuan: <span id="bh-total-findings">-</span></div>
-            <div style="font-size:0.72rem; color:var(--text-muted);">Terakhir: <span id="bh-scanned-at">-</span></div>
-          </div>
-          <div style="display:flex; gap:8px; margin-bottom:10px;">
-            <div class="stat-tile" style="flex:1; min-width:90px; background:rgba(239,68,68,0.1); border-color:var(--warna-merah);">
-              <div class="stat-nilai" id="bh-critical" style="color:var(--warna-merah);">0</div>
-              <div class="stat-label" style="color:var(--warna-merah); font-size:0.65rem;">KRITIKAL</div>
-            </div>
-            <div class="stat-tile" style="flex:1; min-width:90px; background:rgba(255,176,32,0.1); border-color:var(--warna-aksen);">
-              <div class="stat-nilai" id="bh-high" style="color:var(--warna-aksen);">0</div>
-              <div class="stat-label" style="color:var(--warna-aksen); font-size:0.65rem;">TINGGI</div>
-            </div>
-            <div class="stat-tile" style="flex:1; min-width:90px; background:rgba(255,176,32,0.1); border-color:var(--warna-aksen);">
-              <div class="stat-nilai" id="bh-medium" style="color:var(--warna-aksen);">0</div>
-              <div class="stat-label" style="color:var(--warna-aksen); font-size:0.65rem;">SEDANG</div>
-            </div>
-          </div>
-          <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">
-            <strong>Saran:</strong> Bug kritikal &amp; tinggi segera diperbaiki. Bug sedang adalah peringatan yang perlu dipantau.
-          </div>
-        </div>
-
-        <div id="bug-hunter-list"><div class="empty-state">Memuat laporan scan...</div></div>
+        <div id="struktur-units-list"></div>
       </section>
-
-      <!-- TAB DEV TOOLS -->
-      <section id="panel-devtools" class="view-panel">
+      <!-- TAB ADMIN TOOLS (superadmin): Progres + Bug Hunter + Dev Tools -->
+      <section id="panel-admin-tools" class="view-panel">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
           <div>
-            <h2 style="font-size:1.15rem; font-weight:700;">🛠️ Dev Tools</h2>
-            <div style="font-size:0.75rem; color:var(--text-sub);">Git, diagnosa bug, monitor host, inventaris, rilis, dan feature flag — semua live dari sistem.</div>
+            <h2 style="font-size:1.15rem; font-weight:700;">⚙️ Admin Tools</h2>
+            <div style="font-size:0.75rem; color:var(--text-sub);">Khusus superadmin: progres, bug hunter, dan dev tools.</div>
           </div>
-          <button class="btn btn-primary" style="width:auto; padding:6px 12px; font-size:0.78rem;" onclick="App.devtoolsLoadAll()">
-            🔄 Muat Ulang Semua
+          <button class="btn btn-outline" style="width:auto; padding:6px 10px; font-size:0.75rem;" onclick="window.location.reload()">
+            🔄 Muat Ulang Halaman
           </button>
-          <button class="btn btn-outline" style="width:auto; padding:6px 12px; font-size:0.78rem;" onclick="App.switchTab('bug-hunter')">🐛 Bug Hunter</button>
-          <button class="btn btn-outline" style="width:auto; padding:6px 12px; font-size:0.78rem;" onclick="App.switchTab('progres')">🚀 Progres</button>
         </div>
 
         <div class="sub-tabs" style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
-          <button class="devtools-sub-tab" data-sub="git" onclick="App.devtoolsSwitchSub('git')">Git</button>
-          <button class="devtools-sub-tab" data-sub="diagnosa" onclick="App.devtoolsSwitchSub('diagnosa')">Diagnosa Bug</button>
-          <button class="devtools-sub-tab" data-sub="monitor" onclick="App.devtoolsSwitchSub('monitor')">Monitor</button>
-          <button class="devtools-sub-tab" data-sub="info" onclick="App.devtoolsSwitchSub('info')">Info &amp; Flag</button>
+          <button class="devtools-sub-tab admin-tab-active" data-sub="progres" onclick="App.adminToolsSwitchSub('progres')">🚀 Progres</button>
+          <button class="devtools-sub-tab" data-sub="bug-hunter" onclick="App.adminToolsSwitchSub('bug-hunter')">🐛 Bug Hunter</button>
+          <button class="devtools-sub-tab" data-sub="devtools" onclick="App.adminToolsSwitchSub('devtools')">🛠️ Dev Tools</button>
         </div>
 
-        <div id="devtools-sub-git" class="devtools-sub-panel">
-          <div style="font-size:0.8rem; color:var(--text-sub); margin-bottom:8px;">Status git kotor + commit terakhir per direktori (deteksi konflik antar-agen).</div>
-          <div id="devtools-git-list"><div class="empty-state">Memuat...</div></div>
+        <!-- Progres sub-panel -->
+        <div id="admin-sub-progres" class="admin-sub-panel">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <div>
+              <h3 style="font-size:1rem; font-weight:700; margin:0;">Progres Pengembangan</h3>
+              <div style="font-size:0.7rem; color:var(--text-sub);">Pelacakan otomatis berbasis hasil uji nyata</div>
+            </div>
+            <button class="btn btn-outline" style="width:auto; padding:4px 8px; font-size:0.7rem;" onclick="App.loadProgres()">
+              🔄 Muat Ulang
+            </button>
+          </div>
+          <div class="dompet-card" style="padding:16px; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline;">
+              <div style="font-size:0.78rem; color:#a7f3d0; font-weight:700;">FITUR BERFUNGSI</div>
+              <div id="progres-pct-headline" style="font-size:1.4rem; font-weight:800; color:#fff;">0%</div>
+            </div>
+            <div class="bensin-bar-wrap" style="height:14px; margin:10px 0;">
+              <div id="progres-bar-fill" class="bensin-bar-fill" style="width:0%;"></div>
+            </div>
+            <div id="progres-summary-sub" style="font-size:0.75rem; color:#d1fae5;">Memuat data uji...</div>
+          </div>
+          <div style="font-size:0.8rem; font-weight:700; color:var(--text-sub); margin-bottom:4px;">POS RUTE PENGEMBANGAN</div>
+          <div id="progres-roadmap-wrap" class="progres-roadmap"></div>
+          <div style="font-size:0.8rem; font-weight:700; color:var(--text-sub); margin:14px 0 8px 0;">DETAIL FASE & HASIL UJI</div>
+          <div id="progres-fase-accordion"></div>
         </div>
 
-        <div id="devtools-sub-diagnosa" class="devtools-sub-panel" style="display:none;">
-          <div style="font-size:0.8rem; color:var(--text-sub); margin-bottom:8px;">Akar masalah tiap bug + perintah verifikasi + langkah fix (untuk AI dev &amp; human).</div>
-          <div id="devtools-diagnose-list"><div class="empty-state">Memuat...</div></div>
+        <!-- Bug Hunter sub-panel -->
+        <div id="admin-sub-bug-hunter" class="admin-sub-panel" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <div>
+              <h3 style="font-size:1rem; font-weight:700; margin:0;">🐛 Bug Hunter &amp; Scan Otomatis</h3>
+              <div style="font-size:0.7rem; color:var(--text-sub);">Pindai kode, hook, rute, berkas, dan database untuk menemukan potensi bug.</div>
+            </div>
+            <button class="btn btn-primary" style="width:auto; padding:4px 8px; font-size:0.7rem;" onclick="App.refreshScan()">
+              🔄 Jalankan Scan Sekarang
+            </button>
+          </div>
+          <div class="kas-card" style="margin-bottom:14px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+              <div style="font-size:0.8rem; color:var(--text-sub); font-weight:600;">Dicek: <span id="bh-total-checked">-</span> &nbsp;|&nbsp; Temuan: <span id="bh-total-findings">-</span></div>
+              <div style="font-size:0.72rem; color:var(--text-muted);">Terakhir: <span id="bh-scanned-at">-</span></div>
+            </div>
+            <div style="display:flex; gap:8px; margin-bottom:10px;">
+              <div class="stat-tile" style="flex:1; min-width:90px; background:rgba(239,68,68,0.1); border-color:var(--warna-merah);">
+                <div class="stat-nilai" id="bh-critical" style="color:var(--warna-merah);">0</div>
+                <div class="stat-label" style="color:var(--warna-merah); font-size:0.65rem;">KRITIKAL</div>
+              </div>
+              <div class="stat-tile" style="flex:1; min-width:90px; background:rgba(255,176,32,0.1); border-color:var(--warna-aksen);">
+                <div class="stat-nilai" id="bh-high" style="color:var(--warna-aksen);">0</div>
+                <div class="stat-label" style="color:var(--warna-aksen); font-size:0.65rem;">TINGGI</div>
+              </div>
+              <div class="stat-tile" style="flex:1; min-width:90px; background:rgba(255,176,32,0.1); border-color:var(--warna-aksen);">
+                <div class="stat-nilai" id="bh-medium" style="color:var(--warna-aksen);">0</div>
+                <div class="stat-label" style="color:var(--warna-aksen); font-size:0.65rem;">SEDANG</div>
+              </div>
+            </div>
+            <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:6px;">
+              <strong>Saran:</strong> Bug kritikal &amp; tinggi segera diperbaiki. Bug sedang adalah peringatan yang perlu dipantau.
+            </div>
+          </div>
+          <div id="bug-hunter-list"><div class="empty-state">Memuat laporan scan...</div></div>
         </div>
 
-        <div id="devtools-sub-monitor" class="devtools-sub-panel" style="display:none;">
-          <div style="font-size:0.8rem; color:var(--text-sub); margin-bottom:8px;">Heartbeat host (RAM, socket UDP, disk) + tail log PocketBase.</div>
-          <div id="devtools-heartbeat-list"><div class="empty-state">Memuat...</div></div>
-          <div id="devtools-log-list" style="margin-top:10px;"><div class="empty-state">Memuat...</div></div>
-          <div style="font-weight:700;font-size:0.85rem;margin-top:14px;">Kesegaran Data per Koleksi</div>
-          <div id="devtools-db-list" style="margin-top:6px;"><div class="empty-state">Memuat...</div></div>
-          <div style="font-weight:700;font-size:0.85rem;margin-top:14px;">Tren Riwayat (bug dari waktu ke waktu)</div>
-          <div id="devtools-history-list" style="margin-top:6px;"><div class="empty-state">Memuat...</div></div>
-          <div style="font-weight:700;font-size:0.85rem;margin-top:14px;">Error Terstruktur (pola journal)</div>
-          <div id="devtools-errors-list" style="margin-top:6px;"><div class="empty-state">Memuat...</div></div>
-        </div>
+        <!-- Dev Tools sub-panel -->
+        <div id="admin-sub-devtools" class="admin-sub-panel" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <div>
+              <h3 style="font-size:1rem; font-weight:700; margin:0;">🛠️ Dev Tools</h3>
+              <div style="font-size:0.7rem; color:var(--text-sub);">Git, diagnosa bug, monitor host, inventaris, rilis, dan feature flag — semua live dari sistem.</div>
+            </div>
+            <button class="btn btn-primary" style="width:auto; padding:4px 8px; font-size:0.7rem;" onclick="App.devtoolsLoadAll()">
+              🔄 Muat Ulang Semua
+            </button>
+          </div>
 
-        <div id="devtools-sub-info" class="devtools-sub-panel" style="display:none;">
-          <div style="font-size:0.8rem; color:var(--text-sub); margin-bottom:8px;">Drift PLAN vs registry, inventaris route/koleksi/JS, dan release notes.</div>
-          <div id="devtools-drift-list"><div class="empty-state">Memuat...</div></div>
-          <div id="devtools-inventory-list" style="margin-top:12px;"><div class="empty-state">Memuat...</div></div>
-          <div id="devtools-releases-list" style="margin-top:12px;"><div class="empty-state">Memuat...</div></div>
-          <div style="font-weight:700;font-size:0.85rem;margin-top:14px;">Audit Tautan (dead-link check live)</div>
-          <div id="devtools-links-list" style="margin-top:6px;"><div class="empty-state">Memuat...</div></div>
-          <div style="font-weight:700;font-size:0.85rem;margin-top:14px;">Feature Flag (modul_aktif)</div>
-          <div id="devtools-flags-note" style="font-size:0.72rem;color:var(--text-muted);"></div>
-          <div id="devtools-flags-list" style="margin-top:6px;"><div class="empty-state">Memuat...</div></div>
-          <div style="font-weight:700;font-size:0.85rem;margin-top:14px;">Audit Keamanan</div>
-          <div id="devtools-security-list" style="margin-top:6px;"><div class="empty-state">Memuat...</div></div>
+          <div class="sub-tabs" style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+            <button class="devtools-sub-tab" data-sub="git" onclick="App.devtoolsSwitchSub('git')">Git</button>
+            <button class="devtools-sub-tab" data-sub="diagnosa" onclick="App.devtoolsSwitchSub('diagnosa')">Diagnosa Bug</button>
+            <button class="devtools-sub-tab" data-sub="monitor" onclick="App.devtoolsSwitchSub('monitor')">Monitor</button>
+            <button class="devtools-sub-tab" data-sub="info" onclick="App.devtoolsSwitchSub('info')">Info &amp; Flag</button>
+          </div>
+
+          <div id="devtools-sub-git" class="devtools-sub-panel">
+            <div style="font-size:0.8rem; color:var(--text-sub); margin-bottom:8px;">Status git kotor + commit terakhir per direktori (deteksi konflik antar-agen).</div>
+            <div id="devtools-git-list"><div class="empty-state">Memuat...</div></div>
+          </div>
+
+          <div id="devtools-sub-diagnosa" class="devtools-sub-panel" style="display:none;">
+            <div style="font-size:0.8rem; color:var(--text-sub); margin-bottom:8px;">Akar masalah tiap bug + perintah verifikasi + langkah fix (untuk AI dev &amp; human).</div>
+            <div id="devtools-diagnose-list"><div class="empty-state">Memuat...</div></div>
+          </div>
+
+          <div id="devtools-sub-monitor" class="devtools-sub-panel" style="display:none;">
+            <div style="font-size:0.8rem; color:var(--text-sub); margin-bottom:8px;">Heartbeat host (RAM, socket UDP, disk) + tail log PocketBase.</div>
+            <div id="devtools-heartbeat-list"><div class="empty-state">Memuat...</div></div>
+            <div id="devtools-log-list" style="margin-top:10px;"><div class="empty-state">Memuat...</div></div>
+            <div style="font-weight:700;font-size:0.85rem;margin-top:14px;">Kesegaran Data per Koleksi</div>
+            <div id="devtools-db-list" style="margin-top:6px;"><div class="empty-state">Memuat...</div></div>
+            <div style="font-weight:700;font-size:0.85rem;margin-top:14px;">Tren Riwayat (bug dari waktu ke waktu)</div>
+            <div id="devtools-history-list"><div class="empty-state">Memuat...</div></div>
+            <div style="font-weight:700;font-size:0.85rem;margin-top:14px;">Error Terstruktur (pola journal)</div>
+            <div id="devtools-errors-list"><div class="empty-state">Memuat...</div></div>
+          </div>
+
+          <div id="devtools-sub-info" class="devtools-sub-panel" style="display:none;">
+            <div style="font-size:0.8rem; color:var(--text-sub); margin-bottom:8px;">Drift PLAN vs registry, inventaris route/koleksi/JS, dan release notes.</div>
+            <div id="devtools-drift-list"><div class="empty-state">Memuat...</div></div>
+            <div id="devtools-inventory-list" style="margin-top:12px;"><div class="empty-state">Memuat...</div></div>
+            <div id="devtools-releases-list" style="margin-top:12px;"><div class="empty-state">Memuat...</div></div>
+            <div style="font-weight:700;font-size:0.85rem;margin-top:14px;">Audit Tautan (dead-link check live)</div>
+            <div id="devtools-links-list"><div class="empty-state">Memuat...</div></div>
+            <div style="font-weight:700;font-size:0.85rem;margin-top:14px;">Feature Flag (modul_aktif)</div>
+            <div id="devtools-flags-note" style="font-size:0.72rem;color:var(--text-muted);"></div>
+            <div id="devtools-flags-list" style="margin-top:6px;"><div class="empty-state">Memuat...</div></div>
+            <div style="font-weight:700;font-size:0.85rem;margin-top:14px;">Audit Keamanan</div>
+            <div id="devtools-security-list"><div class="empty-state">Memuat...</div></div>
+          </div>
         </div>
       </section>
 
@@ -1098,17 +1121,9 @@
       <span class="nav-icon">⛽</span>
       <span>Iuran</span>
     </button>
-    <button class="nav-item" data-tab="progres">
-      <span class="nav-icon">🚀</span>
-      <span>Progres</span>
-    </button>
-    <button class="nav-item" data-tab="bug-hunter">
-      <span class="nav-icon">🐛</span>
-      <span>Bug Hunter</span>
-    </button>
-    <button class="nav-item" data-tab="devtools">
-      <span class="nav-icon">🛠️</span>
-      <span>Dev Tools</span>
+    <button class="nav-item" data-tab="admin-tools">
+      <span class="nav-icon">⚙️</span>
+      <span>Admin Tools</span>
     </button>
     <button id="nav-btn-role" class="nav-item" data-tab="role" style="display: none;">
       <span class="nav-icon">🛡️</span>

@@ -265,12 +265,12 @@ async function main() {
                 }
                 break;
 
-              case "U-F1c-4": // Panel Dev Tools dan scanner tersedia
+              case "U-F1c-4": // Panel Dev Tools dan scanner tersedia (sekarang di Admin Tools)
                 {
                   const htmlDt = fs.readFileSync(path.join(PUBLIC_DIR, 'index.html'), 'utf-8');
                   const scannerAda = fs.existsSync(path.join(PROJECT_ROOT, 'scripts/scan-bugs.js'));
-                  lulus = htmlDt.includes('panel-devtools') && htmlDt.includes('data-tab="devtools"') && scannerAda;
-                  pesan = "Panel Dev Tools + scanner tersedia";
+                  lulus = htmlDt.includes('panel-admin-tools') && htmlDt.includes('data-tab="admin-tools"') && scannerAda;
+                  pesan = "Panel Admin Tools + scanner tersedia";
                 }
                 break;
 
