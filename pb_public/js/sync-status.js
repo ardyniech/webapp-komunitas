@@ -186,7 +186,9 @@ window.AppModules.SyncStatus = {
     if (window.App && App.refreshData) await App.refreshData();
   },
 
+  // delegasi ke helper bersama
   esc(s) {
+    if (window.UIHelpers && UIHelpers.esc) return UIHelpers.esc(s);
     if (!s) return "";
     return String(s).replace(/[&<>'"]/g, (t) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[t] || t));
   },

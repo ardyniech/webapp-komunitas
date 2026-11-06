@@ -2,6 +2,12 @@
 window.AppModules = window.AppModules || {};
 
 window.AppModules.ScanBugs = {
+  // delegasi ke helper bersama (single source) — fallback lokal bila helper belum termuat
+  escapeHtml(s) {
+    if (window.UIHelpers && UIHelpers.esc) return UIHelpers.esc(s);
+    if (!s) return "";
+    return String(s).replace(/[&<>'"]/g, (t) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[t] || t));
+  },
   async loadScanBugs() {
     const listEl = document.getElementById("bug-hunter-list");
     const totalEl = document.getElementById("bh-total-checked");
@@ -119,10 +125,5 @@ window.AppModules.ScanBugs = {
       }
     } catch (_) {}
     window.location.reload();
-  },
-
-  escapeHtml(s) {
-    if (!s) return "";
-    return String(s).replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t));
   }
 };
