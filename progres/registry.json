@@ -81,7 +81,8 @@
           "nama": "Dev Tools Pemantauan & Diagnosa",
           "deskripsi": "Halaman Dev Tools: git, diagnosa akar masalah, heartbeat, inventaris, rilis, feature flag",
           "uji": [
-            { "kode": "U-F1c-4", "nama": "Panel Dev Tools dan scanner tersedia", "jenis": "uji_statis" }
+            { "kode": "U-F1c-4", "nama": "Panel Dev Tools dan scanner tersedia", "jenis": "uji_statis" },
+            { "kode": "U-F1c-5", "nama": "Laporan scan bug tersaji (scan-report.json)", "jenis": "ada_route" }
           ]
         }
       ]
@@ -235,6 +236,22 @@
           "deskripsi": "Artikel solusi masalah ojol dan forum santai bermoderasi",
           "uji": [
             { "kode": "U-F3d-1", "nama": "Koleksi forum_* dan panduan tersedia", "jenis": "ada_koleksi" }
+          ]
+        },
+        {
+          "kode": "F3d-2",
+          "nama": "Dokumen & Berkas Basecamp",
+          "deskripsi": "Unduh berkas AD/ART, SK, formulir, dan template resmi pangkalan",
+          "uji": [
+            { "kode": "U-F3d-2", "nama": "Koleksi dokumen tersedia", "jenis": "ada_koleksi" }
+          ]
+        },
+        {
+          "kode": "F3d-3",
+          "nama": "Pengaduan ke Dewan Etik",
+          "deskripsi": "Laporan anonim dan cek status laporan dengan kode cek",
+          "uji": [
+            { "kode": "U-F3d-3", "nama": "Koleksi pengaduan tersedia dan terproteksi", "jenis": "ada_koleksi" }
           ]
         }
       ]

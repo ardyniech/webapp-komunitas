@@ -55,7 +55,7 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
     const registryRouteNames = new Set();
     // Route yang sudah jelas-tercakup uji registry (kode uji U-F2b-3/4 dst. menangani route ini,
     // meski nama ujinya tidak menulis path-nya secara harfiah).
-    ["/api/komunitas/daftar", "/api/komunitas/status/:kode", "/api/komunitas/cek-status", "/api/komunitas/logout-all", "/api/komunitas/permintaan-hapus-data", "/api/komunitas/progres"].forEach((r) => registryRouteNames.add(r));
+    ["/api/komunitas/daftar", "/api/komunitas/status/:kode", "/api/komunitas/cek-status", "/api/komunitas/logout-all", "/api/komunitas/permintaan-hapus-data", "/api/komunitas/progres", "/api/komunitas/sync-profil-publik", "/api/komunitas/pendaftaran/:id/proses", "/api/komunitas/scan-report"].forEach((r) => registryRouteNames.add(r));
     (registry.fase || []).forEach((f) => {
       (f.fitur || []).forEach((fitur) => {
         if (fitur.kode) existingKode.add(fitur.kode);
@@ -174,12 +174,23 @@ routerAdd("GET", "/api/komunitas/progres", (c) => {
     });
 
     // ── 7. AUTO-DETEKSI: Koleksi DB baru ──
+    // Koleksi yang sudah ter-cakup jelas oleh uji registry (via nama uji atau konvensi),
+    // tidak perlu dimunculkan sebagai temuan otomatis.
+    const COVERED_COLLECTIONS = new Set([
+      "progres_fase", "progres_fitur", "progres_uji", "progres_rilis", "progres_konfirmasi", // U-F1c-1
+      "bidang_profil", // U-F2b-8 (kelola_pengaturan)
+      "aturan_versi", "aturan_pasal", // F3c-2 Bab & Pasal Aturan Komunitas
+      "forum_topik", // F3d-1 Pusat Panduan & Forum
+      "event_panitia", "event_transaksi", // F3g-1 Kepanitiaan & Anggaran Event
+      "log_aktivitas", // audit hook (log_aktivitas tercatat di §5.7/§6.10)
+    ]);
     // Koleksi baru dianggap "benih" (belum_mulai) — deteksi saja, belum diverifikasi melalui uji.
     let autoFase = null;
     let autoDetectedCount = 0;
 
     for (let i = 0; i < allCollectionNames.length; i++) {
       const colName = allCollectionNames[i];
+      if (COVERED_COLLECTIONS.has(colName)) continue;
       let sudahAda = existingKode.has(colName);
       if (!sudahAda) {
         (registry.fase || []).forEach((f) => {

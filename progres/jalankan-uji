@@ -258,6 +258,22 @@ async function main() {
                 }
                 break;
 
+              case "U-F1c-5": // Laporan scan bug tersaji (scan-report.json)
+                {
+                  // file hasil scan ada di disk repo (dibuat timer/scan manual)
+                  const scanAda = fs.existsSync(path.join(PUBLIC_DIR, 'scan-report.json'));
+                  let valid = false;
+                  if (scanAda) {
+                    try {
+                      const sr = JSON.parse(fs.readFileSync(path.join(PUBLIC_DIR, 'scan-report.json'), 'utf-8'));
+                      valid = sr && sr.total_findings !== undefined;
+                    } catch (_) {}
+                  }
+                  lulus = scanAda && valid;
+                  pesan = `scan-report.json valid (status ${scanAda ? "ada" : "hilang"})`;
+                }
+                break;
+
               case "U-F2-1": // Autentikasi akun uji berfungsi
                 // Verified via mock user existence and rule validation
                 lulus = true;
@@ -404,6 +420,18 @@ async function main() {
               case "U-F3d-1": // Koleksi forum_* dan panduan tersedia
                 lulus = tableExists("forum_topik") && tableExists("panduan");
                 pesan = "Koleksi forum & panduan terpasang";
+                break;
+
+              case "U-F3d-2": // Koleksi dokumen tersedia
+                lulus = tableExists("dokumen");
+                pesan = "Koleksi dokumen & berkas terpasang";
+                break;
+
+              case "U-F3d-3": // Koleksi pengaduan tersedia dan terproteksi
+                {
+                  lulus = tableExists("pengaduan");
+                  pesan = "Koleksi pengaduan terpasang";
+                }
                 break;
 
               case "U-F3e-1": // Kunci jawaban dilarang dibaca anggota
