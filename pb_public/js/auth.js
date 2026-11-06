@@ -77,8 +77,12 @@ window.AppModules.Auth = {
       const oc = btn.getAttribute("onclick") || "";
       if (/switchTab\('(admin-tools|bug-hunter)'\)/.test(oc)) btn.style.display = isSuper ? "" : "none";
     });
-    const panelAdmin = document.getElementById("panel-admin-tools");
-    if (panelAdmin) panelAdmin.style.display = isSuper ? "" : "none";
+    const panelProgres = document.getElementById("panel-progres");
+    const panelBugHunter = document.getElementById("panel-bug-hunter");
+    const panelDevTools = document.getElementById("panel-devtools");
+    if (panelProgres) panelProgres.style.display = isSuper ? "" : "none";
+    if (panelBugHunter) panelBugHunter.style.display = isSuper ? "" : "none";
+    if (panelDevTools) panelDevTools.style.display = isSuper ? "" : "none";
 
     const setupSection = document.getElementById("admin-setup-komunitas-section");
     if (setupSection) setupSection.style.display = (this.user.role === "admin") ? "block" : "none";
