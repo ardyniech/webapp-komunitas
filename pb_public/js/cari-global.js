@@ -13,6 +13,47 @@ window.AppModules.CariGlobal = {
     if (this._pasang) return;
     const header = document.querySelector(".app-header");
     if (!header) return;
+
+    // Tombol toggle pencarian untuk tampilan mobile (<900px): mengetuk 🔍
+    // membuka kolom pencarian sebagai overlay di bawah header.
+    if (!document.getElementById("cari-global-toggle")) {
+      const toggle = document.createElement("button");
+      toggle.id = "cari-global-toggle";
+      toggle.textContent = "🔍";
+      toggle.title = "Cari";
+      toggle.style.cssText =
+        "width:34px;height:34px;padding:0;border-radius:50%;background:var(--bg-card-hover, rgba(255,255,255,0.06));" +
+        "border:1px solid var(--border-color);color:var(--text-main);font-size:0.95rem;cursor:pointer;flex-shrink:0;";
+      toggle.addEventListener("click", () => {
+        const w = document.getElementById("cari-global-wrap");
+        if (!w) return;
+        const tampil = w.style.display === "flex" && w.style.position === "fixed";
+        w.style.display = tampil ? "none" : "flex";
+        if (!tampil) {
+          w.style.position = "fixed";
+          w.style.top = "56px";
+          w.style.left = "10px";
+          w.style.right = "10px";
+          w.style.width = "auto";
+          w.style.maxWidth = "none";
+          w.style.zIndex = "12500";
+          w.querySelector("input") && w.querySelector("input").focus();
+        } else {
+          w.style.position = "";
+          w.style.top = "";
+          w.style.left = "";
+          w.style.right = "";
+          w.style.width = "";
+          w.style.maxWidth = "";
+          w.style.zIndex = "";
+          w.style.display = "";
+        }
+      });
+      const badge = document.getElementById("user-header-badge");
+      if (badge) header.insertBefore(toggle, badge);
+      else header.appendChild(toggle);
+    }
+
     const wrap = document.createElement("div");
     wrap.id = "cari-global-wrap";
     wrap.style.cssText = "position:relative;margin-left:8px;width:170px;min-width:120px;display:flex;flex-shrink:0;";
