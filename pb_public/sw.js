@@ -55,6 +55,8 @@ const ASSETS_TO_CACHE = [
   './js/core-events.js',
   './js/scan-bugs.js',
   './js/loading.js',
+  './js/panel-admin.js',
+  './panel-admin.html',
 ];
 
 self.addEventListener('install', (e) => {

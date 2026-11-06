@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel Admin — Personalisasi Komunitas</title>
+<link rel="icon" href="icon-192.png" sizes="192x192">
+<style>
+  :root{--warna-utama:#1FA463;--warna-aksen:#FFB020;--warna-merah:#ef4444;--border-color:#e2e8f0;--text-muted:#64748b;--bg-card:#fff;--bg-page:#f8fafc;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg-page);color:#1e293b;font-size:15px}
+  .wrap{max-width:860px;margin:0 auto;padding:16px}
+  header.top{position:sticky;top:0;background:var(--bg-page);padding:12px 0 8px;border-bottom:1px solid var(--border-color);z-index:10}
+  h1{font-size:1.25rem;margin:0}
+  .sub{color:var(--text-muted);font-size:.82rem;margin-top:2px}
+  .card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:14px;padding:16px;margin:14px 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .card h2{font-size:1rem;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .field{flex:1 1 220px;min-width:200px;margin-bottom:12px}
+  .field label{display:block;font-size:.8rem;font-weight:600;color:#334155;margin-bottom:4px}
+  .field .hint{font-size:.75rem;color:var(--text-muted);margin-top:3px}
+  input[type=text],input[type=number],textarea{width:100%;padding:10px 11px;border:1px solid var(--border-color);border-radius:10px;font-size:.95rem;background:#fff;color:inherit}
+  textarea{min-height:84px;resize:vertical}
+  input[type=file]{width:100%;padding:8px;border:1px dashed #cbd5e1;border-radius:10px;background:#f8fafc}
+  .logo-preview{width:72px;height:72px;border-radius:14px;background:var(--warna-utama);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:32px;color:#fff;flex:none}
+  .logo-preview img{width:100%;height:100%;object-fit:cover}
+  .logo-row{display:flex;gap:14px;align-items:flex-start}
+  .logo-row .field{flex:1}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:none;border-radius:10px;padding:11px 18px;font-size:.92rem;font-weight:600;cursor:pointer}
+  .btn-primary{background:var(--warna-utama);color:#fff}
+  .btn-primary:hover{filter:brightness(1.07)}
+  .btn-ghost{background:#fff;border:1px solid var(--border-color);color:#334155}
+  .btn[disabled]{opacity:.6;cursor:not-allowed}
+  .msg{display:none;border-radius:10px;padding:11px 13px;font-size:.88rem;margin:10px 0}
+  .msg.show{display:block}
+  .msg.err{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}
+  .msg.ok{background:#ecfdf5;color:#047857;border:1px solid #a7f3d0}
+  .banner{display:none;border-radius:10px;padding:12px 14px;font-size:.9rem;margin:14px 0;background:#fffbeb;border:1px solid #fcd34d;color:#92400e}
+  .banner.show{display:block}
+  .stat-tiles{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .tile{background:#f8fafc;border:1px solid var(--border-color);border-radius:10px;padding:8px 14px;min-width:110px}
+  .tile b{display:block;font-size:1.15rem}
+  .tile span{font-size:.75rem;color:var(--text-muted)}
+  ul.pengurus{list-style:none;margin:0;padding:0}
+  ul.pengurus li{padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:.88rem}
+  .jabatan{font-weight:700;color:var(--warna-utama)}
+  .meta{font-size:.78rem;color:var(--text-muted);margin-top:8px}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 26px}
+  footer{padding:18px 0 30px;text-align:center;color:var(--text-muted);font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>🛠️ Panel Admin — Personalisasi Komunitas</h1>
+    <div class="sub">Halaman khusus admin. Atur identitas, tampilan, dan info basecamp. Semua perubahan langsung berlaku untuk semua anggota.</div>
+  </header>
+
+  <div class="banner" id="admin-banner"></div>
+  <div class="msg" id="msg"></div>
+
+  <form id="form-personalisasi" autocomplete="off">
+    <div class="card">
+      <h2>🏷️ Identitas Komunitas</h2>
+      <div class="row">
+        <div class="field"><label>Nama komunitas <span style="color:var(--warna-merah)">*</span></label><input type="text" id="f-nama" maxlength="120"></div>
+        <div class="field"><label>Sapaan (mis. "bro", "kak")</label><input type="text" id="f-sapaan" maxlength="50"></div>
+      </div>
+      <div class="field"><label>Tagline</label><input type="text" id="f-tagline" maxlength="200"></div>
+      <div class="logo-row">
+        <div class="logo-preview" id="logo-preview">🛵</div>
+        <div class="field"><label>Logo komunitas</label><input type="file" id="f-logo" accept="image/png,image/jpeg,image/webp">
+        <div class="hint">JPG/PNG/WebP maks 500KB. Kosongkan = tetap pakai logo sekarang (emoji 🛵).</div></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Warna utama (hex)</label><input type="text" id="f-warna-utama" maxlength="20" placeholder="#1FA463"></div>
+        <div class="field"><label>Warna aksen (hex)</label><input type="text" id="f-warna-aksen" maxlength="20" placeholder="#FFB020"></div>
+        <div class="field"><label>Iuran default (Rp)</label><input type="number" id="f-iuran-default" min="0" step="500"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🗣️ Persona & Cerita</h2>
+      <div class="row">
+        <div class="field"><label>Nama hero (maskot)</label><input type="text" id="f-nama-hero" maxlength="100"></div>
+      </div>
+      <div class="field"><label>Tentang komunitas</label><textarea id="f-tentang"></textarea></div>
+      <div class="field"><label>Visi & misi</label><textarea id="f-visi-misi"></textarea></div>
+      <div class="field"><label>Kontak & info basecamp</label><textarea id="f-kontak" placeholder="WA: 08xx..&#10;Email: ...&#10;Alamat sekretariat: ...&#10;Instagram: @..."></textarea>
+      <div class="hint">Rekomendasi format per baris: <b>Label: isi</b> (WA, Email, Alamat, Medsos).</div></div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="btn btn-primary" id="btn-simpa">💾 Simpan Perubahan</button>
+      <button type="button" class="btn btn-ghost" id="btn-muat-ulang">↻ Muat Ulang Data</button>
+      <a class="btn btn-ghost" href="index.html">← Kembali ke Webapp</a>
+    </div>
+  </form>
+
+  <div class="card">
+    <h2>👥 Info Pengurus (Read-Only)</h2>
+    <div class="stat-tiles" id="pengurus-tiles"></div>
+    <ul class="pengurus" id="pengurus-list"></ul>
+    <div class="meta">Data dari koleksi <b>unit</b> &amp; <b>jabatan</b>. Edit struktur/jabatan dari halaman <b>Struktur</b> di webapp utama (atau Dev Tools).</div>
+  </div>
+
+  <footer id="footer-meta">Panel Admin Personalisasi · data dikelola via koleksi <i>komunitas</i>.</footer>
+</div>
+<script src="js/panel-admin.js?v=17"></script>
+</body>
+</html>
