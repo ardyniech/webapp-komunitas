@@ -160,6 +160,13 @@ window.AppModules.CoreEvents = {
       if (!e.target.closest("#user-dropdown-menu") && !e.target.closest("#user-header-badge")) {
         this.closeUserMenu();
       }
+      // Tutup side nav jika klik di luar side-nav dan bukan pada logo
+      if (!e.target.closest("#side-nav") && !e.target.closest("#brand-logo-container")) {
+        const sideNav = document.getElementById("side-nav");
+        if (sideNav && sideNav.classList.contains("open")) {
+          sideNav.classList.remove("open");
+        }
+      }
     });
   }
 };
