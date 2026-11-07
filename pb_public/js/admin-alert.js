@@ -46,8 +46,7 @@ window.AppModules.AdminAlert = {
 
   tandai(jumlah) {
     // badge angka di tombol nav Anggota
-    const btn = document.getElementById("nav-btn-anggota");
-    if (btn) {
+    document.querySelectorAll(".nav-btn-anggota").forEach((btn) => {
       let badge = btn.querySelector(".admin-alert-badge");
       if (!badge) {
         badge = document.createElement("span");
@@ -59,7 +58,7 @@ window.AppModules.AdminAlert = {
       }
       badge.textContent = jumlah;
       badge.style.display = jumlah > 0 ? "flex" : "none";
-    }
+    });
     // banner di panel Anggota
     const panel = document.getElementById("panel-anggota");
     let banner = document.getElementById("admin-alert-banner");

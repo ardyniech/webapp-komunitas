@@ -61,8 +61,9 @@ window.AppModules.Auth = {
     const btnCatat = document.getElementById("btn-open-catat-kas");
     if (btnCatat) btnCatat.style.display = canManage ? "inline-flex" : "none";
 
-    const navAnggota = document.getElementById("nav-btn-anggota");
-    if (navAnggota) navAnggota.style.display = this.isAuthenticated() ? "flex" : "none";
+    document.querySelectorAll(".nav-btn-anggota").forEach((btn) => {
+      btn.style.display = this.isAuthenticated() ? "flex" : "none";
+    });
 
     // Dev Tools & Bug Hunter: khusus superadmin (data sensitif internal)
     const isSuper = this.user && this.user.role === "superadmin";
@@ -71,8 +72,9 @@ window.AppModules.Auth = {
     });
     // Role & Manajemen: khusus admin/superadmin
     const isAdmin = this.user && (this.user.role === "admin" || this.user.role === "superadmin");
-    const navRole = document.getElementById("nav-btn-role");
-    if (navRole) navRole.style.display = isAdmin ? "flex" : "none";
+    document.querySelectorAll(".nav-btn-role").forEach((btn) => {
+      btn.style.display = isAdmin ? "flex" : "none";
+    });
     document.querySelectorAll(".dropdown-item").forEach((btn) => {
       const oc = btn.getAttribute("onclick") || "";
       if (/switchTab\('(admin-tools|bug-hunter)'\)/.test(oc)) btn.style.display = isSuper ? "" : "none";
