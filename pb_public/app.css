@@ -307,10 +307,11 @@ body.mode-hemat-animasi * {
 /* Main Container */
 .main-content {
   max-width: 680px;
-  margin: 0 auto;
+  margin: 0 auto 70px auto;
   padding: 16px;
   position: relative;
   z-index: 1;
+  margin-left: 72px;
 }
 
 /* Views (Tab Panels) */
@@ -864,6 +865,10 @@ body.mode-hemat-animasi * {
   .main-content {
     margin-left: 0;
   }
+  .bottom-nav {
+    left: 0;
+    width: 100%;
+  }
 }
 
 .hero-bubble {
@@ -914,8 +919,8 @@ body.mode-hemat-animasi * {
 .bottom-nav {
   position: fixed;
   bottom: 0;
-  left: 0;
-  width: 100%;
+  left: 72px;
+  width: calc(100% - 72px);
   background: var(--bg-card);
   border-top: 1px solid var(--border-color);
   display: flex;
