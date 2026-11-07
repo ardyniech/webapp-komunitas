@@ -13,6 +13,11 @@ window.AppModules.CoreEvents = {
     if (menu) menu.classList.remove("show");
   },
 
+  toggleSideNav() {
+    const nav = document.getElementById("side-nav");
+    if (nav) nav.classList.toggle("open");
+  },
+
   switchAuthTab(tab) {
     const tabs = ["login", "daftar", "status"];
     tabs.forEach(t => {
