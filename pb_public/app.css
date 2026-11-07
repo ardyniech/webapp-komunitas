@@ -311,6 +311,10 @@ body.mode-hemat-animasi * {
   padding: 16px;
   position: relative;
   z-index: 1;
+  margin-left: 0;
+}
+
+.sidebar-open .main-content {
   margin-left: 72px;
 }
 
@@ -923,8 +927,8 @@ body.mode-hemat-animasi * {
 .bottom-nav {
   position: fixed;
   bottom: 0;
-  left: 72px;
-  width: calc(100% - 72px);
+  left: 0;
+  width: 100%;
   background: var(--bg-card);
   border-top: 1px solid var(--border-color);
   display: flex;
@@ -932,6 +936,12 @@ body.mode-hemat-animasi * {
   padding: 8px 0;
   z-index: 110;
   backdrop-filter: blur(10px);
+}
+
+/* When side nav is open, shift bottom nav to the right */
+.sidebar-open .bottom-nav {
+  left: 72px;
+  width: calc(100% - 72px);
 }
 
 .nav-item {

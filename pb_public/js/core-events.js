@@ -15,7 +15,15 @@ window.AppModules.CoreEvents = {
 
   toggleSideNav() {
     const nav = document.getElementById("side-nav");
-    if (nav) nav.classList.toggle("open");
+    const body = document.body;
+    if (nav) {
+      nav.classList.toggle("open");
+      if (nav.classList.contains("open")) {
+        body.classList.add("sidebar-open");
+      } else {
+        body.classList.remove("sidebar-open");
+      }
+    }
   },
 
   switchAuthTab(tab) {
