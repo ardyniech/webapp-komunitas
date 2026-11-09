@@ -4,10 +4,10 @@ window.AppModules = window.AppModules || {};
 
 window.AppModules.DevTools = {
   async devtoolsLoadAll() {
-    if (this.renderGit) this.renderGit();
-    if (this.renderDiagnose) this.renderDiagnose();
-    if (this.renderMonitor) this.renderMonitor();
-    if (this.renderInfo) this.renderInfo();
+    if (App.renderGit) App.renderGit();
+    if (App.renderDiagnose) App.renderDiagnose();
+    if (App.renderMonitor) App.renderMonitor();
+    if (App.renderInfo) App.renderInfo();
     this.tandaiAlert();
   },
 

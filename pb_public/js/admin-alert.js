@@ -36,7 +36,10 @@ window.AppModules.AdminAlert = {
       const data = await res.json();
       const jumlah = data.totalItems !== undefined ? data.totalItems : (data.items || []).length;
       this.tandai(jumlah);
-      if (this._terakhir !== null && jumlah > this._terakhir) {
+      // Notifikasi saat pertama kali ada pendaftaran (dari nol) atau jumlah naik
+      const baru = this._terakhir === null && jumlah > 0;
+      const naik = this._terakhir !== null && jumlah > this._terakhir;
+      if (baru || naik) {
         this.berbunyi();
         window.Hero && Hero.setExpression("senang", `Ada ${jumlah} pendaftaran menunggu verifikasi bro!`);
       }

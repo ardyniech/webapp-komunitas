@@ -99,11 +99,7 @@ window.AppModules.CoreEvents = {
     else if (tabName === "dokumen" && this.loadDokumen) this.loadDokumen();
     else if (tabName === "devtools" && this.devtoolsLoadAll) this.devtoolsLoadAll();
     else if (tabName === "role" && this.renderRole) this.renderRole();
-    else if (tabName === "bug-hunter" && this.loadScanBugs) this.loadScanBugs();
-    else if (tabName === "bug-hunter") {
-      const listEl = document.getElementById("bug-hunter-list");
-      if (listEl) listEl.innerHTML = `<div class="empty-state" style="color:var(--warna-merah);">Modul scan belum siap. Silakan muat ulang halaman (Ctrl+F5) dan coba lagi.</div>`;
-    }
+    else if (tabName === "bug-hunter" && App.loadScanBugs) App.loadScanBugs();
   },
 
   setupEventListeners() {
